@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.expensemanager'
+    namespace 'com.example.bcapp'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.expensemanager"
+        applicationId "com.example.bcapp"
         minSdk 24
         targetSdk 34
         versionCode 1
