@@ -36,6 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <!-- Members section -->
         <TextView
             android:id="@+id/labelMembers"
             android:text="Members Names"
@@ -46,7 +47,16 @@
         <LinearLayout
             android:id="@+id/layoutMembers"
             android:orientation="vertical"
+            android:layout_marginBottom="8dp"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Amount type section -->
+        <TextView
+            android:id="@+id/labelAmountType"
+            android:text="Amount Type"
+            android:layout_marginTop="4dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Spinner
@@ -57,6 +67,7 @@
         <LinearLayout
             android:id="@+id/layoutAmounts"
             android:orientation="vertical"
+            android:layout_marginTop="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
