@@ -1,13 +1,13 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// Root-level build.gradle
+
 buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }  // Optional JitPack
+        maven { url "https://jitpack.io" }
+        maven { url "https://repo1.maven.org/maven2" } // explicit Maven Central mirror
     }
     dependencies {
-        // Use a single Android Gradle Plugin version.
-        // 8.1.1 works with Gradle 8.x and Java 17 for this simple project.
         classpath "com.android.tools.build:gradle:8.1.1"
     }
 }
@@ -16,7 +16,12 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }  // Optional JitPack
-        maven { url "https://repo1.maven.org/maven2" } // explicit central mirror
+        maven { url "https://jitpack.io" }
+        maven { url "https://repo1.maven.org/maven2" } // mirror to avoid ISP block
     }
+}
+
+// Clean task (optional but useful)
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
 }
