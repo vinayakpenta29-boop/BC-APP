@@ -1,10 +1,15 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }  // Added JitPack repository
     }
     dependencies {
+        // Use ONLY one Android Gradle Plugin version.
+        // AGP 8.5.0 requires Gradle 8.7, which you set in gradle-wrapper.properties.
         classpath "com.android.tools.build:gradle:8.5.0"
+
     }
 }
 
@@ -12,5 +17,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }  // Added JitPack repository
     }
 }
