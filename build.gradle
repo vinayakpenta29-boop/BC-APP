@@ -1,9 +1,8 @@
-// Root-level build.gradle (Gradle 8.x + AGP 8.1.1 compliant)
+// Root-level build.gradle (Gradle 8.7 + AGP 8.1.1)
 
-buildscript {
-    dependencies {
-        classpath "com.android.tools.build:gradle:8.1.1"
-    }
+plugins {
+    id "com.android.application" version "8.1.1" apply false
+    id "com.android.library" version "8.1.1" apply false
 }
 
 // Clean task
