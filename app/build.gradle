@@ -1,40 +1,36 @@
 plugins {
     id 'com.android.application'
-    // No Kotlin plugin here
 }
 
 android {
-    namespace "com.example.bcapp"
+    namespace 'com.example.bcapp'
     compileSdk 34
 
     defaultConfig {
         applicationId "com.example.bcapp"
-        minSdk 21
+        minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
-        }
-        debug {
-            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    // IMPORTANT: remove any kotlinOptions { ... } block you had here.
-    // Example of what must be deleted:
-    // kotlinOptions {
-    //     jvmTarget = "1.8"
-    // }
-}
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.webkit:webkit:1.11.0'
-    // No kotlin-stdlib or other Kotlin libs
 }
