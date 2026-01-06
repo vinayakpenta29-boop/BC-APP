@@ -1,27 +1,12 @@
-// Root-level build.gradle
+// Root-level build.gradle (Gradle 8.x + AGP 8.1.1 compliant)
 
 buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://repo1.maven.org/maven2" } // explicit Maven Central mirror
-    }
     dependencies {
         classpath "com.android.tools.build:gradle:8.1.1"
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url "https://repo1.maven.org/maven2" } // mirror to avoid ISP block
-    }
-}
-
-// Clean task (optional but useful)
+// Clean task
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
