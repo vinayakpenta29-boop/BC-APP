@@ -6,9 +6,12 @@ buildscript {
         maven { url 'https://jitpack.io' }  // Added JitPack repository
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.1'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0'
+        // Use ONLY one Android Gradle Plugin version.
+        // AGP 8.5.0 requires Gradle 8.7, which you set in gradle-wrapper.properties.
         classpath "com.android.tools.build:gradle:8.5.0"
+
+        // Kotlin Gradle plugin (1.8.0 is fine with AGP 8.x for simple projects)
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
     }
 }
 
