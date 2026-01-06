@@ -3,13 +3,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }  // Added JitPack repository
+        maven { url 'https://jitpack.io' }  // Optional JitPack
     }
     dependencies {
-        // Use ONLY one Android Gradle Plugin version.
-        // AGP 8.5.0 requires Gradle 8.7, which you set in gradle-wrapper.properties.
-        classpath "com.android.tools.build:gradle:8.5.0"
-
+        // Use a single Android Gradle Plugin version.
+        // 8.1.1 works with Gradle 8.x and Java 17 for this simple project.
+        classpath "com.android.tools.build:gradle:8.1.1"
     }
 }
 
@@ -17,6 +16,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }  // Added JitPack repository
+        maven { url 'https://jitpack.io' }  // Optional JitPack
+        maven { url "https://repo1.maven.org/maven2" } // explicit central mirror
     }
 }
