@@ -1,18 +1,25 @@
+// settings.gradle (Gradle 8.7 + AGP 8.1.1)
+
 pluginManagement {
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
+        // Maven Central mirror (helps if ISP blocks main repo)
         maven { url "https://repo1.maven.org/maven2" }
     }
 }
 
 dependencyResolutionManagement {
+    // Enforce single source of repositories (recommended for Gradle 8+)
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
     repositories {
         google()
         mavenCentral()
+        // Mirror for reliability
         maven { url "https://repo1.maven.org/maven2" }
+        // Optional – used only if you add JitPack dependencies
         maven { url "https://jitpack.io" }
     }
 }
