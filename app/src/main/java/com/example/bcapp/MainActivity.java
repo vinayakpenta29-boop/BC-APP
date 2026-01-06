@@ -1,39 +1,43 @@
 package com.example.bcapp;
 
-import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.*;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView menuButton;
-    private Spinner spinnerBc, spinnerMember;
-    private EditText editPayDate, editPayAmount;
-    private Button buttonAdd;
-    private LinearLayout tableContainer;
+    // UI references
+    TextView menuButton;
+    Spinner spinnerBc, spinnerMember;
+    EditText editPayDate, editPayAmount;
+    Button buttonAdd;
+    LinearLayout tableContainer;
 
-    private final List<Bc> bcData = new ArrayList<>();
-    private ArrayAdapter<String> bcAdapter;
-    private ArrayAdapter<String> memberAdapter;
+    // Data + helpers
+    List<Bc> bcData = new ArrayList<>();
+    BcManager bcManager;
 
-    private final SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private final SimpleDateFormat displayFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    // Date formats used everywhere
+    final SimpleDateFormat isoFormat =
+            new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    final SimpleDateFormat displayFormat =
+            new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Bind views
         menuButton = findViewById(R.id.menuButton);
         spinnerBc = findViewById(R.id.spinnerBc);
         spinnerMember = findViewById(R.id.spinnerMember);
@@ -42,385 +46,21 @@ public class MainActivity extends AppCompatActivity {
         buttonAdd = findViewById(R.id.buttonAdd);
         tableContainer = findViewById(R.id.tableContainer);
 
-        // Adapters
-        bcAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new ArrayList<>());
-        bcAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerBc.setAdapter(bcAdapter);
-
-        memberAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new ArrayList<>());
-        memberAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerMember.setAdapter(memberAdapter);
-
-        setupMenu();
-        setupDatePickers();
-        setupListeners();
-    }
-
-    private void setupMenu() {
-        menuButton.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(MainActivity.this, menuButton);
-            popup.getMenu().add(0, 1, 0, "Create New BC");
-            popup.getMenu().add(0, 2, 1, "Show BC List");
-            popup.setOnMenuItemClickListener(this::onMenuItemClick);
-            popup.show();
-        });
-    }
-
-    private boolean onMenuItemClick(@NonNull MenuItem item) {
-        if (item.getItemId() == 1) {
-            openCreateBcDialog();
-            return true;
-        } else if (item.getItemId() == 2) {
-            showBcListTable();
-            return true;
-        }
-        return false;
-    }
-
-    private void setupDatePickers() {
-        View.OnClickListener dateClick = v -> {
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog dp = new DatePickerDialog(MainActivity.this,
-                    (view, year1, month1, dayOfMonth) -> {
-                        Calendar cal = Calendar.getInstance();
-                        cal.set(year1, month1, dayOfMonth, 0, 0, 0);
-                        String iso = isoFormat.format(cal.getTime());
-                        String display = displayFormat.format(cal.getTime());
-                        ((EditText) v).setText(iso); // store ISO (like HTML date input)
-                    },
-                    year, month, day);
-            dp.show();
-        };
-        editPayDate.setOnClickListener(dateClick);
-    }
-
-    private void setupListeners() {
-        spinnerBc.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateMembersDropdown();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
-
-        buttonAdd.setOnClickListener(v -> markInstallment());
-    }
-
-    private void openCreateBcDialog() {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_create_bc, null);
-        EditText editBcName = dialogView.findViewById(R.id.editBcName);
-        EditText editMonths = dialogView.findViewById(R.id.editMonths);
-        EditText editStartDate = dialogView.findViewById(R.id.editStartDate);
-        LinearLayout layoutMembers = dialogView.findViewById(R.id.layoutMembers);
-        Spinner spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);
-        LinearLayout layoutAmounts = dialogView.findViewById(R.id.layoutAmounts);
-        CheckBox checkAfterTaken = dialogView.findViewById(R.id.checkAfterTaken);
-        Button buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);
-        Button buttonCancelBc = dialogView.findViewById(R.id.buttonCancelBc);
-
-        // Date for startDate
-        editStartDate.setOnClickListener(v -> {
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog dp = new DatePickerDialog(MainActivity.this,
-                    (view, year1, month1, dayOfMonth) -> {
-                        Calendar cal = Calendar.getInstance();
-                        cal.set(year1, month1, dayOfMonth, 0, 0, 0);
-                        editStartDate.setText(isoFormat.format(cal.getTime()));
-                    },
-                    year, month, day);
-            dp.show();
-        });
-
-        // Amount type spinner
-        ArrayAdapter<String> amountTypeAdapter = new ArrayAdapter<>(
+        // Create manager that handles all BC logic + UI
+        bcManager = new BcManager(
                 this,
-                android.R.layout.simple_spinner_item,
-                Arrays.asList("Select Amount Type", "Fixed", "Random")
+                menuButton,
+                spinnerBc,
+                spinnerMember,
+                editPayDate,
+                editPayAmount,
+                buttonAdd,
+                tableContainer,
+                bcData,
+                isoFormat,
+                displayFormat
         );
-        amountTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerAmountType.setAdapter(amountTypeAdapter);
 
-        // months change listener
-        editMonths.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                createMemberInputs(editMonths, layoutMembers);
-                amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);
-            }
-        });
-
-        spinnerAmountType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .setCancelable(false)
-                .create();
-
-        buttonSaveBc.setOnClickListener(v -> {
-            String name = editBcName.getText().toString().trim();
-            int months = safeParseInt(editMonths.getText().toString());
-            String startDate = editStartDate.getText().toString().trim();
-
-            if (name.isEmpty() || months <= 0 || startDate.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Bc bc = new Bc(name, months, startDate);
-
-            // members
-            for (int i = 0; i < layoutMembers.getChildCount(); i++) {
-                View child = layoutMembers.getChildAt(i);
-                if (child instanceof EditText) {
-                    String m = ((EditText) child).getText().toString().trim();
-                    if (!m.isEmpty()) bc.members.add(m);
-                }
-            }
-
-            // amounts
-            for (int i = 0; i < layoutAmounts.getChildCount(); i++) {
-                View child = layoutAmounts.getChildAt(i);
-                if (child instanceof EditText) {
-                    String a = ((EditText) child).getText().toString().trim();
-                    bc.amounts.add(a.isEmpty() ? 0.0 : Double.parseDouble(a));
-                }
-            }
-
-            bc.afterTaken = checkAfterTaken.isChecked();
-
-            bcData.add(bc);
-            bcAdapter.add(bc.name);
-            bcAdapter.notifyDataSetChanged();
-
-            dialog.dismiss();
-        });
-
-        buttonCancelBc.setOnClickListener(v -> dialog.dismiss());
-
-        dialog.show();
-    }
-
-    private void createMemberInputs(EditText editMonths, LinearLayout layoutMembers) {
-        layoutMembers.removeAllViews();
-        int m = safeParseInt(editMonths.getText().toString());
-        for (int i = 0; i < m; i++) {
-            EditText e = new EditText(this);
-            e.setHint("Member " + (i + 1));
-            layoutMembers.addView(e);
-        }
-    }
-
-    private void amountTypeChange(EditText editMonths, Spinner spinnerAmountType, LinearLayout layoutAmounts) {
-        layoutAmounts.removeAllViews();
-        int m = safeParseInt(editMonths.getText().toString());
-        String selected = spinnerAmountType.getSelectedItem() != null
-                ? spinnerAmountType.getSelectedItem().toString().toLowerCase(Locale.ROOT)
-                : "";
-
-        if (selected.contains("fixed")) {
-            EditText e = new EditText(this);
-            e.setHint("Amount");
-            e.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-            layoutAmounts.addView(e);
-        } else if (selected.contains("random")) {
-            for (int i = 0; i < m; i++) {
-                EditText e = new EditText(this);
-                e.setHint("Amount Month " + (i + 1));
-                e.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-                layoutAmounts.addView(e);
-            }
-        }
-    }
-
-    private void updateMembersDropdown() {
-        memberAdapter.clear();
-        int index = spinnerBc.getSelectedItemPosition();
-        if (index < 0 || index >= bcData.size()) {
-            renderMainTable(null);
-            return;
-        }
-        Bc bc = bcData.get(index);
-        memberAdapter.addAll(bc.members);
-        memberAdapter.notifyDataSetChanged();
-        renderMainTable(bc);
-    }
-
-    private void showBcListTable() {
-        tableContainer.removeAllViews();
-        for (Bc bc : bcData) {
-            TextView title = new TextView(this);
-            title.setText(bc.name);
-            title.setTextSize(16f);
-            title.setPadding(0, 8, 0, 4);
-            tableContainer.addView(title);
-
-            TableLayout table = new TableLayout(this);
-            table.setStretchAllColumns(true);
-
-            TableRow header = new TableRow(this);
-            addCell(header, "Sr", true);
-            addCell(header, "Date", true);
-            addCell(header, "Amount", true);
-            table.addView(header);
-
-            for (int i = 0; i < bc.months; i++) {
-                TableRow row = new TableRow(this);
-                addCell(row, String.valueOf(i + 1), false);
-
-                Calendar cal = parseIsoDate(bc.startDateIso);
-                if (cal != null) {
-                    cal.add(Calendar.MONTH, i);
-                }
-                String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
-                addCell(row, dateStr, false);
-
-                double amount = bc.amounts.size() > i
-                        ? bc.amounts.get(i)
-                        : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
-                addCell(row, String.valueOf(amount), false);
-                table.addView(row);
-            }
-
-            tableContainer.addView(table);
-        }
-    }
-
-    private void renderMainTable(Bc bc) {
-        tableContainer.removeAllViews();
-        if (bc == null) return;
-
-        TextView title = new TextView(this);
-        title.setText("Main BC Table");
-        title.setTextSize(16f);
-        title.setPadding(0, 8, 0, 4);
-        tableContainer.addView(title);
-
-        TableLayout table = new TableLayout(this);
-        table.setStretchAllColumns(true);
-
-        TableRow header = new TableRow(this);
-        addCell(header, "Sr", true);
-        addCell(header, "Date", true);
-        addCell(header, "Amount", true);
-        addCell(header, "Member", true);
-        for (int i = 0; i < bc.months; i++) {
-            addCell(header, "M" + (i + 1), true);
-        }
-        table.addView(header);
-
-        for (int r = 0; r < bc.members.size(); r++) {
-            String member = bc.members.get(r);
-            TableRow row = new TableRow(this);
-
-            addCell(row, String.valueOf(r + 1), false);
-
-            Calendar cal = parseIsoDate(bc.startDateIso);
-            String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
-            addCell(row, dateStr, false);
-
-            double amount = bc.amounts.size() > r
-                    ? bc.amounts.get(r)
-                    : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
-            addCell(row, String.valueOf(amount), false);
-
-            addCell(row, member, false);
-
-            for (int m = 0; m < bc.months; m++) {
-                CheckBox cb = new CheckBox(this);
-                cb.setEnabled(false);
-                String key = bc.getPaidKey(member, m);
-                Boolean isPaid = bc.paid.get(key);
-                cb.setChecked(isPaid != null && isPaid);
-                TableRow.LayoutParams lp = new TableRow.LayoutParams();
-                lp.gravity = Gravity.CENTER;
-                cb.setLayoutParams(lp);
-                row.addView(cb);
-            }
-
-            table.addView(row);
-        }
-
-        tableContainer.addView(table);
-    }
-
-    private void markInstallment() {
-        int bcIndex = spinnerBc.getSelectedItemPosition();
-        int memberIndex = spinnerMember.getSelectedItemPosition();
-        String dateVal = editPayDate.getText().toString().trim();
-
-        if (bcIndex < 0 || memberIndex < 0 || dateVal.isEmpty()) {
-            Toast.makeText(this, "Please select BC, Member and Date", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Bc bc = bcData.get(bcIndex);
-        Calendar start = parseIsoDate(bc.startDateIso);
-        Calendar paid = parseIsoDate(dateVal);
-        if (start == null || paid == null) {
-            Toast.makeText(this, "Invalid date", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        int monthIndex =
-                (paid.get(Calendar.YEAR) - start.get(Calendar.YEAR)) * 12 +
-                (paid.get(Calendar.MONTH) - start.get(Calendar.MONTH));
-
-        if (monthIndex < 0 || monthIndex >= bc.months) {
-            Toast.makeText(this, "Selected date is outside BC duration", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String member = bc.members.get(memberIndex);
-        String key = bc.getPaidKey(member, monthIndex);
-        bc.paid.put(key, true);
-        renderMainTable(bc);
-    }
-
-    private void addCell(TableRow row, String text, boolean header) {
-        TextView tv = new TextView(this);
-        tv.setText(text);
-        tv.setPadding(4, 4, 4, 4);
-        tv.setGravity(Gravity.CENTER);
-        if (header) {
-            tv.setTextSize(14f);
-            tv.setAllCaps(true);
-        }
-        row.addView(tv);
-    }
-
-    private int safeParseInt(String s) {
-        try {
-            return Integer.parseInt(s.trim());
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    private Calendar parseIsoDate(String iso) {
-        try {
-            Date d = isoFormat.parse(iso);
-            Calendar c = Calendar.getInstance();
-            c.setTime(d);
-            return c;
-        } catch (ParseException e) {
-            return null;
-        }
+        bcManager.init();   // set adapters, menu, listeners, etc.
     }
 }
