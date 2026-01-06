@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BC Management</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px;
+}
+.menu { position: relative; display: inline-block; }
+.menu-btn { font-size: 24px; cursor: pointer; }
+.menu-content {
+    display: none; position: absolute; background: #fff;
+    border: 1px solid #ccc; min-width: 160px; z-index: 10;
+}
+.menu-content div { padding: 10px; cursor: pointer; }
+.menu-content div:hover { background: #eee; }
+.popup {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+.popup-content {
+    background: #fff; max-width: 400px;
+    margin: 30px auto; padding: 15px; border-radius: 6px;
+}
+input, select, button {
+    width: 100%; margin: 6px 0; padding: 6px;
+}
+table {
+    width: 100%; border-collapse: collapse; margin-top: 15px;
+}
+th, td {
+    border: 1px solid #999; padding: 6px; text-align: center;
+}
+.toggle { display: flex; align-items: center; }
+.toggle input { width: auto; margin-left: 10px; }
+</style>
+</head>
+<body>
+
+<!-- Three dots menu -->
+<div class="menu">
+    <div class="menu-btn" onclick="toggleMenu()">⋮</div>
+    <div class="menu-content" id="menu">
+        <div onclick="openCreateBC()">Create New BC</div>
+        <div onclick="showBCList()">Show BC List</div>
+    </div>
+</div>
+
+<!-- Create BC Popup -->
+<div class="popup" id="createPopup">
+    <div class="popup-content">
+        <h3>Create New BC</h3>
+        <input id="bcName" placeholder="BC Name">
+        <input id="months" type="number" placeholder="Months" onchange="createMemberInputs()">
+        <input id="startDate" type="date">
+        <div id="members"></div>
+
+        <select id="amountType" onchange="amountTypeChange()">
+            <option value="">Select Amount Type</option>
+            <option value="fixed">Fixed</option>
+            <option value="random">Random</option>
+        </select>
+        <div id="amountInputs"></div>
+
+        <div class="toggle">
+            After Taken BC
+            <input type="checkbox" id="afterTaken">
+        </div>
+
+        <button onclick="saveBC()">Save BC</button>
+        <button onclick="closePopup()">Close</button>
+    </div>
+</div>
+
+<!-- Main Page Controls -->
+<h3>Main BC Entry</h3>
+<select id="bcSelect" onchange="updateMembersDropdown()">
+    <option value="">Select BC</option>
+</select>
+<select id="memberSelect">
+    <option value="">Select Member</option>
+</select>
+<input type="date" id="payDate">
+<input type="number" id="payAmount" placeholder="Amount">
+<button onclick="markInstallment()">ADD</button>
+
+<div id="tables"></div>
+
+<script>
+let bcData = [];
+
+function toggleMenu() {
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+function openCreateBC() { createPopup.style.display = "block"; }
+function closePopup() { createPopup.style.display = "none"; }
+
+function createMemberInputs() {
+    let m = Number(months.value);
+    members.innerHTML = "<b>Members Names</b>";
+    for (let i = 0; i < m; i++) {
+        members.innerHTML += `<input placeholder="Member ${i+1}">`;
+    }
+}
+
+function amountTypeChange() {
+    let m = Number(months.value);
+    amountInputs.innerHTML = "";
+    if (amountType.value === "fixed") {
+        amountInputs.innerHTML = `<input placeholder="Amount">`;
+    } else if (amountType.value === "random") {
+        for (let i = 0; i < m; i++) {
+            amountInputs.innerHTML += `<input placeholder="Amount Month ${i+1}">`;
+        }
+    }
+}
+
+function saveBC() {
+    let bc = {
+        name: bcName.value.trim(),
+        months: Number(months.value),
+        startDate: startDate.value,
+        members: [...members.querySelectorAll("input")].map(i => i.value.trim()),
+        afterTaken: afterTaken.checked,
+        amounts: [...amountInputs.querySelectorAll("input")].map(i => i.value),
+        paid: {}
+    };
+    bcData.push(bc);
+    bcSelect.innerHTML += `<option value="${bcData.length-1}">${bc.name}</option>`;
+    closePopup();
+}
+
+function updateMembersDropdown() {
+    memberSelect.innerHTML = `<option value="">Select Member</option>`;
+    let bc = bcData[bcSelect.value];
+    if (!bc) return;
+    bc.members.forEach(m => {
+        memberSelect.innerHTML += `<option value="${m}">${m}</option>`;
+    });
+    renderMainTable(bc);
+}
+
+function showBCList() {
+    let out = "";
+    bcData.forEach(bc => {
+        out += `<h4>${bc.name}</h4><table>
+        <tr><th>Sr</th><th>Date</th><th>Amount</th></tr>`;
+        for (let i = 0; i < bc.months; i++) {
+            let d = new Date(bc.startDate);
+            d.setMonth(d.getMonth() + i);
+            out += `<tr><td>${i+1}</td><td>${d.toLocaleDateString()}</td>
+            <td>${bc.amounts[i] || bc.amounts[0]}</td></tr>`;
+        }
+        out += `</table>`;
+    });
+    tables.innerHTML = out;
+}
+
+function renderMainTable(bc) {
+    let html = `<h3>Main BC Table</h3><table><tr>
+        <th>Sr</th><th>Date</th><th>Amount</th><th>Member</th>`;
+    for (let i = 0; i < bc.months; i++) html += `<th>M${i+1}</th>`;
+    html += `</tr>`;
+
+    bc.members.forEach((member, r) => {
+        html += `<tr>
+            <td>${r+1}</td>
+            <td>${new Date(bc.startDate).toLocaleDateString()}</td>
+            <td>${bc.amounts[r] || bc.amounts[0]}</td>
+            <td>${member}</td>`;
+        for (let m = 0; m < bc.months; m++) {
+            let key = member + "_" + m;
+            html += `<td><input type="checkbox" disabled ${bc.paid[key] ? "checked" : ""}></td>`;
+        }
+        html += `</tr>`;
+    });
+    html += `</table>`;
+    tables.innerHTML = html;
+}
+
+function markInstallment() {
+    let bcIndex = bcSelect.value;
+    let member = memberSelect.value;
+    let dateVal = payDate.value;
+
+    if (!bcIndex || !member || !dateVal) {
+        alert("Please select BC, Member and Date");
+        return;
+    }
+
+    let bc = bcData[bcIndex];
+    let start = new Date(bc.startDate);
+    let paid = new Date(dateVal);
+
+    let monthIndex =
+        (paid.getFullYear() - start.getFullYear()) * 12 +
+        (paid.getMonth() - start.getMonth());
+
+    if (monthIndex < 0 || monthIndex >= bc.months) {
+        alert("Selected date is outside BC duration");
+        return;
+    }
+
+    bc.paid[member + "_" + monthIndex] = true;
+    renderMainTable(bc);
+}
+</script>
+</body>
+</html>
