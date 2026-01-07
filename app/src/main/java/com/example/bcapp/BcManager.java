@@ -444,6 +444,9 @@ public class BcManager {
             addCell(header, "Sr", true);
             addCell(header, "Date", true);
             addCell(header, "Amount", true);
+            if (bc.afterTaken) {
+            addCell(header, "After Taken", true);
+            }
             table.addView(header);
 
             for (int i = 0; i < bc.months; i++) {
@@ -459,6 +462,9 @@ public class BcManager {
                         ? bc.amounts.get(i)
                         : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
                 addCell(row, String.valueOf(amount), false);
+                if (bc.afterTaken) {
+                addCell(row, String.valueOf(bc.afterTakenAmount), false);
+                }
                 table.addView(row);
             }
 
@@ -485,11 +491,6 @@ public class BcManager {
         addCell(header, "Amount", true);
         addCell(header, "Member", true);
 
-        // NEW: show column only if enabled for this BC
-        if (bc.afterTaken) {
-            addCell(header, "After Taken", true);
-        }
-
         for (int i = 0; i < bc.months; i++) addCell(header, "M" + (i + 1), true);
         table.addView(header);
 
@@ -509,11 +510,6 @@ public class BcManager {
             addCell(row, String.valueOf(amount), false);
 
             addCell(row, member, false);
-
-            // NEW: show amount in each row
-            if (bc.afterTaken) {
-                addCell(row, String.valueOf(bc.afterTakenAmount), false);
-            }
 
             for (int m = 0; m < bc.months; m++) {
                 CheckBox cb = new CheckBox(context);
