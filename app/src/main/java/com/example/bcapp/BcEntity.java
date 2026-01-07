@@ -3,6 +3,7 @@ package com.example.bcapp;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Map;
 @Entity(tableName = "bc_table")
 @TypeConverters({Converters.class})
 public class BcEntity {
+
     @PrimaryKey(autoGenerate = true)
     public int id;
 
@@ -18,6 +20,9 @@ public class BcEntity {
     public int months;
     public String startDateIso;
     public boolean afterTaken;
+
+    // NEW: store amount when "After Taken BC" is enabled
+    public double afterTakenAmount;
 
     public List<String> members = new ArrayList<>();
     public List<Double> amounts = new ArrayList<>();
@@ -30,5 +35,6 @@ public class BcEntity {
         this.months = months;
         this.startDateIso = startDateIso;
         this.afterTaken = afterTaken;
+        this.afterTakenAmount = 0.0;
     }
 }
