@@ -3,6 +3,7 @@ package com.example.bcapp;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -101,6 +102,7 @@ public class BcManager {
             for (BcEntity e : entities) {
                 Bc bc = new Bc(e.name, e.months, e.startDateIso);
                 bc.afterTaken = e.afterTaken;
+                bc.afterTakenAmount = e.afterTakenAmount;   // NEW
 
                 if (e.members != null) bc.members = e.members;
                 if (e.amounts != null) bc.amounts = e.amounts;
@@ -117,18 +119,17 @@ public class BcManager {
                 for (Bc bc : bcData) bcAdapter.add(bc.name);
                 bcAdapter.notifyDataSetChanged();
 
-                // refresh table for currently selected bc
                 updateMembersDropdown();
             });
         }).start();
     }
 
-    // Simple approach: rewrite entire table on each change
     private void saveAllToRoom() {
         new Thread(() -> {
             bcDao.deleteAll();
             for (Bc bc : bcData) {
                 BcEntity e = new BcEntity(bc.name, bc.months, bc.startDateIso, bc.afterTaken);
+                e.afterTakenAmount = bc.afterTakenAmount; // NEW
                 e.members = bc.members;
                 e.amounts = bc.amounts;
                 e.paid = bc.paid;
@@ -174,7 +175,7 @@ public class BcManager {
                         Calendar cal = Calendar.getInstance();
                         cal.set(year1, month1, dayOfMonth, 0, 0, 0);
                         String iso = isoFormat.format(cal.getTime());
-                        ((EditText) v).setText(iso); // store ISO
+                        ((EditText) v).setText(iso);
                     },
                     year, month, day);
             dp.show();
@@ -198,6 +199,34 @@ public class BcManager {
         buttonAdd.setOnClickListener(v -> markInstallment());
     }
 
+    /* ---------- After Taken amount dialog ---------- */
+
+    private void askAfterTakenAmount(AfterTakenCallback callback) {
+        final EditText input = new EditText(context);
+        input.setHint("Enter amount");
+        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+        new AlertDialog.Builder(context)
+                .setTitle("After Taken BC Amount")
+                .setView(input)
+                .setCancelable(false)
+                .setPositiveButton("OK", (d, which) -> {
+                    String s = input.getText().toString().trim();
+                    double amount = 0.0;
+                    try {
+                        if (!s.isEmpty()) amount = Double.parseDouble(s);
+                    } catch (Exception ignored) { }
+                    callback.onValue(amount);
+                })
+                .setNegativeButton("Cancel", (d, which) -> callback.onCancelled())
+                .show();
+    }
+
+    private interface AfterTakenCallback {
+        void onValue(double amount);
+        void onCancelled();
+    }
+
     /* ---------- Create BC dialog ---------- */
 
     private void openCreateBcDialog() {
@@ -213,6 +242,29 @@ public class BcManager {
         CheckBox checkAfterTaken = dialogView.findViewById(R.id.checkAfterTaken);
         Button buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);
         Button buttonCancelBc = dialogView.findViewById(R.id.buttonCancelBc);
+
+        // holder for after-taken amount while dialog is open
+        final double[] afterTakenAmountHolder = new double[]{0.0};
+
+        // If checked -> ask amount now
+        checkAfterTaken.setOnCheckedChangeListener((btn, isChecked) -> {
+            if (isChecked) {
+                askAfterTakenAmount(new AfterTakenCallback() {
+                    @Override
+                    public void onValue(double amount) {
+                        afterTakenAmountHolder[0] = amount;
+                    }
+
+                    @Override
+                    public void onCancelled() {
+                        checkAfterTaken.setChecked(false);
+                        afterTakenAmountHolder[0] = 0.0;
+                    }
+                });
+            } else {
+                afterTakenAmountHolder[0] = 0.0;
+            }
+        });
 
         // Start date picker
         editStartDate.setOnClickListener(v -> {
@@ -297,14 +349,13 @@ public class BcManager {
             }
 
             bc.afterTaken = checkAfterTaken.isChecked();
+            bc.afterTakenAmount = bc.afterTaken ? afterTakenAmountHolder[0] : 0.0; // NEW
 
             bcData.add(bc);
             bcAdapter.add(bc.name);
             bcAdapter.notifyDataSetChanged();
 
-            // save to Room
             saveAllToRoom();
-
             dialog.dismiss();
         });
 
@@ -334,13 +385,13 @@ public class BcManager {
         if (selected.contains("fixed")) {
             EditText e = new EditText(context);
             e.setHint("Amount");
-            e.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+            e.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             layoutAmounts.addView(e);
         } else if (selected.contains("random")) {
             for (int i = 0; i < m; i++) {
                 EditText e = new EditText(context);
                 e.setHint("Amount Month " + (i + 1));
-                e.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+                e.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 layoutAmounts.addView(e);
             }
         }
@@ -417,6 +468,12 @@ public class BcManager {
         addCell(header, "Date", true);
         addCell(header, "Amount", true);
         addCell(header, "Member", true);
+
+        // NEW: show column only if enabled for this BC
+        if (bc.afterTaken) {
+            addCell(header, "After Taken", true);
+        }
+
         for (int i = 0; i < bc.months; i++) addCell(header, "M" + (i + 1), true);
         table.addView(header);
 
@@ -436,6 +493,11 @@ public class BcManager {
             addCell(row, String.valueOf(amount), false);
 
             addCell(row, member, false);
+
+            // NEW: show amount in each row
+            if (bc.afterTaken) {
+                addCell(row, String.valueOf(bc.afterTakenAmount), false);
+            }
 
             for (int m = 0; m < bc.months; m++) {
                 CheckBox cb = new CheckBox(context);
@@ -488,9 +550,7 @@ public class BcManager {
         String key = bc.getPaidKey(member, monthIndex);
         bc.paid.put(key, true);
 
-        // save to Room
         saveAllToRoom();
-
         renderMainTable(bc);
     }
 
