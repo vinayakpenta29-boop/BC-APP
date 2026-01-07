@@ -2,6 +2,8 @@ package com.example.bcapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -21,9 +23,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.bcapp.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -518,6 +522,9 @@ public class BcManager {
                 Boolean isPaid = bc.paid.get(key);
                 cb.setChecked(isPaid != null && isPaid);
 
+                cb.setBackgroundResource(R.drawable.table_cell_border);
+                cb.setPadding(8, 8, 8, 8);
+
                 TableRow.LayoutParams lp = new TableRow.LayoutParams();
                 lp.gravity = Gravity.CENTER;
                 cb.setLayoutParams(lp);
@@ -571,12 +578,27 @@ public class BcManager {
     private void addCell(TableRow row, String text, boolean header) {
         TextView tv = new TextView(context);
         tv.setText(text);
-        tv.setPadding(4, 4, 4, 4);
+        tv.setPadding(12, 12, 12, 12);
         tv.setGravity(Gravity.CENTER);
+        tv.setSingleLine(true);
+        tv.setBackgroundResource(R.drawable.table_cell_border);
         if (header) {
-            tv.setTextSize(14f);
+            tv.setTextSize(16f);
             tv.setAllCaps(true);
+            tv.setTypeface(null, android.graphics.Typeface.BOLD);
+            tv.setTextColor(Color.BLACK);
+        } else {
+            tv.setTextSize(14f);
+            tv.setTextColor(Color.DARK_GRAY);
         }
+
+        TableRow.LayoutParams lp = new TableRow.LayoutParams(
+            TableRow.LayoutParams.MATCH_PARENT, 
+            TableRow.LayoutParams.WRAP_CONTENT, 
+            1.0f  // Equal weight for all columns
+        );
+        lp.setMargins(1, 1, 1, 1);  // Small gaps between cells
+        tv.setLayoutParams(lp);
         row.addView(tv);
     }
 
