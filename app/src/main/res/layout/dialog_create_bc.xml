@@ -9,34 +9,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- Title -->
         <TextView
             android:text="Create New BC"
             android:textSize="18sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <!-- 1. BC Name -->
         <EditText
             android:id="@+id/editBcName"
             android:hint="BC Name"
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <!-- 2. Months -->
         <EditText
             android:id="@+id/editMonths"
             android:hint="Months"
             android:inputType="number"
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <EditText
-            android:id="@+id/editStartDate"
-            android:hint="Start Date"
-            android:focusable="false"
-            android:inputType="none"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <!-- Members section -->
+        <!-- 3. Members Names (generated from Months) -->
         <TextView
             android:id="@+id/labelMembers"
             android:text="Members Names"
@@ -47,23 +44,35 @@
         <LinearLayout
             android:id="@+id/layoutMembers"
             android:orientation="vertical"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Amount type section -->
+        <!-- 4. Start Date -->
+        <EditText
+            android:id="@+id/editStartDate"
+            android:hint="Start Date"
+            android:focusable="false"
+            android:inputType="none"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- 5. Amount Type -->
         <TextView
             android:id="@+id/labelAmountType"
             android:text="Amount Type"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Spinner
             android:id="@+id/spinnerAmountType"
+            android:layout_marginTop="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <!-- 6. Amount inputs (fixed/random) -->
         <LinearLayout
             android:id="@+id/layoutAmounts"
             android:orientation="vertical"
@@ -71,6 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <!-- 7. After Taken BC -->
         <LinearLayout
             android:orientation="horizontal"
             android:gravity="center_vertical"
@@ -90,6 +100,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <!-- 8. Buttons -->
         <LinearLayout
             android:orientation="horizontal"
             android:gravity="end"
