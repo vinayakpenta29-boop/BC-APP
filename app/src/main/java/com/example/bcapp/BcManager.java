@@ -2,10 +2,13 @@ package com.example.bcapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -115,7 +118,7 @@ public class BcManager {
                         Calendar cal = Calendar.getInstance();
                         cal.set(year1, month1, dayOfMonth, 0, 0, 0);
                         String iso = isoFormat.format(cal.getTime());
-                        ((EditText) v).setText(iso);   // store ISO (2026‑01‑01)
+                        ((EditText) v).setText(iso);   // store ISO
                     },
                     year, month, day);
             dp.show();
@@ -181,19 +184,19 @@ public class BcManager {
         amountTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAmountType.setAdapter(amountTypeAdapter);
 
-        // Months change -> create members + amount inputs
-        editMonths.setOnEditorActionListener((v, actionId, event) -> {
-            createMemberInputs(editMonths, layoutMembers);
-            amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);
-            return false;
-        });
-        editMonths.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
+        // Update Members + Amounts whenever Months changes (as user types)
+        editMonths.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
                 createMemberInputs(editMonths, layoutMembers);
                 amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);
             }
         });
 
+        // Also update amounts when amount type changes
         spinnerAmountType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -325,9 +328,7 @@ public class BcManager {
                 addCell(row, String.valueOf(i + 1), false);
 
                 Calendar cal = parseIsoDate(bc.startDateIso);
-                if (cal != null) {
-                    cal.add(Calendar.MONTH, i);
-                }
+                if (cal != null) cal.add(Calendar.MONTH, i);
                 String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
                 addCell(row, dateStr, false);
 
@@ -360,9 +361,7 @@ public class BcManager {
         addCell(header, "Date", true);
         addCell(header, "Amount", true);
         addCell(header, "Member", true);
-        for (int i = 0; i < bc.months; i++) {
-            addCell(header, "M" + (i + 1), true);
-        }
+        for (int i = 0; i < bc.months; i++) addCell(header, "M" + (i + 1), true);
         table.addView(header);
 
         for (int r = 0; r < bc.members.size(); r++) {
@@ -388,12 +387,12 @@ public class BcManager {
                 String key = bc.getPaidKey(member, m);
                 Boolean isPaid = bc.paid.get(key);
                 cb.setChecked(isPaid != null && isPaid);
+
                 TableRow.LayoutParams lp = new TableRow.LayoutParams();
                 lp.gravity = Gravity.CENTER;
                 cb.setLayoutParams(lp);
                 row.addView(cb);
             }
-
             table.addView(row);
         }
 
@@ -422,7 +421,7 @@ public class BcManager {
 
         int monthIndex =
                 (paid.get(Calendar.YEAR) - start.get(Calendar.YEAR)) * 12 +
-                (paid.get(Calendar.MONTH) - start.get(Calendar.MONTH));
+                        (paid.get(Calendar.MONTH) - start.get(Calendar.MONTH));
 
         if (monthIndex < 0 || monthIndex >= bc.months) {
             Toast.makeText(context, "Selected date is outside BC duration", Toast.LENGTH_SHORT).show();
