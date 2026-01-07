@@ -11,16 +11,21 @@ public class Bc {
     public String startDateIso; // "yyyy-MM-dd"
     public List<String> members = new ArrayList<>();
     public boolean afterTaken;
+
+    // NEW: amount entered when After Taken BC is checked
+    public double afterTakenAmount = 0.0;
+
     public List<Double> amounts = new ArrayList<>();
     public Map<String, Boolean> paid = new HashMap<>(); // key: member_monthIndex
 
-    // REQUIRED: no-argument constructor for Room and Gson
+    // REQUIRED: no-argument constructor (Room/Gson)
     public Bc() {
         this.name = "";
         this.months = 0;
         this.startDateIso = "";
         this.members = new ArrayList<>();
         this.afterTaken = false;
+        this.afterTakenAmount = 0.0;
         this.amounts = new ArrayList<>();
         this.paid = new HashMap<>();
     }
@@ -32,6 +37,7 @@ public class Bc {
         this.startDateIso = startDateIso;
         this.members = new ArrayList<>();
         this.afterTaken = false;
+        this.afterTakenAmount = 0.0;
         this.amounts = new ArrayList<>();
         this.paid = new HashMap<>();
     }
