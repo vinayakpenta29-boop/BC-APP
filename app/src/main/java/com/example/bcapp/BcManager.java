@@ -38,6 +38,10 @@ public class BcManager {
     private final SimpleDateFormat isoFormat;
     private final SimpleDateFormat displayFormat;
 
+    // Room
+    private final AppDatabase db;
+    private final BcDao bcDao;
+
     public BcManager(AppCompatActivity activity,
                      TextView menuButton,
                      Spinner spinnerBc,
@@ -62,6 +66,9 @@ public class BcManager {
         this.bcData = bcData;
         this.isoFormat = isoFormat;
         this.displayFormat = displayFormat;
+
+        this.db = AppDatabase.getDatabase(context);
+        this.bcDao = db.bcDao();
     }
 
     public void init() {
@@ -79,6 +86,55 @@ public class BcManager {
         setupMenu();
         setupDatePickers();
         setupListeners();
+
+        // Load saved data from Room
+        loadFromRoomAndRefreshUi();
+    }
+
+    /* -------------------- ROOM: load/save -------------------- */
+
+    private void loadFromRoomAndRefreshUi() {
+        new Thread(() -> {
+            List<BcEntity> entities = bcDao.getAll();
+            List<Bc> loaded = new ArrayList<>();
+
+            for (BcEntity e : entities) {
+                Bc bc = new Bc(e.name, e.months, e.startDateIso);
+                bc.afterTaken = e.afterTaken;
+
+                if (e.members != null) bc.members = e.members;
+                if (e.amounts != null) bc.amounts = e.amounts;
+                if (e.paid != null) bc.paid = e.paid;
+
+                loaded.add(bc);
+            }
+
+            activity.runOnUiThread(() -> {
+                bcData.clear();
+                bcData.addAll(loaded);
+
+                bcAdapter.clear();
+                for (Bc bc : bcData) bcAdapter.add(bc.name);
+                bcAdapter.notifyDataSetChanged();
+
+                // refresh table for currently selected bc
+                updateMembersDropdown();
+            });
+        }).start();
+    }
+
+    // Simple approach: rewrite entire table on each change
+    private void saveAllToRoom() {
+        new Thread(() -> {
+            bcDao.deleteAll();
+            for (Bc bc : bcData) {
+                BcEntity e = new BcEntity(bc.name, bc.months, bc.startDateIso, bc.afterTaken);
+                e.members = bc.members;
+                e.amounts = bc.amounts;
+                e.paid = bc.paid;
+                bcDao.insert(e);
+            }
+        }).start();
     }
 
     /* ---------- Menu ---------- */
@@ -118,7 +174,7 @@ public class BcManager {
                         Calendar cal = Calendar.getInstance();
                         cal.set(year1, month1, dayOfMonth, 0, 0, 0);
                         String iso = isoFormat.format(cal.getTime());
-                        ((EditText) v).setText(iso);   // store ISO
+                        ((EditText) v).setText(iso); // store ISO
                     },
                     year, month, day);
             dp.show();
@@ -184,11 +240,10 @@ public class BcManager {
         amountTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAmountType.setAdapter(amountTypeAdapter);
 
-        // Update Members + Amounts whenever Months changes (as user types)
+        // Update Members + Amounts whenever Months changes
         editMonths.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
-
             @Override
             public void afterTextChanged(Editable s) {
                 createMemberInputs(editMonths, layoutMembers);
@@ -202,7 +257,6 @@ public class BcManager {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
         });
@@ -248,11 +302,13 @@ public class BcManager {
             bcAdapter.add(bc.name);
             bcAdapter.notifyDataSetChanged();
 
+            // save to Room
+            saveAllToRoom();
+
             dialog.dismiss();
         });
 
         buttonCancelBc.setOnClickListener(v -> dialog.dismiss());
-
         dialog.show();
     }
 
@@ -431,6 +487,10 @@ public class BcManager {
         String member = bc.members.get(memberIndex);
         String key = bc.getPaidKey(member, monthIndex);
         bc.paid.put(key, true);
+
+        // save to Room
+        saveAllToRoom();
+
         renderMainTable(bc);
     }
 
