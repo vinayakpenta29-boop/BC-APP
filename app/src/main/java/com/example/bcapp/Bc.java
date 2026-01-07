@@ -12,12 +12,28 @@ public class Bc {
     public List<String> members = new ArrayList<>();
     public boolean afterTaken;
     public List<Double> amounts = new ArrayList<>();
-    public Map<String, Boolean> paid = new HashMap<>(); // key: member_index
+    public Map<String, Boolean> paid = new HashMap<>(); // key: member_monthIndex
 
+    // REQUIRED: no-argument constructor for Room and Gson
+    public Bc() {
+        this.name = "";
+        this.months = 0;
+        this.startDateIso = "";
+        this.members = new ArrayList<>();
+        this.afterTaken = false;
+        this.amounts = new ArrayList<>();
+        this.paid = new HashMap<>();
+    }
+
+    // Original constructor
     public Bc(String name, int months, String startDateIso) {
         this.name = name;
         this.months = months;
         this.startDateIso = startDateIso;
+        this.members = new ArrayList<>();
+        this.afterTaken = false;
+        this.amounts = new ArrayList<>();
+        this.paid = new HashMap<>();
     }
 
     public String getPaidKey(String member, int monthIndex) {
