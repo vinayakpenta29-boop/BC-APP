@@ -601,7 +601,7 @@ public class BcManager {
             tv.setTextColor(Color.parseColor("#757575"));
         }
 
-        TableRow.LayoutParams lp = new TableRow.LayoutParams(
+        TableRow.LayoutParams lp = new TableRow.LayoutParams(0,
             TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
         lp.setMargins(1, 1, 1, 1);  // Small gaps between cells
         tv.setLayoutParams(lp);
