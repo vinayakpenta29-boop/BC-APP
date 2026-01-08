@@ -443,6 +443,9 @@ public class BcManager {
 
             TableLayout table = new TableLayout(context);
             table.setStretchAllColumns(true);
+            table.setShrinkAllColumns(true);
+            table.setColumnStretchable(0, true);
+            table.setColumnShrinkable(0, true);
 
             TableRow header = new TableRow(context);
             addCell(header, "Sr", true);
@@ -488,6 +491,9 @@ public class BcManager {
 
         TableLayout table = new TableLayout(context);
         table.setStretchAllColumns(true);
+        table.setShrinkAllColumns(true);
+        table.setColumnStretchable(0, true);
+        table.setColumnShrinkable(0, true);
 
         TableRow header = new TableRow(context);
         addCell(header, "Sr", true);
@@ -521,11 +527,13 @@ public class BcManager {
                 String key = bc.getPaidKey(member, m);
                 Boolean isPaid = bc.paid.get(key);
                 cb.setChecked(isPaid != null && isPaid);
-
+                
+                cb.setMinHeight(60);
+                cb.setPadding(16, 16, 16, 16);
+                cb.setGravity(Gravity.CENTER);
                 cb.setBackgroundResource(R.drawable.table_cell_border);
-                cb.setPadding(8, 8, 8, 8);
 
-                TableRow.LayoutParams lp = new TableRow.LayoutParams();
+                TableRow.LayoutParams lp = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
                 lp.gravity = Gravity.CENTER;
                 cb.setLayoutParams(lp);
                 row.addView(cb);
@@ -578,8 +586,9 @@ public class BcManager {
     private void addCell(TableRow row, String text, boolean header) {
         TextView tv = new TextView(context);
         tv.setText(text);
-        tv.setPadding(12, 12, 12, 12);
-        tv.setGravity(Gravity.CENTER);
+        tv.setPadding(16, 16, 16, 16);
+        tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        tv.setMinHeight(60);
         tv.setSingleLine(true);
         tv.setBackgroundResource(R.drawable.table_cell_border);
         if (header) {
@@ -593,10 +602,7 @@ public class BcManager {
         }
 
         TableRow.LayoutParams lp = new TableRow.LayoutParams(
-            TableRow.LayoutParams.MATCH_PARENT, 
-            TableRow.LayoutParams.WRAP_CONTENT, 
-            1.0f  // Equal weight for all columns
-        );
+            TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
         lp.setMargins(1, 1, 1, 1);  // Small gaps between cells
         tv.setLayoutParams(lp);
         row.addView(tv);
