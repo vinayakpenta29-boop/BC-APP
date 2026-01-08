@@ -589,7 +589,7 @@ public class BcManager {
             tv.setTextColor(Color.BLACK);
         } else {
             tv.setTextSize(14f);
-            tv.setTextColor(Color.DARK_GRAY);
+            tv.setTextColor(Color.parseColor("#757575"));
         }
 
         TableRow.LayoutParams lp = new TableRow.LayoutParams(
