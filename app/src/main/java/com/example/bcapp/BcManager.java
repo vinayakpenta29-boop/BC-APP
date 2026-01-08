@@ -590,7 +590,13 @@ public class BcManager {
         tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
         tv.setMinHeight(60);
         tv.setSingleLine(true);
-        tv.setBackgroundResource(R.drawable.table_cell_border);
+
+        if (header) {
+            tv.setBackgroundResource(R.drawable.table_header_border);  // ← NEW HEADER
+        } else {
+            tv.setBackgroundResource(R.drawable.table_cell_border);
+        }
+        
         if (header) {
             tv.setTextSize(16f);
             tv.setAllCaps(true);
@@ -601,8 +607,7 @@ public class BcManager {
             tv.setTextColor(Color.parseColor("#757575"));
         }
 
-        TableRow.LayoutParams lp = new TableRow.LayoutParams(0,
-            TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
+        TableRow.LayoutParams lp = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1.0f);
         lp.setMargins(1, 1, 1, 1);  // Small gaps between cells
         tv.setLayoutParams(lp);
         row.addView(tv);
