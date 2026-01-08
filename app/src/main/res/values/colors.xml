@@ -13,13 +13,13 @@
     <color name="btn_installment_green">#195c31</color>
     <color name="bg_row_paid">#E8F5E9</color>
     <color name="bg_table_container">#F2F2F2</color>
-    <color name="table_cell_border">#8E9492</color>
+
 
     <color name="blue">#2196F3</color>
     <color name="purple">#9C27B0</color>
     <color name="green">#4CAF50</color>
 
-    <color name="table_cell_border">##8E9492</color>  <!-- Light gray -->
+    <color name="table_cell_border">#8E9492</color>  <!-- Light gray -->
     <color name="table_header_bg">#F5F5F5</color>    <!-- Header bg -->
     
     
