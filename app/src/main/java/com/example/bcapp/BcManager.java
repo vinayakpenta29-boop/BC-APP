@@ -490,10 +490,6 @@ public class BcManager {
         tableContainer.addView(title);
 
         TableLayout table = new TableLayout(context);
-        table.setStretchAllColumns(true);
-        table.setShrinkAllColumns(true);
-        table.setColumnStretchable(0, true);
-        table.setColumnShrinkable(0, true);
 
         TableRow header = new TableRow(context);
         addCell(header, "Sr", true);
@@ -530,15 +526,13 @@ public class BcManager {
                 status.setText(isPaid != null && isPaid ? "✅" : "☐");
                 status.setTextSize(18f);
                 status.setGravity(Gravity.CENTER);
-                status.setPadding(16, 16, 16, 16);
-                status.setMinHeight(64);
                 status.setBackgroundResource(R.drawable.table_cell_border);
 
                 TableRow.LayoutParams lp = new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT
                 );
-                lp.setMargins(2, 2, 2, 2);
+                lp.setMargins(0, 0, 0, 0);
                 status.setLayoutParams(lp);
 
                 row.addView(status);
@@ -594,14 +588,14 @@ public class BcManager {
         tv.setPadding(24, 16, 24, 16);
         tv.setGravity(Gravity.CENTER);
         tv.setMinHeight(64);
-        tv.setSingleLine(false);
-        tv.setMaxLines(2);
+        tv.setSingleLine(true);
 
         if (header) {
             tv.setBackgroundResource(R.drawable.table_header_border);  // ← NEW HEADER
             tv.setTypeface(null, Typeface.BOLD);
             tv.setTextSize(15f);
             tv.setTextColor(Color.BLACK);
+            tv.setGravity(Gravity.CENTER);
         } else {
             tv.setBackgroundResource(R.drawable.table_cell_border);
             tv.setTextSize(14f);
@@ -613,7 +607,7 @@ public class BcManager {
                     TableRow.LayoutParams.WRAP_CONTENT,
                     TableRow.LayoutParams.WRAP_CONTENT
             );
-        lp.setMargins(2, 2, 2, 2);  // Small gaps between cells
+        lp.setMargins(0, 0, 0, 0);  // Small gaps between cells
         tv.setLayoutParams(lp);
 
         if (text.matches("\\d{4}-\\d{2}-\\d{2}.*")) { // Date
