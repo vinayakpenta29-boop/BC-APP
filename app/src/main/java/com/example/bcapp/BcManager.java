@@ -21,7 +21,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.Spinner;
+import android.widget.AutoCompleteTextView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -49,7 +49,7 @@ public class BcManager {
 
     // UI
     private final TextView menuButton;
-    private final Spinner spinnerBc, spinnerMember;
+    private final AutoCompleteTextView spinnerBc, spinnerMember;
     private final EditText editPayDate, editPayAmount;
     private final Button buttonAdd;
     private final LinearLayout tableContainer;
@@ -58,6 +58,8 @@ public class BcManager {
     private final List<Bc> bcData;
     private ArrayAdapter<String> bcAdapter;
     private ArrayAdapter<String> memberAdapter;
+    private int selectedBcIndex = -1;
+    private int selectedMemberIndex = -1;
 
     // Date formats
     private final SimpleDateFormat isoFormat;
@@ -69,8 +71,8 @@ public class BcManager {
 
     public BcManager(AppCompatActivity activity,
                      TextView menuButton,
-                     Spinner spinnerBc,
-                     Spinner spinnerMember,
+                     AutoCompleteTextView spinnerBc,
+                     AutoCompleteTextView spinnerMember,
                      EditText editPayDate,
                      EditText editPayAmount,
                      Button buttonAdd,
@@ -103,14 +105,14 @@ public class BcManager {
         bcAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         bcAdapter.add("Select BC");
         spinnerBc.setAdapter(bcAdapter);
-        spinnerBc.setSelection(0);
+        spinnerBc.setText("Select BC", false);
 
         memberAdapter = new ArrayAdapter<>(context,
                 R.layout.spinner_item, new ArrayList<>());
         memberAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         memberAdapter.add("Select Member");
         spinnerMember.setAdapter(memberAdapter);
-        spinnerMember.setSelection(0);
+        spinnerMember.setText("Select Member", false);
 
         setupMenu();
         setupDatePickers();
@@ -149,9 +151,9 @@ public class BcManager {
                    bcAdapter.add(bc.name);
                 }
                 bcAdapter.notifyDataSetChanged();
-                spinnerBc.setSelection(0);
+                spinnerBc.setText("Select BC", false);
 
-                updateMembersDropdown();
+                updateMembersDropdown(-1);
             });
         }).start();
     }
@@ -246,15 +248,12 @@ public class BcManager {
     /* ---------- Listeners ---------- */
 
     private void setupListeners() {
-        spinnerBc.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                updateMembersDropdown();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
+        spinnerBc.setOnItemClickListener((parent, view, position, id) -> {
+        updateMembersDropdown(position -1);
+    });
+        spinnerMember.setOnItemClickListener((parent, view, position, id) -> {
+        selectedMemberIndex = position > 0 ? position - 1 : -1;
+    });
 
         buttonAdd.setOnClickListener(v -> markInstallment());
     }
@@ -459,19 +458,20 @@ public class BcManager {
 
     /* ---------- Dropdowns & tables ---------- */
 
-    private void updateMembersDropdown() {
+    private void updateMembersDropdown(int bcIndex) {
         memberAdapter.clear();
         memberAdapter.add("Select Member");
-        int index = spinnerBc.getSelectedItemPosition();
-        if (index <= 0 || index > bcData.size()) {
+        selectedBcIndex = bcIndex;
+        selectedMemberIndex = -1;
+        if (bcIndex < 0 || bcIndex >= bcData.size()) {
             memberAdapter.notifyDataSetChanged();
             renderMainTable(null);
             return;
         }
-        Bc bc = bcData.get(index -1);
+        Bc bc = bcData.get(bcIndex);
         memberAdapter.addAll(bc.members);
         memberAdapter.notifyDataSetChanged();
-        spinnerMember.setSelection(0);
+        spinnerMember.setText("Select Member", false);
         renderMainTable(bc);
     }
 
@@ -594,16 +594,16 @@ public class BcManager {
     /* ---------- Installments ---------- */
 
     private void markInstallment() {
-        int bcIndex = spinnerBc.getSelectedItemPosition();
-        int memberIndex = spinnerMember.getSelectedItemPosition();
+        int bcIndex = selectedBcIndex;
+        int memberIndex = selectedMemberIndex;
         String dateVal = editPayDate.getText().toString().trim();
 
-        if (bcIndex <= 0 || memberIndex <= 0 || dateVal.isEmpty()) {
+        if (bcIndex < 0 || memberIndex < 0 || dateVal.isEmpty()) {
             Toast.makeText(context, "Please select BC, Member and Date", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Bc bc = bcData.get(bcIndex -1);
+        Bc bc = bcData.get(bcIndex);
         Calendar start = parseIsoDate(bc.startDateIso);
         Calendar paid = parseIsoDate(dateVal);
         if (start == null || paid == null) {
@@ -620,7 +620,7 @@ public class BcManager {
             return;
         }
 
-        String member = bc.members.get(memberIndex -1);
+        String member = bc.members.get(memberIndex);
         String key = bc.getPaidKey(member, monthIndex);
         bc.paid.put(key, true);
 
