@@ -523,10 +523,15 @@ public class BcManager {
                 Boolean isPaid = bc.paid.get(key);
 
                 TextView status = new TextView(context);
-                status.setText(isPaid != null && isPaid ? "✅" : "☐");
+                boolean paid = isPaid != null && isPaid;
+                status.setText(paid ? "✅" : "☐");
                 status.setTextSize(18f);
                 status.setGravity(Gravity.CENTER);
+                status.setPadding(12, 12, 12, 12);
                 status.setBackgroundResource(R.drawable.table_cell_border);
+                if (paid) {
+                    status.setTextColor(Color.parseColor("#2E7D32")); // green
+                }
 
                 TableRow.LayoutParams lp = new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
@@ -585,38 +590,32 @@ public class BcManager {
     private void addCell(TableRow row, String text, boolean header) {
         TextView tv = new TextView(context);
         tv.setText(text);
-        tv.setPadding(24, 16, 24, 16);
+        tv.setPadding(16, 12, 16, 12);
         tv.setGravity(Gravity.CENTER);
         tv.setMinHeight(64);
-        tv.setSingleLine(true);
 
         if (header) {
-            tv.setBackgroundResource(R.drawable.table_header_border);  // ← NEW HEADER
             tv.setTypeface(null, Typeface.BOLD);
             tv.setTextSize(15f);
             tv.setTextColor(Color.BLACK);
-            tv.setGravity(Gravity.CENTER);
+            tv.setBackgroundResource(R.drawable.table_header_border);  // ← NEW HEADER
         } else {
-            tv.setBackgroundResource(R.drawable.table_cell_border);
             tv.setTextSize(14f);
+            if ("✅".equals(text)) {
+            tv.setTextColor(Color.parseColor("#2E7D32"));
+            } else {
             tv.setTextColor(Color.parseColor("#424242"));
+            }
+            tv.setBackgroundResource(R.drawable.table_cell_border);
         }
 
         TableRow.LayoutParams lp =
             new TableRow.LayoutParams(
                     TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT
+                    TableRow.LayoutParams.MATCH_PARENT
             );
-        lp.setMargins(0, 0, 0, 0);  // Small gaps between cells
         tv.setLayoutParams(lp);
 
-        if (text.matches("\\d{4}-\\d{2}-\\d{2}.*")) { // Date
-            tv.setMinWidth(220);
-        } else if (text.length() > 8) { // Member name
-            tv.setMinWidth(200);
-        } else {
-            tv.setMinWidth(140);
-        }
         row.addView(tv);
     }
 
