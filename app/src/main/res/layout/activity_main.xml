@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f0f6fb"
@@ -40,32 +41,51 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <!-- Spinners row (SIDE BY SIDE) -->
+        <!-- Material 3 Exposed Dropdowns -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp">
 
-            <Spinner
-                android:id="@+id/spinnerBc"
+            <!-- BC Dropdown -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/bg_input_curved"
-                android:paddingHorizontal="12dp" />
+                android:hint="Select BC"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                <AutoCompleteTextView
+                    android:id="@+id/spinnerBc"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Space
                 android:layout_width="8dp"
                 android:layout_height="wrap_content" />
 
-            <Spinner
-                android:id="@+id/spinnerMember"
+            <!-- Member Dropdown -->
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/bg_input_curved"
-                android:paddingHorizontal="12dp" />
+                android:hint="Select Member"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                <AutoCompleteTextView
+                    android:id="@+id/spinnerMember"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:textSize="15sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
         </LinearLayout>
 
         <!-- Date -->
