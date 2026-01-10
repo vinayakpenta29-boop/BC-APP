@@ -4,6 +4,10 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import androidx.core.content.ContextCompat;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -170,10 +174,38 @@ public class BcManager {
 
     private void setupMenu() {
         menuButton.setOnClickListener(v -> {
+
             PopupMenu popup = new PopupMenu(context, menuButton);
+
+            // Add menu items
             popup.getMenu().add(0, 1, 0, "Create New BC");
             popup.getMenu().add(0, 2, 1, "Show BC List");
-            popup.setOnMenuItemClickListener(this::onMenuItemClick);
+
+            popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));
+
+            // OPTIONAL: Force icons to show (reflection – safe wrapped)
+            try {
+                Field field = PopupMenu.class.getDeclaredField("mPopup");
+                field.setAccessible(true);
+                Object menuPopupHelper = field.get(popup);
+
+                Method setForceShowIcon =
+                        menuPopupHelper.getClass().getDeclaredMethod("setForceShowIcon", boolean.class);
+                setForceShowIcon.invoke(menuPopupHelper, true);
+
+                Method setBackground =
+                        menuPopupHelper.getClass().getDeclaredMethod(
+                                "setPopupBackgroundDrawable", Drawable.class);
+
+                setBackground.invoke(
+                        menuPopupHelper,
+                        ContextCompat.getDrawable(context, R.drawable.bg_popup_menu)
+                );
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             popup.show();
         });
     }
@@ -594,6 +626,9 @@ public class BcManager {
 
         saveAllToRoom();
         renderMainTable(bc);
+
+        editPayDate.setText("");
+        editPayAmount.setText("");
     }
 
     /* ---------- Helpers ---------- */
