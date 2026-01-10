@@ -97,12 +97,16 @@ public class BcManager {
         bcAdapter = new ArrayAdapter<>(context,
                 R.layout.spinner_item, new ArrayList<>());
         bcAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        bcAdapter.add("Select BC");
         spinnerBc.setAdapter(bcAdapter);
+        spinnerBc.setSelection(0);
 
         memberAdapter = new ArrayAdapter<>(context,
                 R.layout.spinner_item, new ArrayList<>());
         memberAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        memberAdapter.add("Select Member");
         spinnerMember.setAdapter(memberAdapter);
+        spinnerMember.setSelection(0);
 
         setupMenu();
         setupDatePickers();
@@ -136,8 +140,12 @@ public class BcManager {
                 bcData.addAll(loaded);
 
                 bcAdapter.clear();
-                for (Bc bc : bcData) bcAdapter.add(bc.name);
+                bcAdapter.add("Select BC");
+                for (Bc bc : bcData) {
+                   bcAdapter.add(bc.name);
+                }
                 bcAdapter.notifyDataSetChanged();
+                spinnerBc.setSelection(0);
 
                 updateMembersDropdown();
             });
@@ -421,14 +429,17 @@ public class BcManager {
 
     private void updateMembersDropdown() {
         memberAdapter.clear();
+        memberAdapter.add("Select Member");
         int index = spinnerBc.getSelectedItemPosition();
-        if (index < 0 || index >= bcData.size()) {
+        if (index <= 0 || index > bcData.size()) {
+            memberAdapter.notifyDataSetChanged();
             renderMainTable(null);
             return;
         }
-        Bc bc = bcData.get(index);
+        Bc bc = bcData.get(index -1);
         memberAdapter.addAll(bc.members);
         memberAdapter.notifyDataSetChanged();
+        spinnerMember.setSelection(0);
         renderMainTable(bc);
     }
 
@@ -555,12 +566,12 @@ public class BcManager {
         int memberIndex = spinnerMember.getSelectedItemPosition();
         String dateVal = editPayDate.getText().toString().trim();
 
-        if (bcIndex < 0 || memberIndex < 0 || dateVal.isEmpty()) {
+        if (bcIndex <= 0 || memberIndex <= 0 || dateVal.isEmpty()) {
             Toast.makeText(context, "Please select BC, Member and Date", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Bc bc = bcData.get(bcIndex);
+        Bc bc = bcData.get(bcIndex -1);
         Calendar start = parseIsoDate(bc.startDateIso);
         Calendar paid = parseIsoDate(dateVal);
         if (start == null || paid == null) {
@@ -577,7 +588,7 @@ public class BcManager {
             return;
         }
 
-        String member = bc.members.get(memberIndex);
+        String member = bc.members.get(memberIndex -1);
         String key = bc.getPaidKey(member, monthIndex);
         bc.paid.put(key, true);
 
