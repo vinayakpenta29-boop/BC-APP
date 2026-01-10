@@ -537,7 +537,7 @@ public class BcManager {
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT
                 );
-                lp.setMargins(0, 0, 0, 0);
+                lp.setMargins(1, 1, 1, 1);
                 status.setLayoutParams(lp);
 
                 row.addView(status);
@@ -614,6 +614,7 @@ public class BcManager {
                     TableRow.LayoutParams.WRAP_CONTENT,
                     TableRow.LayoutParams.MATCH_PARENT
             );
+        lp.setMargins(1, 1, 1, 1);
         tv.setLayoutParams(lp);
 
         row.addView(tv);
