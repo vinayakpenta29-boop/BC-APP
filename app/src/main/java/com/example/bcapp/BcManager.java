@@ -95,13 +95,13 @@ public class BcManager {
     public void init() {
         // Adapters
         bcAdapter = new ArrayAdapter<>(context,
-                android.R.layout.simple_spinner_item, new ArrayList<>());
-        bcAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item, new ArrayList<>());
+        bcAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinnerBc.setAdapter(bcAdapter);
 
         memberAdapter = new ArrayAdapter<>(context,
-                android.R.layout.simple_spinner_item, new ArrayList<>());
-        memberAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item, new ArrayList<>());
+        memberAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinnerMember.setAdapter(memberAdapter);
 
         setupMenu();
