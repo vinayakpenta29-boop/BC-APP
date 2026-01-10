@@ -99,7 +99,7 @@
             android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background=="@drawable/btn_add_ripple"
+            android:background="@drawable/btn_add_ripple"
             android:elevation="4dp"
             android:layout_marginBottom="12dp" />
 
