@@ -296,7 +296,7 @@ public class BcManager {
         EditText editMonths = dialogView.findViewById(R.id.editMonths);
         EditText editStartDate = dialogView.findViewById(R.id.editStartDate);
         LinearLayout layoutMembers = dialogView.findViewById(R.id.layoutMembers);
-        Spinner spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);
+        AutoCompleteTextView spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);
         LinearLayout layoutAmounts = dialogView.findViewById(R.id.layoutAmounts);
         CheckBox checkAfterTaken = dialogView.findViewById(R.id.checkAfterTaken);
         Button buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);
@@ -433,7 +433,7 @@ public class BcManager {
     }
 
     private void amountTypeChange(EditText editMonths,
-                                  Spinner spinnerAmountType,
+                                  AutoCompleteTextView spinnerAmountType;
                                   LinearLayout layoutAmounts) {
         layoutAmounts.removeAllViews();
         int m = safeParseInt(editMonths.getText().toString());
