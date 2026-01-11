@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,6 +61,8 @@ public class BcManager {
     private ArrayAdapter<String> memberAdapter;
     private int selectedBcIndex = -1;
     private int selectedMemberIndex = -1;
+    private final List<String> amountTypeList =
+        Arrays.asList("Fixed", "Random");
 
     // Date formats
     private final SimpleDateFormat isoFormat;
@@ -249,7 +252,8 @@ public class BcManager {
 
     private void setupListeners() {
         spinnerBc.setOnItemClickListener((parent, view, position, id) -> {
-        updateMembersDropdown(position -1);
+            selectedBcIndex = position > 0 ? position - 1 : -1;
+        updateMembersDropdown(selectedBcIndex);
     });
         spinnerMember.setOnItemClickListener((parent, view, position, id) -> {
         selectedMemberIndex = position > 0 ? position - 1 : -1;
@@ -424,7 +428,7 @@ public class BcManager {
 
     private void createMemberInputs(EditText editMonths, LinearLayout layoutMembers) {
         layoutMembers.removeAllViews();
-        int m = safeParseInt(editMonths.getText().toString());
+        int m = layoutAmounts.getChildCount();
         for (int i = 0; i < m; i++) {
             EditText e = new EditText(context);
             e.setHint("Member " + (i + 1));
