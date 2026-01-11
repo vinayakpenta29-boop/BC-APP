@@ -574,7 +574,7 @@ private void renderMainTable(Bc bc) {
             status.setBackgroundResource(R.drawable.table_cell_border);  
             if (paid) {  
                 status.setTextColor(Color.parseColor("#2E7D32")); // green  
-                status.setBackgroundColor(Color.parseColor("#E8F5E9"));
+                status.setBackgroundResource(R.drawable.table_cell_border_paid);
             }  
 
             TableRow.LayoutParams lp = new TableRow.LayoutParams(  
