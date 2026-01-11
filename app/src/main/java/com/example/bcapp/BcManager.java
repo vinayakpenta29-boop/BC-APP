@@ -560,32 +560,52 @@ private void renderMainTable(Bc bc) {
 
         addCell(row, member, false);  
 
-        for (int m = 0; m < bc.months; m++) {  
+        for (int m = 0; m < bc.months; m++) {
+            LinearLayout cellContainer = new LinearLayout(context);
+            cellContainer.setOrientation(LinearLayout.VERTICAL);
+            cellContainer.setGravity(Gravity.CENTER);
+            cellContainer.setPadding(4, 4, 4, 4);
+            cellContainer.setBackgroundResource(R.drawable.table_cell_border);
+          
 
             String key = bc.getPaidKey(member, m);  
             Boolean isPaid = bc.paid.get(key);  
 
-            TextView status = new TextView(context);  
-            boolean paid = isPaid != null && isPaid;  
-            status.setText(paid ? "✅" : "☐");  
-            status.setTextSize(18f);  
-            status.setGravity(Gravity.CENTER);  
-            status.setPadding(12, 12, 12, 12);  
-            status.setBackgroundResource(R.drawable.table_cell_border);  
-            if (paid) {  
-                status.setTextColor(Color.parseColor("#2E7D32")); // green  
-                status.setBackgroundResource(R.drawable.table_cell_border_paid);
-            }  
+            if (isPaid != null && isPaid) {
+                // PAID: ✅ + Amount badge
+                TextView tick = new TextView(context);
+                tick.setText("✅");
+                tick.setTextSize(20f);
+                tick.setTextColor(Color.parseColor("#2E7D32"));
+                tick.setGravity(Gravity.CENTER);
+                cellContainer.addView(tick);
 
-            TableRow.LayoutParams lp = new TableRow.LayoutParams(  
-                    TableRow.LayoutParams.WRAP_CONTENT,  
-                    TableRow.LayoutParams.WRAP_CONTENT  
-            );  
-            lp.setMargins(1, 1, 1, 1);  
-            status.setLayoutParams(lp);  
-
-            row.addView(status);  
-        }  
+                TextView amountBadge = new TextView(context);
+                double amount = bc.amounts.size() > m ? bc.amounts.get(m) : 0.0;
+                amountBadge.setText("₹" + String.format("%.0f", amount));
+                amountBadge.setTextColor(Color.WHITE);
+                amountBadge.setTextSize(11f);
+                amountBadge.setTypeface(null, Typeface.BOLD);
+                amountBadge.setGravity(Gravity.CENTER);
+                amountBadge.setPadding(6, 3, 6, 3);
+                amountBadge.setBackgroundResource(R.drawable.amount_badge_green);
+                cellContainer.addView(amountBadge);
+            } else {
+                // UNPAID: Only ☐
+                TextView checkbox = new TextView(context);
+                checkbox.setText("☐");
+                checkbox.setTextSize(18f);
+                checkbox.setTextColor(Color.GRAY);
+                checkbox.setGravity(Gravity.CENTER);
+                cellContainer.addView(checkbox);
+            }
+    
+            TableRow.LayoutParams lp = new TableRow.LayoutParams(80, 60);
+            lp.gravity = Gravity.CENTER;
+            lp.setMargins(1, 1, 1, 1);
+            cellContainer.setLayoutParams(lp);
+            row.addView(cellContainer);
+        }
         table.addView(row);  
     }  
 
