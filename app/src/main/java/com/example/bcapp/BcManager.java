@@ -581,8 +581,8 @@ private void renderMainTable(Bc bc) {
                 cellContainer.addView(tick);
 
                 TextView amountBadge = new TextView(context);
-                double amount = bc.amounts.size() > m ? bc.amounts.get(m) : 0.0;
-                amountBadge.setText("₹" + String.format("%.0f", amount));
+                double monthAmount = bc.amounts.size() > m ? bc.amounts.get(m) : 0.0;
+                amountBadge.setText("₹" + String.format("%.0f", monthAmount));
                 amountBadge.setTextColor(Color.WHITE);
                 amountBadge.setTextSize(11f);
                 amountBadge.setTypeface(null, Typeface.BOLD);
