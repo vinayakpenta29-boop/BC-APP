@@ -432,14 +432,26 @@ public class BcManager {
         }
     }
 
-    private void amountTypeChange(EditText editMonths,
-                                  AutoCompleteTextView spinnerAmountType;
-                                  LinearLayout layoutAmounts) {
+    private void showAmountDialog(
+        Context context,
+        LinearLayout layoutAmounts) {
+        View dialogView = LayoutInflater.from(context)
+            .inflate(R.layout.dialog_add_amount, null);
+        AutoCompleteTextView spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+            context,
+            android.R.layout.simple_dropdown_item_1line,
+                        amountTypeList
+                );
+               spinnerAmountType.setAdapter(adapter);
+        spinnerAmountType.setOnItemClickListener((parent, view, position, id) -> {
+
+        String selected = parent.getItemAtPosition(position)
+                .toString()
+                .toLowerCase(Locale.ROOT);
+                                  
         layoutAmounts.removeAllViews();
         int m = safeParseInt(editMonths.getText().toString());
-        String selected = spinnerAmountType.getSelectedItem() != null
-                ? spinnerAmountType.getSelectedItem().toString().toLowerCase(Locale.ROOT)
-                : "";
 
         if (selected.contains("fixed")) {
             EditText e = new EditText(context);
