@@ -548,7 +548,8 @@ private void renderMainTable(Bc bc) {
 
         addCell(row, String.valueOf(r + 1), false);  
 
-        Calendar cal = parseIsoDate(bc.startDateIso);  
+        Calendar cal = parseIsoDate(bc.startDateIso);
+        if (cal != null) cal.add(Calendar.MONTH, r);
         String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";  
         addCell(row, dateStr, false);  
 
