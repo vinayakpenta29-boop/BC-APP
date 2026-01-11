@@ -97,7 +97,7 @@ public class BcManager {
         this.db = AppDatabase.getDatabase(context);
         this.bcDao = db.bcDao();
     }
-
+    
     public void init() {
         // Adapters
         bcAdapter = new ArrayAdapter<>(context,
@@ -435,8 +435,7 @@ public class BcManager {
     private void showAmountDialog(
         Context context,
         LinearLayout layoutAmounts) {
-        View dialogView = LayoutInflater.from(context)
-            .inflate(R.layout.dialog_add_amount, null);
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_add_amount, null);
         AutoCompleteTextView spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
             context,
@@ -466,6 +465,7 @@ public class BcManager {
                 layoutAmounts.addView(e);
             }
         }
+    });
     }
 
     /* ---------- Dropdowns & tables ---------- */
