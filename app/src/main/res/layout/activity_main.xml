@@ -1,141 +1,120 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#f0f6fb"
-    android:fillViewport="true">
+<?xml version="1.0" encoding="utf-8"?>  <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"  
+android:layout_width="match_parent"  
+android:layout_height="match_parent"  
+android:background="#f0f6fb"  
+android:fillViewport="true">
 
-    <LinearLayout
-        android:id="@+id/rootLayout"
-        android:orientation="vertical"
-        android:padding="12dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<LinearLayout  
+    android:id="@+id/rootLayout"  
+    android:orientation="vertical"  
+    android:padding="12dp"  
+    android:layout_width="match_parent"  
+    android:layout_height="match_parent">  
 
-        <!-- Top menu row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end">
+    <!-- Top menu row -->  
+    <LinearLayout  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:gravity="end">  
 
-            <TextView
-                android:id="@+id/menuButton"
-                android:text="⋮"
-                android:textSize="24sp"
-                android:padding="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+        <TextView  
+            android:id="@+id/menuButton"  
+            android:text="⋮"  
+            android:textSize="24sp"  
+            android:padding="8dp"  
+            android:clickable="true"  
+            android:focusable="true"  
+            android:layout_width="wrap_content"  
+            android:layout_height="wrap_content" />  
+    </LinearLayout>  
 
-        <!-- Title -->
-        <TextView
-            android:id="@+id/titleMain"
-            android:text="Main BC Entry"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+    <!-- Title -->  
+    <TextView  
+        android:id="@+id/titleMain"  
+        android:text="Main BC Entry"  
+        android:textSize="18sp"  
+        android:textStyle="bold"  
+        android:layout_marginTop="8dp"  
+        android:layout_marginBottom="8dp"  
+        android:layout_width="wrap_content"  
+        android:layout_height="wrap_content" />  
 
-        <!-- Material 3 Exposed Dropdowns -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp">
+    <!-- Spinners row (SIDE BY SIDE) -->  
+    <LinearLayout  
+        android:orientation="horizontal"  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:layout_marginBottom="8dp">  
 
-            <!-- BC Dropdown -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Select BC"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <Spinner  
+            android:id="@+id/spinnerBc"  
+            android:layout_width="0dp"  
+            android:layout_height="48dp"  
+            android:layout_weight="1"  
+            android:background="@drawable/bg_input_curved"  
+            android:paddingHorizontal="12dp" />  
 
-                <AutoCompleteTextView
-                    android:id="@+id/spinnerBc"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:inputType="none"
-                    android:focusable="false"
-                    android:textSize="15sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+        <Space  
+            android:layout_width="8dp"  
+            android:layout_height="wrap_content" />  
 
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="wrap_content" />
+        <Spinner  
+            android:id="@+id/spinnerMember"  
+            android:layout_width="0dp"  
+            android:layout_height="48dp"  
+            android:layout_weight="1"  
+            android:background="@drawable/bg_input_curved"  
+            android:paddingHorizontal="12dp" />  
+    </LinearLayout>  
 
-            <!-- Member Dropdown -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Select Member"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+    <!-- Date -->  
+    <EditText  
+        android:id="@+id/editPayDate"  
+        android:hint="Date"  
+        android:focusable="false"  
+        android:inputType="none"  
+        android:layout_width="match_parent"  
+        android:layout_height="48dp"  
+        android:background="@drawable/bg_input_curved"  
+        android:paddingHorizontal="12dp"  
+        android:layout_marginBottom="8dp" />  
 
-                <AutoCompleteTextView
-                    android:id="@+id/spinnerMember"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:inputType="none"
-                    android:focusable="false"
-                    android:textSize="15sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+    <!-- Amount -->  
+    <EditText  
+        android:id="@+id/editPayAmount"  
+        android:hint="Amount"  
+        android:inputType="number"  
+        android:layout_width="match_parent"  
+        android:layout_height="48dp"  
+        android:background="@drawable/bg_input_curved"  
+        android:paddingHorizontal="12dp"  
+        android:layout_marginBottom="12dp" />  
 
-        </LinearLayout>
+    <!-- ADD Button -->  
+    <Button  
+        android:id="@+id/buttonAdd"  
+        android:text="ADD"  
+        android:textColor="@android:color/white"  
+        android:textStyle="bold"  
+        android:layout_width="match_parent"  
+        android:layout_height="48dp"  
+        android:background="@drawable/btn_add_ripple"  
+        android:elevation="4dp"  
+        android:layout_marginBottom="12dp" />  
 
-        <!-- Date -->
-        <EditText
-            android:id="@+id/editPayDate"
-            android:hint="Date"
-            android:focusable="false"
-            android:inputType="none"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_input_curved"
-            android:paddingHorizontal="12dp"
-            android:layout_marginBottom="8dp" />
+    <!-- Table -->  
+    <HorizontalScrollView  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:scrollbars="horizontal">  
 
-        <!-- Amount -->
-        <EditText
-            android:id="@+id/editPayAmount"
-            android:hint="Amount"
-            android:inputType="number"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_input_curved"
-            android:paddingHorizontal="12dp"
-            android:layout_marginBottom="12dp" />
+        <LinearLayout  
+            android:id="@+id/tableContainer"  
+            android:orientation="vertical"  
+            android:layout_width="wrap_content"  
+            android:layout_height="wrap_content" />  
+    </HorizontalScrollView>  
 
-        <!-- ADD Button -->
-        <Button
-            android:id="@+id/buttonAdd"
-            android:text="ADD"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/btn_add_ripple"
-            android:elevation="4dp"
-            android:layout_marginBottom="12dp" />
-
-        <!-- Table -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="horizontal">
-
-            <LinearLayout
-                android:id="@+id/tableContainer"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </HorizontalScrollView>
-
-    </LinearLayout>
+</LinearLayout>
 
 </ScrollView>
