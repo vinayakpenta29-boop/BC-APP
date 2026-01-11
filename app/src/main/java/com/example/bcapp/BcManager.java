@@ -564,7 +564,8 @@ private void renderMainTable(Bc bc) {
             LinearLayout cellContainer = new LinearLayout(context);
             cellContainer.setOrientation(LinearLayout.VERTICAL);
             cellContainer.setGravity(Gravity.CENTER);
-            cellContainer.setPadding(4, 4, 4, 4);
+            cellContainer.setPadding(8, 8, 8, 8);
+            cellContainer.setMinimumHeight(60);
             cellContainer.setBackgroundResource(R.drawable.table_cell_border);
           
 
@@ -575,9 +576,12 @@ private void renderMainTable(Bc bc) {
                 // PAID: ✅ + Amount badge
                 TextView tick = new TextView(context);
                 tick.setText("✅");
-                tick.setTextSize(20f);
+                tick.setTextSize(22f);
                 tick.setTextColor(Color.parseColor("#2E7D32"));
                 tick.setGravity(Gravity.CENTER);
+                tick.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, 
+                0, 1f));
                 cellContainer.addView(tick);
 
                 TextView amountBadge = new TextView(context);
@@ -587,8 +591,11 @@ private void renderMainTable(Bc bc) {
                 amountBadge.setTextSize(11f);
                 amountBadge.setTypeface(null, Typeface.BOLD);
                 amountBadge.setGravity(Gravity.CENTER);
-                amountBadge.setPadding(6, 3, 6, 3);
+                amountBadge.setPadding(8, 4, 8, 4);
                 amountBadge.setBackgroundResource(R.drawable.amount_badge_green);
+                amountBadge.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, 
+                0, 1f));
                 cellContainer.addView(amountBadge);
             } else {
                 // UNPAID: Only ☐
@@ -597,10 +604,13 @@ private void renderMainTable(Bc bc) {
                 checkbox.setTextSize(18f);
                 checkbox.setTextColor(Color.GRAY);
                 checkbox.setGravity(Gravity.CENTER);
+                checkbox.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, 
+                LinearLayout.LayoutParams.WRAP_CONTENT));
                 cellContainer.addView(checkbox);
             }
     
-            TableRow.LayoutParams lp = new TableRow.LayoutParams(80, 60);
+            TableRow.LayoutParams lp = new TableRow.LayoutParams(85, TableRow.LayoutParams.WRAP_CONTENT);
             lp.gravity = Gravity.CENTER;
             lp.setMargins(1, 1, 1, 1);
             cellContainer.setLayoutParams(lp);
