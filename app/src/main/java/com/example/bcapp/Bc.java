@@ -16,7 +16,12 @@ public class Bc {
     public double afterTakenAmount = 0.0;
 
     public List<Double> amounts = new ArrayList<>();
-    public Map<String, Boolean> paid = new HashMap<>(); // key: member_monthIndex
+
+    // key: member_monthIndex (paid or not)
+    public Map<String, Boolean> paid = new HashMap<>();
+
+    // ✅ NEW: key: member_monthIndex → paid amount
+    public HashMap<String, Double> paidAmount = new HashMap<>();
 
     // REQUIRED: no-argument constructor (Room/Gson)
     public Bc() {
@@ -28,6 +33,7 @@ public class Bc {
         this.afterTakenAmount = 0.0;
         this.amounts = new ArrayList<>();
         this.paid = new HashMap<>();
+        this.paidAmount = new HashMap<>(); // ✅ IMPORTANT
     }
 
     // Original constructor
@@ -40,6 +46,7 @@ public class Bc {
         this.afterTakenAmount = 0.0;
         this.amounts = new ArrayList<>();
         this.paid = new HashMap<>();
+        this.paidAmount = new HashMap<>(); // ✅ IMPORTANT
     }
 
     public String getPaidKey(String member, int monthIndex) {
