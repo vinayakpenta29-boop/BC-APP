@@ -562,7 +562,7 @@ private void renderMainTable(Bc bc) {
 
         for (int m = 0; m < bc.months; m++) {
             LinearLayout cellContainer = new LinearLayout(context);
-            cellContainer.setOrientation(LinearLayout.VERTICAL);
+            cellContainer.setOrientation(LinearLayout.HORIZONTAL);
             cellContainer.setGravity(Gravity.CENTER);
             cellContainer.setPadding(6, 6, 6, 6);
             cellContainer.setMinimumHeight(72);
