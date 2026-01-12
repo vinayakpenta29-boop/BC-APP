@@ -26,7 +26,12 @@ public class BcEntity {
 
     public List<String> members = new ArrayList<>();
     public List<Double> amounts = new ArrayList<>();
+
+    // key: member_monthIndex (paid or not)
     public Map<String, Boolean> paid = new HashMap<>();
+
+    // ✅ NEW: key: member_monthIndex → paid amount
+    public HashMap<String, Double> paidAmount = new HashMap<>();
 
     public BcEntity() { }
 
@@ -36,5 +41,6 @@ public class BcEntity {
         this.startDateIso = startDateIso;
         this.afterTaken = afterTaken;
         this.afterTakenAmount = 0.0;
+        this.paidAmount = new HashMap<>(); // safety init
     }
 }
