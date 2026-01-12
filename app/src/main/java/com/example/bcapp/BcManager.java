@@ -532,6 +532,7 @@ private void renderMainTable(Bc bc) {
     tableContainer.addView(title);  
 
     TableLayout table = new TableLayout(context);  
+    table.setStretchAllColumns(false);
 
     TableRow header = new TableRow(context);  
     addCell(header, "Sr", true);  
@@ -611,9 +612,8 @@ private void renderMainTable(Bc bc) {
     
             TableRow.LayoutParams lp =
             new TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.MATCH_PARENT,
-                    1.5f   // ✅ equal width for all M columns
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.MATCH_PARENT
             );
             lp.setMargins(1, 1, 1, 1);
             cellContainer.setLayoutParams(lp);
