@@ -8,19 +8,35 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {BcEntity.class}, version = 2, exportSchema = false)
+@Database(
+        entities = {BcEntity.class},
+        version = 3,                  // ⬅️ INCREASE VERSION
+        exportSchema = false
+)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract BcDao bcDao();
 
     private static volatile AppDatabase INSTANCE;
 
-    // Migration from version 1 to 2: add afterTakenAmount column
+    // 🔹 Migration 1 → 2 : afterTakenAmount
     private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL(
-                    "ALTER TABLE bc_table ADD COLUMN afterTakenAmount REAL NOT NULL DEFAULT 0.0"
+                    "ALTER TABLE bc_table " +
+                    "ADD COLUMN afterTakenAmount REAL NOT NULL DEFAULT 0.0"
+            );
+        }
+    };
+
+    // 🔹 Migration 2 → 3 : paidAmount (Map<String, Double>)
+    private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL(
+                    "ALTER TABLE bc_table " +
+                    "ADD COLUMN paidAmount TEXT"
             );
         }
     };
@@ -34,7 +50,11 @@ public abstract class AppDatabase extends RoomDatabase {
                                     AppDatabase.class,
                                     "bc_database"
                             )
-                            .addMigrations(MIGRATION_1_2)
+                            // ⬅️ ADD ALL MIGRATIONS IN ORDER
+                            .addMigrations(
+                                    MIGRATION_1_2,
+                                    MIGRATION_2_3
+                            )
                             .build();
                 }
             }
