@@ -134,6 +134,7 @@ private void loadFromRoomAndRefreshUi() {
             if (e.members != null) bc.members = e.members;  
             if (e.amounts != null) bc.amounts = e.amounts;  
             if (e.paid != null) bc.paid = e.paid;  
+            if (e.paidAmount != null) bc.paidAmount = e.paidAmount;
 
             loaded.add(bc);  
         }  
@@ -164,6 +165,7 @@ private void saveAllToRoom() {
             e.members = bc.members;  
             e.amounts = bc.amounts;  
             e.paid = bc.paid;  
+            e.paidAmount = bc.paidAmount;
             bcDao.insert(e);  
         }  
     }).start();  
@@ -582,7 +584,8 @@ private void renderMainTable(Bc bc) {
                 cellContainer.addView(tick);
 
                 TextView amountBadge = new TextView(context);
-                double monthAmount = bc.amounts.size() > m ? bc.amounts.get(m) : 0.0;
+                Double monthAmountObj = bc.paidAmount.get(key);
+                double monthAmount = monthAmountObj != null ? monthAmountObj : 0.0;
                 amountBadge.setText("₹" + String.format("%.0f", monthAmount));
                 amountBadge.setTextColor(Color.WHITE);
                 amountBadge.setTextSize(11f);
@@ -657,6 +660,12 @@ private void markInstallment() {
     String member = bc.members.get(memberIndex -1);  
     String key = bc.getPaidKey(member, monthIndex);  
     bc.paid.put(key, true);  
+    double paidAmount = 0.0;
+    try {
+        paidAmount = Double.parseDouble(editPayAmount.getText().toString().trim());
+    } catch (Exception ignored) {}
+
+    bc.paidAmount.put(key, paidAmount);
 
     saveAllToRoom();  
     renderMainTable(bc);  
