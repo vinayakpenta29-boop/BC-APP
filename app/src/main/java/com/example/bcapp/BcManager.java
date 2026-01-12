@@ -562,10 +562,10 @@ private void renderMainTable(Bc bc) {
 
         for (int m = 0; m < bc.months; m++) {
             LinearLayout cellContainer = new LinearLayout(context);
-            cellContainer.setOrientation(LinearLayout.HORIZONTAL);
+            cellContainer.setOrientation(LinearLayout.VERTICAL);
             cellContainer.setGravity(Gravity.CENTER);
             cellContainer.setPadding(6, 6, 6, 6);
-            cellContainer.setMinimumHeight(60);
+            cellContainer.setMinimumHeight(72);
             cellContainer.setBackgroundResource(R.drawable.table_cell_border);
           
 
@@ -578,7 +578,6 @@ private void renderMainTable(Bc bc) {
                 tick.setTextSize(18f);
                 tick.setTextColor(Color.parseColor("#2E7D32"));
                 tick.setGravity(Gravity.CENTER);
-                tick.setPadding(2, 0, 4, 0);
                 cellContainer.addView(tick);
 
                 TextView amountBadge = new TextView(context);
@@ -588,13 +587,13 @@ private void renderMainTable(Bc bc) {
                 amountBadge.setTextSize(11f);
                 amountBadge.setTypeface(null, Typeface.BOLD);
                 amountBadge.setGravity(Gravity.CENTER);
-                amountBadge.setPadding(8, 4, 8, 4);
+                amountBadge.setPadding(10, 4, 10, 4);
                 amountBadge.setBackgroundResource(R.drawable.amount_badge_green);
                 LinearLayout.LayoutParams badgeLp =
                 new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
-                badgeLp.setMargins(4, 0, 0, 0);
+                badgeLp.topMargin = 4;
                 amountBadge.setLayoutParams(badgeLp);
                 cellContainer.addView(amountBadge);
             } else {
@@ -607,9 +606,13 @@ private void renderMainTable(Bc bc) {
                 cellContainer.addView(checkbox);
             }
     
-            TableRow.LayoutParams lp = new TableRow.LayoutParams(85, TableRow.LayoutParams.WRAP_CONTENT);
-            lp.gravity = Gravity.CENTER;
-            lp.setMargins(0, 0, 0, 0);
+            TableRow.LayoutParams lp =
+            new TableRow.LayoutParams(
+                    0,
+                    TableRow.LayoutParams.MATCH_PARENT,
+                    1f   // ✅ equal width for all M columns
+            );
+            lp.setMargins(1, 1, 1, 1);
             cellContainer.setLayoutParams(lp);
             row.addView(cellContainer);
         }
