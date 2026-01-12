@@ -613,7 +613,7 @@ private void renderMainTable(Bc bc) {
             new TableRow.LayoutParams(
                     0,
                     TableRow.LayoutParams.MATCH_PARENT,
-                    1f   // ✅ equal width for all M columns
+                    1.5f   // ✅ equal width for all M columns
             );
             lp.setMargins(1, 1, 1, 1);
             cellContainer.setLayoutParams(lp);
