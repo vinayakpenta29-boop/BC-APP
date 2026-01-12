@@ -562,7 +562,7 @@ private void renderMainTable(Bc bc) {
 
         for (int m = 0; m < bc.months; m++) {
             LinearLayout cellContainer = new LinearLayout(context);
-            cellContainer.setOrientation(LinearLayout.HORIZONTAL);
+            cellContainer.setOrientation(LinearLayout.VERTICAL);
             cellContainer.setGravity(Gravity.CENTER);
             cellContainer.setPadding(6, 6, 6, 6);
             cellContainer.setMinimumHeight(72);
@@ -587,6 +587,9 @@ private void renderMainTable(Bc bc) {
                 amountBadge.setTextSize(11f);
                 amountBadge.setTypeface(null, Typeface.BOLD);
                 amountBadge.setGravity(Gravity.CENTER);
+                amountBadge.setSingleLine(true);
+                amountBadge.setMaxLines(1);
+                amountBadge.setEllipsize(null);
                 amountBadge.setPadding(10, 4, 10, 4);
                 amountBadge.setBackgroundResource(R.drawable.amount_badge_green);
                 LinearLayout.LayoutParams badgeLp =
