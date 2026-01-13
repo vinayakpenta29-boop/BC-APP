@@ -630,49 +630,73 @@ private void renderMainTable(Bc bc) {
 
 /* ---------- Installments ---------- */  
 
-private void markInstallment() {  
-    int bcIndex = spinnerBc.getSelectedItemPosition();  
-    int memberIndex = spinnerMember.getSelectedItemPosition();  
-    String dateVal = editPayDate.getText().toString().trim();  
+private void markInstallment() {
+    int bcIndex = spinnerBc.getSelectedItemPosition();
+    int memberIndex = spinnerMember.getSelectedItemPosition();
+    String dateVal = editPayDate.getText().toString().trim();
+    String amountVal = editPayAmount.getText().toString().trim();
 
-    if (bcIndex <= 0 || memberIndex <= 0 || dateVal.isEmpty()) {  
-        Toast.makeText(context, "Please select BC, Member and Date", Toast.LENGTH_SHORT).show();  
-        return;  
-    }  
+    if (bcIndex <= 0 || memberIndex <= 0 || dateVal.isEmpty() || amountVal.isEmpty()) {
+        Toast.makeText(context, "Please select BC, Member, Date and Amount", Toast.LENGTH_SHORT).show();
+        return;
+    }
 
-    Bc bc = bcData.get(bcIndex -1);  
-    Calendar start = parseIsoDate(bc.startDateIso);  
-    Calendar paid = parseIsoDate(dateVal);  
-    if (start == null || paid == null) {  
-        Toast.makeText(context, "Invalid date", Toast.LENGTH_SHORT).show();  
-        return;  
-    }  
-
-    int monthIndex =  
-            (paid.get(Calendar.YEAR) - start.get(Calendar.YEAR)) * 12 +  
-                    (paid.get(Calendar.MONTH) - start.get(Calendar.MONTH));  
-
-    if (monthIndex < 0 || monthIndex >= bc.months) {  
-        Toast.makeText(context, "Selected date is outside BC duration", Toast.LENGTH_SHORT).show();  
-        return;  
-    }  
-
-    String member = bc.members.get(memberIndex -1);  
-    String key = bc.getPaidKey(member, monthIndex);  
-    bc.paid.put(key, true);  
-    double paidAmount = 0.0;
+    double enteredAmount;
     try {
-        paidAmount = Double.parseDouble(editPayAmount.getText().toString().trim());
-    } catch (Exception ignored) {}
+        enteredAmount = Double.parseDouble(amountVal);
+        if (enteredAmount <= 0) throw new NumberFormatException();
+    } catch (Exception e) {
+        Toast.makeText(context, "Enter valid amount", Toast.LENGTH_SHORT).show();
+        return;
+    }
 
-    bc.paidAmount.put(key, paidAmount);
+    Bc bc = bcData.get(bcIndex - 1);
 
-    saveAllToRoom();  
-    renderMainTable(bc);  
+    Calendar start = parseIsoDate(bc.startDateIso);
+    Calendar paid = parseIsoDate(dateVal);
 
-    editPayDate.setText("");  
-    editPayAmount.setText("");  
-}  
+    if (start == null || paid == null) {
+        Toast.makeText(context, "Invalid date", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    int monthIndex =
+            (paid.get(Calendar.YEAR) - start.get(Calendar.YEAR)) * 12 +
+            (paid.get(Calendar.MONTH) - start.get(Calendar.MONTH));
+
+    if (monthIndex < 0 || monthIndex >= bc.months) {
+        Toast.makeText(context, "Selected date is outside BC duration", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    String member = bc.members.get(memberIndex - 1);
+    String key = bc.getPaidKey(member, monthIndex);
+
+    // 🔹 Accumulate paid amount (PARTIAL SUPPORT)
+    double currentPaid = bc.paidAmount.containsKey(key)
+            ? bc.paidAmount.get(key)
+            : 0.0;
+
+    double newPaid = currentPaid + enteredAmount;
+    bc.paidAmount.put(key, newPaid);
+
+    // 🔹 Expected amount for that month
+    double expectedAmount =
+            bc.amounts.size() > monthIndex
+                    ? bc.amounts.get(monthIndex)
+                    : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+
+    // 🔹 Mark paid only if fully completed
+    bc.paid.put(key, newPaid >= expectedAmount);
+
+    // Save + refresh UI
+    saveAllToRoom();
+    renderMainTable(bc);
+
+    // Clear inputs
+    editPayDate.setText("");
+    editPayAmount.setText("");
+}
 
 /* ---------- Helpers ---------- */  
 
