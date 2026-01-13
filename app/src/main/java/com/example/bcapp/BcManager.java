@@ -603,13 +603,13 @@ private void renderMainTable(Bc bc) {
                 if (paidAmt < expectedAmt) {
                     // PARTIAL PAYMENT
                     amountBadge.setBackgroundResource(
-                            R.drawable.table_cell_border_partialy_paid
+                            R.drawable.amount_badge_red
                     );
                     amountBadge.setTextColor(Color.parseColor("#D32F2F"));
                 } else {
                     // FULL PAYMENT
                     amountBadge.setBackgroundResource(
-                            R.drawable.table_cell_border_paid
+                            R.drawable.amount_badge_green
                     );
                     amountBadge.setTextColor(Color.parseColor("#2E7D32"));
                 }
