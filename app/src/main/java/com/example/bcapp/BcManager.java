@@ -597,14 +597,109 @@ private void renderMainTable(Bc bc) {
                 amountBadge.setPadding(10, 4, 10, 4);
                 amountBadge.setBackgroundResource(R.drawable.amount_badge_green);
                 LinearLayout.LayoutParams badgeLp =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
+     private void renderMainTable(Bc bc) {
+    tableContainer.removeAllViews();
+    if (bc == null) return;
+
+    TextView title = new TextView(context);
+    title.setText("Main BC Table");
+    title.setTextSize(16f);
+    title.setPadding(0, 8, 0, 4);
+    tableContainer.addView(title);
+
+    TableLayout table = new TableLayout(context);
+    table.setStretchAllColumns(false);
+
+    TableRow header = new TableRow(context);
+    addCell(header, "Sr", true);
+    addCell(header, "Date", true);
+    addCell(header, "Amount", true);
+    addCell(header, "Member", true);
+
+    for (int i = 0; i < bc.months; i++) addCell(header, "M" + (i + 1), true);
+    table.addView(header);
+
+    for (int r = 0; r < bc.members.size(); r++) {
+        String member = bc.members.get(r);
+        TableRow row = new TableRow(context);
+
+        addCell(row, String.valueOf(r + 1), false);
+
+        Calendar cal = parseIsoDate(bc.startDateIso);
+        if (cal != null) cal.add(Calendar.MONTH, r);
+        String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
+        addCell(row, dateStr, false);
+
+        double amount = bc.amounts.size() > r
+                ? bc.amounts.get(r)
+                : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+        addCell(row, String.valueOf(amount), false);
+
+        addCell(row, member, false);
+
+        for (int m = 0; m < bc.months; m++) {
+
+            LinearLayout cellContainer = new LinearLayout(context);
+            cellContainer.setOrientation(LinearLayout.VERTICAL);
+            cellContainer.setGravity(Gravity.CENTER);
+            cellContainer.setPadding(6, 6, 6, 6);
+            cellContainer.setMinimumHeight(72);
+            cellContainer.setBackgroundResource(R.drawable.table_cell_border);
+
+            String key = bc.getPaidKey(member, m);
+            Boolean isPaid = bc.paid.get(key);
+            Double paidAmtObj = bc.paidAmount.get(key);
+            double paidAmt = paidAmtObj != null ? paidAmtObj : 0.0;
+
+            double expectedAmt = bc.amounts.size() > m
+                    ? bc.amounts.get(m)
+                    : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+
+            if (isPaid != null && isPaid) {
+
+                // ✅ Tick (same for full & partial)
+                TextView tick = new TextView(context);
+                tick.setText("✅");
+                tick.setTextSize(18f);
+                tick.setTextColor(Color.parseColor("#2E7D32"));
+                tick.setGravity(Gravity.CENTER);
+                cellContainer.addView(tick);
+
+                // Amount badge
+                TextView amountBadge = new TextView(context);
+                amountBadge.setText("₹" + String.format("%.0f", paidAmt));
+                amountBadge.setTextSize(11f);
+                amountBadge.setTypeface(null, Typeface.BOLD);
+                amountBadge.setGravity(Gravity.CENTER);
+                amountBadge.setPadding(10, 4, 10, 4);
+
+                // 🔴 PARTIAL vs 🟢 FULL
+                if (paidAmt < expectedAmt) {
+                    // PARTIAL PAYMENT
+                    amountBadge.setBackgroundResource(
+                            R.drawable.table_cell_border_partialy_paid
+                    );
+                    amountBadge.setTextColor(Color.parseColor("#D32F2F"));
+                } else {
+                    // FULL PAYMENT
+                    amountBadge.setBackgroundResource(
+                            R.drawable.table_cell_border_paid
+                    );
+                    amountBadge.setTextColor(Color.parseColor("#2E7D32"));
+                }
+
+                LinearLayout.LayoutParams badgeLp =
+                        new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        );
                 badgeLp.topMargin = 4;
                 amountBadge.setLayoutParams(badgeLp);
+
                 cellContainer.addView(amountBadge);
+
             } else {
-                // UNPAID: Only ☐
+                // ☐ UNPAID ONLY
                 TextView checkbox = new TextView(context);
                 checkbox.setText("☐");
                 checkbox.setTextSize(18f);
@@ -612,21 +707,23 @@ private void renderMainTable(Bc bc) {
                 checkbox.setGravity(Gravity.CENTER);
                 cellContainer.addView(checkbox);
             }
-    
+
             TableRow.LayoutParams lp =
-            new TableRow.LayoutParams(
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.MATCH_PARENT
-            );
+                    new TableRow.LayoutParams(
+                            TableRow.LayoutParams.WRAP_CONTENT,
+                            TableRow.LayoutParams.MATCH_PARENT
+                    );
             lp.setMargins(1, 1, 1, 1);
             cellContainer.setLayoutParams(lp);
+
             row.addView(cellContainer);
         }
-        table.addView(row);  
-    }  
 
-    tableContainer.addView(table);  
-}  
+        table.addView(row);
+    }
+
+    tableContainer.addView(table);
+}
 
 /* ---------- Installments ---------- */  
 
