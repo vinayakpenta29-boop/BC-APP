@@ -611,7 +611,7 @@ private void renderMainTable(Bc bc) {
                     amountBadge.setBackgroundResource(
                             R.drawable.amount_badge_green
                     );
-                    amountBadge.setTextColor(Color.parseColor("#2E7D32"));
+                    amountBadge.setTextColor(Color.parseColor("#FFFFFF"));
                 }
 
                 LinearLayout.LayoutParams badgeLp =
