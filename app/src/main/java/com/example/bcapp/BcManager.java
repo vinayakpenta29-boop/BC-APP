@@ -542,7 +542,10 @@ private void renderMainTable(Bc bc) {
     addCell(header, "Amount", true);
     addCell(header, "Member", true);
 
-    for (int i = 0; i < bc.months; i++) addCell(header, "M" + (i + 1), true);
+    for (int i = 0; i < bc.months; i++) {
+      addCell(header, "M" + (i + 1), true);
+    }
+    addCell(header, "Total", true);
     table.addView(header);
 
     for (int r = 0; r < bc.members.size(); r++) {
@@ -562,6 +565,9 @@ private void renderMainTable(Bc bc) {
         addCell(row, String.valueOf(amount), false);
 
         addCell(row, member, false);
+
+        double totalPaid = 0.0;
+        boolean hasPartial = false;
 
         for (int m = 0; m < bc.months; m++) {
 
@@ -644,6 +650,30 @@ private void renderMainTable(Bc bc) {
 
             row.addView(cellContainer);
         }
+        TextView totalCell = new TextView(context);
+        totalCell.setText("₹" + String.format("%.0f", totalPaid));
+        totalCell.setGravity(Gravity.CENTER);
+        totalCell.setTextSize(14f);
+        totalCell.setTypeface(null, Typeface.BOLD);
+        totalCell.setPadding(16, 12, 16, 12);
+        totalCell.setMinHeight(64);
+        totalCell.setBackgroundResource(R.drawable.table_cell_border);
+
+        if (hasPartial) {
+            totalCell.setTextColor(Color.parseColor("#D32F2F")); // 🔴 PARTIAL
+        } else {
+            totalCell.setTextColor(Color.parseColor("#1B5E20")); // 🟢 FULL
+        }
+
+        TableRow.LayoutParams totalLp =
+                new TableRow.LayoutParams(
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.MATCH_PARENT
+                );
+        totalLp.setMargins(1, 1, 1, 1);
+        totalCell.setLayoutParams(totalLp);
+
+        row.addView(totalCell);
 
         table.addView(row);
     }
