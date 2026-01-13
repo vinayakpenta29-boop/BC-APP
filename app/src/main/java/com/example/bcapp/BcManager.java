@@ -588,6 +588,16 @@ private void renderMainTable(Bc bc) {
                     : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
 
             if (isPaid != null && isPaid) {
+                totalPaid += paidAmt;
+
+                if (paidAmt < expectedAmt) {
+                    hasPartial = true; // partial month
+                    }
+                  } else {
+                      hasPartial = true; // unpaid month
+                  }
+
+                if (isPaid != null && isPaid) {
 
                 // ✅ Tick (same for full & partial)
                 TextView tick = new TextView(context);
