@@ -69,4 +69,21 @@ public class Converters {
         if (map == null) return null;
         return gson.toJson(map);
     }
+
+    // =====================================================
+    // 🔹 STEP 2 NEW: List<PaymentEntry>
+    // =====================================================
+
+    @TypeConverter
+    public static List<PaymentEntry> stringToPaymentEntryList(String json) {
+        if (json == null) return null;
+        Type type = new TypeToken<List<PaymentEntry>>() {}.getType();
+        return gson.fromJson(json, type);
+    }
+
+    @TypeConverter
+    public static String paymentEntryListToString(List<PaymentEntry> list) {
+        if (list == null) return null;
+        return gson.toJson(list);
+    }
 }
