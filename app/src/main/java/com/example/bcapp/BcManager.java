@@ -779,7 +779,9 @@ private void markInstallment() {
 
     // Save + refresh UI
     saveAllToRoom();
+    activity.runOnUiThread(() -> {
     renderMainTable(bc);
+    });
 
     // Clear inputs
     editPayDate.setText("");
