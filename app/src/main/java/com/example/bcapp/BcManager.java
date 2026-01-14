@@ -669,6 +669,13 @@ private void renderMainTable(Bc bc) {
         totalCell.setMinHeight(64);
         totalCell.setBackgroundResource(R.drawable.table_cell_border);
 
+        final String clickedMember = member;
+        final double clickedTotalPaid = totalPaid;
+
+        totalCell.setOnClickListener(v -> {
+            showTotalBreakdownDialog(bc, clickedMember);
+        });
+
         if (hasPartial) {
             totalCell.setTextColor(Color.parseColor("#D32F2F")); // 🔴 PARTIAL
         } else {
@@ -826,6 +833,102 @@ private Calendar parseIsoDate(String iso) {
     } catch (ParseException e) {  
         return null;  
     }  
+}
+
+
+
+private void showTotalBreakdownDialog(Bc bc, String member) {
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    builder.setTitle("Payment Breakdown");
+
+    ScrollView scrollView = new ScrollView(context);
+    LinearLayout root = new LinearLayout(context);
+    root.setOrientation(LinearLayout.VERTICAL);
+    root.setPadding(32, 24, 32, 24);
+    scrollView.addView(root);
+
+    double totalPaid = 0.0;
+
+    // Member title
+    TextView tvMember = new TextView(context);
+    tvMember.setText("Member: " + member);
+    tvMember.setTextSize(18f);
+    tvMember.setTypeface(null, Typeface.BOLD);
+    root.addView(tvMember);
+
+    addDivider(root);
+
+    // Month-wise entries
+    for (int m = 0; m < bc.months; m++) {
+
+        String key = bc.getPaidKey(member, m);
+        List<PaymentEntry> list = bc.paymentEntries.get(key);
+
+        if (list == null || list.isEmpty()) continue;
+
+        for (PaymentEntry e : list) {
+
+            LinearLayout row = new LinearLayout(context);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setPadding(0, 8, 0, 8);
+
+            TextView tvMonth = new TextView(context);
+            tvMonth.setText("M" + (m + 1));
+            tvMonth.setLayoutParams(new LinearLayout.LayoutParams(0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+            TextView tvAmt = new TextView(context);
+            tvAmt.setText("₹" + String.format("%.0f", e.amount));
+            tvAmt.setLayoutParams(new LinearLayout.LayoutParams(0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+            TextView tvDate = new TextView(context);
+            tvDate.setText(e.date);
+            tvDate.setGravity(Gravity.END);
+            tvDate.setLayoutParams(new LinearLayout.LayoutParams(0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+            row.addView(tvMonth);
+            row.addView(tvAmt);
+            row.addView(tvDate);
+
+            root.addView(row);
+
+            totalPaid += e.amount;
+        }
+    }
+
+    addDivider(root);
+
+    // Expected total
+    double expectedTotal = 0.0;
+    for (double a : bc.amounts) expectedTotal += a;
+
+    TextView tvExpected = new TextView(context);
+    tvExpected.setText("Expected Total: ₹" + String.format("%.0f", expectedTotal));
+    tvExpected.setTypeface(null, Typeface.BOLD);
+    root.addView(tvExpected);
+
+    // Total paid
+    TextView tvPaid = new TextView(context);
+    tvPaid.setText("Total Paid: ₹" + String.format("%.0f", totalPaid));
+    tvPaid.setTypeface(null, Typeface.BOLD);
+    root.addView(tvPaid);
+
+    // Balance
+    double balance = expectedTotal - totalPaid;
+    TextView tvBalance = new TextView(context);
+    tvBalance.setText("Balance: ₹" + String.format("%.0f", balance));
+    tvBalance.setTypeface(null, Typeface.BOLD);
+    tvBalance.setTextColor(balance > 0
+            ? Color.parseColor("#D32F2F")
+            : Color.parseColor("#1B5E20"));
+    root.addView(tvBalance);
+
+    builder.setView(scrollView);
+    builder.setPositiveButton("OK", null);
+    builder.show();
 }
 
 }
