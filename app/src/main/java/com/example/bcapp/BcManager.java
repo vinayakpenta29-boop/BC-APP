@@ -26,6 +26,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
