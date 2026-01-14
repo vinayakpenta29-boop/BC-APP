@@ -604,6 +604,17 @@ private void renderMainTable(Bc bc) {
             }
                   
             if (hasAnyPayment) {
+                if (paidAmt >= expectedAmt) {
+                // 🟢 FULLY PAID
+                cellContainer.setBackgroundResource(
+                R.drawable.table_cell_border_paid
+                );
+            } else {
+                // 🔴 PARTIALLY PAID
+               cellContainer.setBackgroundResource(
+               R.drawable.table_cell_border_partialy_paid // light red
+                );
+            }
 
                 // ✅ Tick (same for full & partial)
                 TextView tick = new TextView(context);
