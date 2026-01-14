@@ -5,14 +5,16 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(
         entities = {BcEntity.class},
-        version = 3,                  // ⬅️ INCREASE VERSION
+        version = 3,
         exportSchema = false
 )
+@TypeConverters({Converters.class}) // ✅ FIX: REQUIRED FOR paidAmount
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract BcDao bcDao();
@@ -50,7 +52,6 @@ public abstract class AppDatabase extends RoomDatabase {
                                     AppDatabase.class,
                                     "bc_database"
                             )
-                            // ⬅️ ADD ALL MIGRATIONS IN ORDER
                             .addMigrations(
                                     MIGRATION_1_2,
                                     MIGRATION_2_3
