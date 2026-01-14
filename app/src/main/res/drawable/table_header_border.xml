@@ -1,3 +1,3 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#928E85"/> <!-- light pink / lavender -->
+    <solid android:color="#ffdb58"/> <!-- light pink / lavender -->
 </shape>
