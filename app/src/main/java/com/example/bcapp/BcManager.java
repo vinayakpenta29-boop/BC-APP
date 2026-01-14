@@ -781,12 +781,9 @@ private void markInstallment() {
     if (bc.payments == null) {
         bc.payments = new ArrayList<>();
     }
-    bc.payments.add(new PaymentEntry(
-            member,
-            monthIndex,
-            enteredAmount,
-            dateVal
-));
+    bc.payments.add(
+    new PaymentEntry(member, monthIndex, enteredAmount, dateVal)
+    );
 
     // 🔹 Accumulate paid amount (PARTIAL SUPPORT)
     double currentPaid = bc.paidAmount.containsKey(key)
