@@ -735,6 +735,19 @@ private void markInstallment() {
     String member = bc.members.get(memberIndex - 1);
     String key = bc.getPaidKey(member, monthIndex);
 
+    List<PaymentEntry> entryList = bc.paymentEntries.get(key);
+    if (entryList == null) {
+        entryList = new ArrayList<>();
+        bc.paymentEntries.put(key, entryList);
+    }
+
+    entryList.add(new PaymentEntry(
+            member,
+            monthIndex,
+            dateVal,
+            enteredAmount
+    ));
+
     // 🔹 Accumulate paid amount (PARTIAL SUPPORT)
     double currentPaid = bc.paidAmount.containsKey(key)
             ? bc.paidAmount.get(key)
