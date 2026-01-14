@@ -21,7 +21,7 @@ public class BcEntity {
     public String startDateIso;
     public boolean afterTaken;
 
-    // NEW: store amount when "After Taken BC" is enabled
+    // store amount when "After Taken BC" is enabled
     public double afterTakenAmount;
 
     public List<String> members = new ArrayList<>();
@@ -30,8 +30,11 @@ public class BcEntity {
     // key: member_monthIndex (paid or not)
     public Map<String, Boolean> paid = new HashMap<>();
 
-    // ✅ NEW: key: member_monthIndex → paid amount
+    // key: member_monthIndex → total paid amount
     public HashMap<String, Double> paidAmount = new HashMap<>();
+
+    // 🔹 STEP 2 NEW: full payment history (multiple + partial)
+    public List<PaymentEntry> payments = new ArrayList<>();
 
     public BcEntity() { }
 
@@ -41,6 +44,9 @@ public class BcEntity {
         this.startDateIso = startDateIso;
         this.afterTaken = afterTaken;
         this.afterTakenAmount = 0.0;
-        this.paidAmount = new HashMap<>(); // safety init
+
+        // safety init
+        this.paidAmount = new HashMap<>();
+        this.payments = new ArrayList<>();
     }
 }
