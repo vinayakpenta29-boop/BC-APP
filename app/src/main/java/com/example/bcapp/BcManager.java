@@ -129,6 +129,9 @@ private void loadFromRoomAndRefreshUi() {
 
         for (BcEntity e : entities) {  
             Bc bc = new Bc(e.name, e.months, e.startDateIso);  
+            bc.paymentEntries = new HashMap<>();
+            bc.paid = new HashMap<>();
+            bc.paidAmount = new HashMap<>();
             bc.afterTaken = e.afterTaken;  
             bc.afterTakenAmount = e.afterTakenAmount;   // NEW  
 
@@ -752,8 +755,8 @@ private void markInstallment() {
     entryList.add(new PaymentEntry(
             member,
             monthIndex,
-            dateVal,
-            enteredAmount
+            enteredAmount,
+            dateVal
     ));
 
     // 🔹 Accumulate paid amount (PARTIAL SUPPORT)
@@ -873,7 +876,8 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     for (int m = 0; m < bc.months; m++) {
 
         String key = bc.getPaidKey(member, m);
-        List<PaymentEntry> list = bc.paymentEntries.get(key);
+        List<PaymentEntry> list =
+        bc.paymentEntries != null ? bc.paymentEntries.get(key) : null;
 
         if (list == null || list.isEmpty()) continue;
 
@@ -894,7 +898,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
             TextView tvDate = new TextView(context);
-            tvDate.setText(e.date);
+            tvDate.setText(e.paidDateIso);
             tvDate.setGravity(Gravity.END);
             tvDate.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1));
