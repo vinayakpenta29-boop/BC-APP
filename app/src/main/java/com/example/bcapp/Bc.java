@@ -26,6 +26,8 @@ public class Bc {
     // 🔹 STEP 2 NEW: Store all payment entries (multiple + partial)
     public List<PaymentEntry> payments = new ArrayList<>();
 
+    public HashMap<String, List<PaymentEntry>> paymentEntries = new HashMap<>();
+
     // REQUIRED: no-argument constructor (Room/Gson)
     public Bc() {
         this.name = "";
