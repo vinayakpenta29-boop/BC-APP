@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class Converters {
     // ---------- List<String> ----------
     @TypeConverter
     public static List<String> stringToList(String json) {
-        if (json == null) return null;
+        if (json == null) return new ArrayList<>();
         Type type = new TypeToken<List<String>>() {}.getType();
         return gson.fromJson(json, type);
     }
@@ -31,7 +32,7 @@ public class Converters {
     // ---------- Map<String, Boolean> ----------
     @TypeConverter
     public static Map<String, Boolean> stringToMap(String json) {
-        if (json == null) return null;
+        if (json == null) return new HashMap<>();
         Type type = new TypeToken<Map<String, Boolean>>() {}.getType();
         return gson.fromJson(json, type);
     }
@@ -45,7 +46,7 @@ public class Converters {
     // ---------- List<Double> ----------
     @TypeConverter
     public static List<Double> stringToDoubleList(String json) {
-        if (json == null) return null;
+        if (json == null) return new ArrayList<>();
         Type type = new TypeToken<List<Double>>() {}.getType();
         return gson.fromJson(json, type);
     }
@@ -76,7 +77,7 @@ public class Converters {
 
     @TypeConverter
     public static List<PaymentEntry> stringToPaymentEntryList(String json) {
-        if (json == null) return null;
+        if (json == null) return new ArrayList<>();
         Type type = new TypeToken<List<PaymentEntry>>() {}.getType();
         return gson.fromJson(json, type);
     }
