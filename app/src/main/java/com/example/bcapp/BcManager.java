@@ -130,9 +130,9 @@ private void loadFromRoomAndRefreshUi() {
 
         for (BcEntity e : entities) {  
             Bc bc = new Bc(e.name, e.months, e.startDateIso);  
-            bc.paymentEntries = new HashMap<>();
             bc.paid = new HashMap<>();
             bc.paidAmount = new HashMap<>();
+            bc.paymentEntries = new HashMap<>();
             bc.afterTaken = e.afterTaken;  
             bc.afterTakenAmount = e.afterTakenAmount;   // NEW  
 
@@ -140,6 +140,18 @@ private void loadFromRoomAndRefreshUi() {
             if (e.amounts != null) bc.amounts = e.amounts;  
             if (e.paid != null) bc.paid = e.paid;  
             if (e.paidAmount != null) bc.paidAmount = e.paidAmount;
+
+            if (bc.payments != null) {
+                for (PaymentEntry pe : bc.payments) {
+                    String key = bc.getPaidKey(pe.member, pe.monthIndex);
+                    List<PaymentEntry> list = bc.paymentEntries.get(key);
+                    if (list == null) {
+                        list = new ArrayList<>();
+                        bc.paymentEntries.put(key, list);
+                    }
+                    list.add(pe);
+                }
+            }
 
             loaded.add(bc);  
         }  
@@ -171,6 +183,7 @@ private void saveAllToRoom() {
             e.amounts = bc.amounts;  
             e.paid = bc.paid;  
             e.paidAmount = bc.paidAmount;
+            e.payments = bc.payments;
             bcDao.insert(e);  
         }  
     }).start();  
@@ -627,7 +640,7 @@ private void renderMainTable(Bc bc) {
                 // Amount badge
                 TextView amountBadge = new TextView(context);
                 amountBadge.setText("₹" + String.format("%.0f", paidAmt));
-                amountBadge.setTextSize(11f);
+                amountBadge.setTextSize(8f);
                 amountBadge.setTypeface(null, Typeface.BOLD);
                 amountBadge.setGravity(Gravity.CENTER);
                 amountBadge.setPadding(10, 4, 10, 4);
@@ -765,12 +778,15 @@ private void markInstallment() {
         bc.paymentEntries.put(key, entryList);
     }
 
-    entryList.add(new PaymentEntry(
+    if (bc.payments == null) {
+        bc.payments = new ArrayList<>();
+    }
+    bc.payments.add(new PaymentEntry(
             member,
             monthIndex,
             enteredAmount,
             dateVal
-    ));
+));
 
     // 🔹 Accumulate paid amount (PARTIAL SUPPORT)
     double currentPaid = bc.paidAmount.containsKey(key)
