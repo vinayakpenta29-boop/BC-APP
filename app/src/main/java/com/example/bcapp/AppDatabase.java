@@ -11,10 +11,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(
         entities = {BcEntity.class},
-        version = 3,
+        version = 4, // ✅ INCREASE VERSION
         exportSchema = false
 )
-@TypeConverters({Converters.class}) // ✅ FIX: REQUIRED FOR paidAmount
+@TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract BcDao bcDao();
@@ -43,6 +43,17 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    // 🔹 Migration 3 → 4 : payments (List<PaymentEntry>)
+    private static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL(
+                    "ALTER TABLE bc_table " +
+                    "ADD COLUMN payments TEXT"
+            );
+        }
+    };
+
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -54,7 +65,8 @@ public abstract class AppDatabase extends RoomDatabase {
                             )
                             .addMigrations(
                                     MIGRATION_1_2,
-                                    MIGRATION_2_3
+                                    MIGRATION_2_3,
+                                    MIGRATION_3_4
                             )
                             .build();
                 }
