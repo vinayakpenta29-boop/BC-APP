@@ -20,8 +20,11 @@ public class Bc {
     // key: member_monthIndex (paid or not)
     public Map<String, Boolean> paid = new HashMap<>();
 
-    // ✅ NEW: key: member_monthIndex → paid amount
+    // key: member_monthIndex → paid amount
     public HashMap<String, Double> paidAmount = new HashMap<>();
+
+    // 🔹 STEP 2 NEW: Store all payment entries (multiple + partial)
+    public List<PaymentEntry> payments = new ArrayList<>();
 
     // REQUIRED: no-argument constructor (Room/Gson)
     public Bc() {
@@ -33,7 +36,8 @@ public class Bc {
         this.afterTakenAmount = 0.0;
         this.amounts = new ArrayList<>();
         this.paid = new HashMap<>();
-        this.paidAmount = new HashMap<>(); // ✅ IMPORTANT
+        this.paidAmount = new HashMap<>();
+        this.payments = new ArrayList<>();
     }
 
     // Original constructor
@@ -46,10 +50,42 @@ public class Bc {
         this.afterTakenAmount = 0.0;
         this.amounts = new ArrayList<>();
         this.paid = new HashMap<>();
-        this.paidAmount = new HashMap<>(); // ✅ IMPORTANT
+        this.paidAmount = new HashMap<>();
+        this.payments = new ArrayList<>();
     }
 
     public String getPaidKey(String member, int monthIndex) {
         return member + "_" + monthIndex;
+    }
+
+    // ✅ STEP 2: Get all payments for a member in a month
+    public List<PaymentEntry> getPaymentsFor(String member, int monthIndex) {
+        List<PaymentEntry> list = new ArrayList<>();
+        for (PaymentEntry p : payments) {
+            if (p.member.equals(member) && p.monthIndex == monthIndex) {
+                list.add(p);
+            }
+        }
+        return list;
+    }
+
+    // ✅ STEP 2: Total paid by member (all months)
+    public double getTotalPaidForMember(String member) {
+        double total = 0.0;
+        for (PaymentEntry p : payments) {
+            if (p.member.equals(member)) {
+                total += p.amount;
+            }
+        }
+        return total;
+    }
+
+    // ✅ STEP 2: Expected total for BC
+    public double getExpectedTotal() {
+        double total = 0.0;
+        for (double amt : amounts) {
+            total += amt;
+        }
+        return total;
     }
 }
