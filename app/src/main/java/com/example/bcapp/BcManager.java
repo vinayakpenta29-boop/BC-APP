@@ -598,13 +598,12 @@ private void renderMainTable(Bc bc) {
 
                 if (paidAmt < expectedAmt) {
                     hasPartial = true;
-                   }
-                } else {
-                        hasPartial = true;
-                    } // unpaid month
-                  }
-
-                if (hasAnyPayment) {
+                }
+            } else {
+                hasPartial = true;
+            }
+                  
+            if (hasAnyPayment) {
 
                 // ✅ Tick (same for full & partial)
                 TextView tick = new TextView(context);
