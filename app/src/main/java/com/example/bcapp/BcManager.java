@@ -835,7 +835,16 @@ private Calendar parseIsoDate(String iso) {
     }  
 }
 
-
+private void addDivider(LinearLayout root) {
+    View v = new View(context);
+    LinearLayout.LayoutParams lp =
+            new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 2);
+    lp.setMargins(0, 16, 0, 16);
+    v.setLayoutParams(lp);
+    v.setBackgroundColor(Color.LTGRAY);
+    root.addView(v);
+}
 
 private void showTotalBreakdownDialog(Bc bc, String member) {
 
