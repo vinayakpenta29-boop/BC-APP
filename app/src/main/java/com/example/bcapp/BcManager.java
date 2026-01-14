@@ -584,25 +584,27 @@ private void renderMainTable(Bc bc) {
             cellContainer.setBackgroundResource(R.drawable.table_cell_border);
 
             String key = bc.getPaidKey(member, m);
-            Boolean isPaid = bc.paid.get(key);
             Double paidAmtObj = bc.paidAmount.get(key);
             double paidAmt = paidAmtObj != null ? paidAmtObj : 0.0;
-
+            
+            boolean hasAnyPayment = paidAmt > 0;
+          
             double expectedAmt = bc.amounts.size() > m
                     ? bc.amounts.get(m)
                     : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
 
-            if (isPaid != null && isPaid) {
+            if (paidAmt > 0) {
                 totalPaid += paidAmt;
 
                 if (paidAmt < expectedAmt) {
-                    hasPartial = true; // partial month
-                    }
-                  } else {
-                      hasPartial = true; // unpaid month
+                    hasPartial = true;
+                   }
+                } else {
+                        hasPartial = true;
+                    } // unpaid month
                   }
 
-                if (isPaid != null && isPaid) {
+                if (hasAnyPayment) {
 
                 // ✅ Tick (same for full & partial)
                 TextView tick = new TextView(context);
