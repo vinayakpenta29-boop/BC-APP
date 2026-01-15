@@ -611,19 +611,29 @@ private void renderMainTable(Bc bc) {
         }
 
         // Apply highlight only for valid month
-        if (currentMonthIndex >= 0 && currentMonthIndex < bc.months
-                && shouldHighlightUnpaid(bc, member, currentMonthIndex)) {
-
-            memberCell.setTextColor(Color.parseColor("#D32F2F")); // 🔴 RED
-            memberCell.setTypeface(null, Typeface.BOLD);
-
-        } else {
-            memberCell.setTextColor(Color.parseColor("#424242"));
-            memberCell.setTypeface(null, Typeface.NORMAL);
-        }
-
+        // default
+        memberCell.setTextColor(Color.parseColor("#424242"));
+        memberCell.setTypeface(null, Typeface.NORMAL);
         memberCell.setBackgroundResource(R.drawable.table_cell_border);
 
+        // Apply highlight only for valid month
+        if (currentMonthIndex >= 0 && currentMonthIndex < bc.months) {
+
+            // 🔴 UNPAID → bold red text
+            if (shouldHighlightUnpaid(bc, member, currentMonthIndex)) {
+                memberCell.setTextColor(Color.parseColor("#D32F2F"));
+                memberCell.setTypeface(null, Typeface.BOLD);
+            }
+
+            // 🔴 OVERDUE → bold red text + light red background
+            if (isOverDue(bc, member, currentMonthIndex)) {
+                memberCell.setTextColor(Color.parseColor("#D32F2F"));
+                memberCell.setTypeface(null, Typeface.BOLD);
+                memberCell.setBackgroundColor(
+                        Color.parseColor("#FDECEA") // light red fill
+                );
+            }
+        }
         TableRow.LayoutParams memberLp =
                 new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
@@ -889,6 +899,25 @@ private boolean shouldHighlightUnpaid(Bc bc, String member, int monthIndex) {
     // 2) today is BEFORE or SAME as due date
     return !isPaid && !today.after(due);
       }
+
+// 🔴 Overdue = unpaid AND today AFTER due date
+private boolean isOverDue(Bc bc, String member, int monthIndex) {
+
+    Calendar today = Calendar.getInstance();
+
+    Calendar due = parseIsoDate(bc.startDateIso);
+    if (due == null) return false;
+
+    due.add(Calendar.MONTH, monthIndex);
+
+    String key = bc.getPaidKey(member, monthIndex);
+
+    boolean isPaid =
+            bc.paid.containsKey(key)
+                    && Boolean.TRUE.equals(bc.paid.get(key));
+
+    return !isPaid && today.after(due);
+}
 
 /* ---------- Helpers ---------- */  
 
