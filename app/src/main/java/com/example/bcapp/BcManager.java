@@ -629,9 +629,7 @@ private void renderMainTable(Bc bc) {
             if (isOverDue(bc, member, currentMonthIndex)) {
                 memberCell.setTextColor(Color.parseColor("#D32F2F"));
                 memberCell.setTypeface(null, Typeface.BOLD);
-                memberCell.setBackgroundColor(
-                        Color.parseColor("#FDECEA") // light red fill
-                );
+                memberCell.setBackgroundResource(R.drawable.table_cell_border_overdue);
             }
         }
         TableRow.LayoutParams memberLp =
