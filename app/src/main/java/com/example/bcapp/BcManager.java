@@ -590,7 +590,49 @@ private void renderMainTable(Bc bc) {
                 : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
         addCell(row, String.valueOf(amount), false);
 
-        addCell(row, member, false);
+        // 🔹 MEMBER CELL WITH UNPAID HIGHLIGHT
+        TextView memberCell = new TextView(context);
+        memberCell.setText(member);
+        memberCell.setPadding(16, 12, 16, 12);
+        memberCell.setGravity(Gravity.CENTER);
+        memberCell.setMinHeight(64);
+        memberCell.setTextSize(14f);
+
+        // 🔴 CHECK CURRENT MONTH (IMPORTANT)
+        // Use CURRENT month index based on today
+        Calendar startCal = parseIsoDate(bc.startDateIso);
+        Calendar todayCal = Calendar.getInstance();
+
+        int currentMonthIndex = -1;
+        if (startCal != null) {
+            currentMonthIndex =
+                    (todayCal.get(Calendar.YEAR) - startCal.get(Calendar.YEAR)) * 12 +
+                    (todayCal.get(Calendar.MONTH) - startCal.get(Calendar.MONTH));
+        }
+
+        // Apply highlight only for valid month
+        if (currentMonthIndex >= 0 && currentMonthIndex < bc.months
+                && shouldHighlightUnpaid(bc, member, currentMonthIndex)) {
+
+            memberCell.setTextColor(Color.parseColor("#D32F2F")); // 🔴 RED
+            memberCell.setTypeface(null, Typeface.BOLD);
+
+        } else {
+            memberCell.setTextColor(Color.parseColor("#424242"));
+            memberCell.setTypeface(null, Typeface.NORMAL);
+        }
+
+        memberCell.setBackgroundResource(R.drawable.table_cell_border);
+
+        TableRow.LayoutParams memberLp =
+                new TableRow.LayoutParams(
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.MATCH_PARENT
+                );
+        memberLp.setMargins(1, 1, 1, 1);
+        memberCell.setLayoutParams(memberLp);
+
+        row.addView(memberCell);
 
         double totalPaid = 0.0;
         boolean hasPartial = false;
@@ -824,6 +866,29 @@ private void markInstallment() {
     editPayDate.setText("");
     editPayAmount.setText("");
 }
+
+// 🔴 Highlight unpaid member name until due date
+private boolean shouldHighlightUnpaid(Bc bc, String member, int monthIndex) {
+
+    Calendar today = Calendar.getInstance();
+
+    // Due date = BC start date + monthIndex
+    Calendar due = parseIsoDate(bc.startDateIso);
+    if (due == null) return false;
+
+    due.add(Calendar.MONTH, monthIndex);
+
+    String key = bc.getPaidKey(member, monthIndex);
+
+    boolean isPaid =
+            bc.paid.containsKey(key)
+                    && Boolean.TRUE.equals(bc.paid.get(key));
+
+    // Highlight only if:
+    // 1) not paid
+    // 2) today is BEFORE or SAME as due date
+    return !isPaid && !today.after(due);
+      }
 
 /* ---------- Helpers ---------- */  
 
