@@ -123,55 +123,63 @@ public void init() {
 
 /* -------------------- ROOM: load/save -------------------- */  
 
-private void loadFromRoomAndRefreshUi() {  
-    new Thread(() -> {  
-        List<BcEntity> entities = bcDao.getAll();  
-        List<Bc> loaded = new ArrayList<>();  
+private void loadFromRoomAndRefreshUi() {
+    new Thread(() -> {
+        List<BcEntity> entities = bcDao.getAll();
+        List<Bc> loaded = new ArrayList<>();
 
-        for (BcEntity e : entities) {  
-            Bc bc = new Bc(e.name, e.months, e.startDateIso);  
-            bc.paid = new HashMap<>();
-            bc.paidAmount = new HashMap<>();
+        for (BcEntity e : entities) {
+
+            Bc bc = new Bc(e.name, e.months, e.startDateIso);
+
+            // ---------- BASIC FIELDS ----------
+            bc.afterTaken = e.afterTaken;
+            bc.afterTakenAmount = e.afterTakenAmount;
+
+            // ---------- LISTS ----------
+            if (e.members != null) bc.members = e.members;
+            if (e.amounts != null) bc.amounts = e.amounts;
+
+            // ---------- MAPS ----------
+            bc.paid = (e.paid != null) ? e.paid : new HashMap<>();
+            bc.paidAmount = (e.paidAmount != null) ? e.paidAmount : new HashMap<>();
+
+            // ---------- 🔹 STEP 2 FIX (IMPORTANT) ----------
+            // LOAD full payment history from Room
+            bc.payments = (e.payments != null) ? e.payments : new ArrayList<>();
+
+            // REBUILD paymentEntries for UI + popup
             bc.paymentEntries = new HashMap<>();
-            bc.afterTaken = e.afterTaken;  
-            bc.afterTakenAmount = e.afterTakenAmount;   // NEW  
-
-            if (e.members != null) bc.members = e.members;  
-            if (e.amounts != null) bc.amounts = e.amounts;  
-            if (e.paid != null) bc.paid = e.paid;  
-            if (e.paidAmount != null) bc.paidAmount = e.paidAmount;
-
-            if (bc.payments != null) {
-                for (PaymentEntry pe : bc.payments) {
-                    String key = bc.getPaidKey(pe.member, pe.monthIndex);
-                    List<PaymentEntry> list = bc.paymentEntries.get(key);
-                    if (list == null) {
-                        list = new ArrayList<>();
-                        bc.paymentEntries.put(key, list);
-                    }
-                    list.add(pe);
+            for (PaymentEntry pe : bc.payments) {
+                String key = bc.getPaidKey(pe.member, pe.monthIndex);
+                List<PaymentEntry> list = bc.paymentEntries.get(key);
+                if (list == null) {
+                    list = new ArrayList<>();
+                    bc.paymentEntries.put(key, list);
                 }
+                list.add(pe);
             }
 
-            loaded.add(bc);  
-        }  
+            loaded.add(bc);
+        }
 
-        activity.runOnUiThread(() -> {  
-            bcData.clear();  
-            bcData.addAll(loaded);  
+        activity.runOnUiThread(() -> {
+            bcData.clear();
+            bcData.addAll(loaded);
 
-            bcAdapter.clear();  
-            bcAdapter.add("Select BC");  
-            for (Bc bc : bcData) {  
-               bcAdapter.add(bc.name);  
-            }  
-            bcAdapter.notifyDataSetChanged();  
-            spinnerBc.setSelection(0);  
+            bcAdapter.clear();
+            bcAdapter.add("Select BC");
+            for (Bc bc : bcData) {
+                bcAdapter.add(bc.name);
+            }
+            bcAdapter.notifyDataSetChanged();
+            spinnerBc.setSelection(0);
 
-            updateMembersDropdown();  
-        });  
-    }).start();  
-}  
+            updateMembersDropdown();
+        });
+
+    }).start();
+}
 
 private void saveAllToRoom() {  
     new Thread(() -> {  
