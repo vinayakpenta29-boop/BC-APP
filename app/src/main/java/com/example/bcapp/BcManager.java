@@ -780,18 +780,24 @@ private void markInstallment() {
     String member = bc.members.get(memberIndex - 1);
     String key = bc.getPaidKey(member, monthIndex);
 
-    List<PaymentEntry> entryList = bc.paymentEntries.get(key);
-    if (entryList == null) {
-        entryList = new ArrayList<>();
-        bc.paymentEntries.put(key, entryList);
-    }
+    if (bc.payments == null) bc.payments = new ArrayList<>();
+    if (bc.paymentEntries == null) bc.paymentEntries = new HashMap<>();
 
-    if (bc.payments == null) {
-        bc.payments = new ArrayList<>();
+    // ✅ ADD PAYMENT ENTRY
+    PaymentEntry pe = new PaymentEntry(member, monthIndex, enteredAmount, dateVal);
+    bc.payments.add(pe);
+
+    // ✅ IMMEDIATE REBUILD (FIX FOR POPUP NOT UPDATING)
+    bc.paymentEntries.clear();
+    for (PaymentEntry p : bc.payments) {
+        String k = bc.getPaidKey(p.member, p.monthIndex);
+        List<PaymentEntry> list = bc.paymentEntries.get(k);
+        if (list == null) {
+            list = new ArrayList<>();
+            bc.paymentEntries.put(k, list);
+        }
+        list.add(p);
     }
-    bc.payments.add(
-    new PaymentEntry(member, monthIndex, enteredAmount, dateVal)
-    );
 
     // 🔹 Accumulate paid amount (PARTIAL SUPPORT)
     double currentPaid = bc.paidAmount.containsKey(key)
@@ -810,13 +816,11 @@ private void markInstallment() {
     // 🔹 Mark paid only if fully completed
     bc.paid.put(key, newPaid >= expectedAmount);
 
-    // Save + refresh UI
+    // 💾 Save + UI refresh
     saveAllToRoom();
-    activity.runOnUiThread(() -> {
-    renderMainTable(bc);
-    });
+    activity.runOnUiThread(() -> renderMainTable(bc));
 
-    // Clear inputs
+    // 🧹 Clear inputs
     editPayDate.setText("");
     editPayAmount.setText("");
 }
