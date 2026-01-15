@@ -568,8 +568,17 @@ private void renderMainTable(Bc bc) {
     addCell(header, "Amount", true);
     addCell(header, "Member", true);
 
+    Calendar headerCal = parseIsoDate(bc.startDateIso);
     for (int i = 0; i < bc.months; i++) {
-      addCell(header, "M" + (i + 1), true);
+        String monthName = "M" + (i + 1); // fallback
+
+        if (headerCal != null) {
+            monthName = new SimpleDateFormat("MMM-yy", Locale.getDefault())
+                    .format(headerCal.getTime());
+            headerCal.add(Calendar.MONTH, 1);
+        }
+
+        addCell(header, monthName, true);
     }
     addCell(header, "Total", true);
     table.addView(header);
