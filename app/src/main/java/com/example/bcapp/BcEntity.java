@@ -21,35 +21,33 @@ public class BcEntity {
     public String startDateIso;
     public boolean afterTaken;
 
-    // store amount when "After Taken BC" is enabled
+    // Amount when "After Taken BC" is enabled
     public double afterTakenAmount;
 
     public List<String> members = new ArrayList<>();
     public List<Double> amounts = new ArrayList<>();
 
-    // key: member_monthIndex (paid or not)
+    // key: member_monthIndex → paid or not
     public Map<String, Boolean> paid = new HashMap<>();
 
     // key: member_monthIndex → total paid amount
     public HashMap<String, Double> paidAmount = new HashMap<>();
 
-    public Map<String, Boolean> paid;
+    // 🔹 NEW: Paid BC per member
+    public HashMap<String, Double> paidBcAmount = new HashMap<>();
 
-// key: member_monthIndex → total paid amount
-    public HashMap<String, Double> paidAmount;
-
-// 🔹 NEW: Paid BC per member
-    public HashMap<String, Double> paidBcAmount;
-
-// full payment history
-    public List<PaymentEntry> payments;
-
-    // 🔹 STEP 2 NEW: full payment history (multiple + partial)
+    // 🔹 STEP 2: Full payment history (multiple + partial)
     public List<PaymentEntry> payments = new ArrayList<>();
-    
-    
 
-    public BcEntity() { }
+    // ✅ Required by Room
+    public BcEntity() {
+        this.members = new ArrayList<>();
+        this.amounts = new ArrayList<>();
+        this.paid = new HashMap<>();
+        this.paidAmount = new HashMap<>();
+        this.paidBcAmount = new HashMap<>();
+        this.payments = new ArrayList<>();
+    }
 
     public BcEntity(String name, int months, String startDateIso, boolean afterTaken) {
         this.name = name;
@@ -58,8 +56,12 @@ public class BcEntity {
         this.afterTaken = afterTaken;
         this.afterTakenAmount = 0.0;
 
-        // safety init
+        // Safety init
+        this.members = new ArrayList<>();
+        this.amounts = new ArrayList<>();
+        this.paid = new HashMap<>();
         this.paidAmount = new HashMap<>();
+        this.paidBcAmount = new HashMap<>();
         this.payments = new ArrayList<>();
     }
 }
