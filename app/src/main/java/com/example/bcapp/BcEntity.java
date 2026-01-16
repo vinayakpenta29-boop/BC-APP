@@ -33,8 +33,21 @@ public class BcEntity {
     // key: member_monthIndex → total paid amount
     public HashMap<String, Double> paidAmount = new HashMap<>();
 
+    public Map<String, Boolean> paid;
+
+// key: member_monthIndex → total paid amount
+    public HashMap<String, Double> paidAmount;
+
+// 🔹 NEW: Paid BC per member
+    public HashMap<String, Double> paidBcAmount;
+
+// full payment history
+    public List<PaymentEntry> payments;
+
     // 🔹 STEP 2 NEW: full payment history (multiple + partial)
     public List<PaymentEntry> payments = new ArrayList<>();
+    
+    
 
     public BcEntity() { }
 
