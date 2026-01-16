@@ -143,6 +143,7 @@ private void loadFromRoomAndRefreshUi() {
             // ---------- MAPS ----------
             bc.paid = (e.paid != null) ? e.paid : new HashMap<>();
             bc.paidAmount = (e.paidAmount != null) ? e.paidAmount : new HashMap<>();
+            bc.paidBcAmount = (e.paidBcAmount != null) ? e.paidBcAmount : new HashMap<>();
 
             // ---------- 🔹 STEP 2 FIX (IMPORTANT) ----------
             // LOAD full payment history from Room
@@ -192,6 +193,7 @@ private void saveAllToRoom() {
             e.paid = bc.paid;  
             e.paidAmount = bc.paidAmount;
             e.payments = bc.payments;
+            e.paidBcAmount = bc.paidBcAmount;
             bcDao.insert(e);  
         }  
     }).start();  
@@ -207,6 +209,7 @@ private void setupMenu() {
         // Add menu items  
         popup.getMenu().add(0, 1, 0, "Create New BC");  
         popup.getMenu().add(0, 2, 1, "Show BC List");  
+        popup.getMenu().add(0, 3, 2, "Paid BC");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -244,7 +247,10 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     } else if (item.getItemId() == 2) {  
         showBcListTable();  
         return true;  
-    }  
+    }  else if (item.getItemId() == 3) {
+        showPaidBcDialog();
+        return true;
+    }
     return false;  
 }  
 
@@ -581,6 +587,7 @@ private void renderMainTable(Bc bc) {
         addCell(header, monthName, true);
     }
     addCell(header, "Total", true);
+    addCell(header, "Paid BC", true);
     table.addView(header);
 
     for (int r = 0; r < bc.members.size(); r++) {
@@ -788,6 +795,26 @@ private void renderMainTable(Bc bc) {
         totalCell.setLayoutParams(totalLp);
 
         row.addView(totalCell);
+
+        Double paidBc = bc.paidBcAmount.get(member);
+
+        TextView paidBcCell = new TextView(context);
+        paidBcCell.setText(paidBc != null ? "₹" + String.format("%.0f", paidBc) : "-");
+        paidBcCell.setGravity(Gravity.CENTER);
+        paidBcCell.setTextSize(14f);
+        paidBcCell.setPadding(16, 12, 16, 12);
+        paidBcCell.setMinHeight(64);
+        paidBcCell.setBackgroundResource(R.drawable.table_cell_border);
+
+        TableRow.LayoutParams paidBcLp =
+                new TableRow.LayoutParams(
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.MATCH_PARENT
+                );
+        paidBcLp.setMargins(1, 1, 1, 1);
+        paidBcCell.setLayoutParams(paidBcLp);
+
+        row.addView(paidBcCell);
 
         table.addView(row);
     }
@@ -1083,6 +1110,79 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     builder.setView(scrollView);
     builder.setPositiveButton("OK", null);
+    builder.show();
+}
+
+private void showPaidBcDialog() {
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    builder.setTitle("Paid BC");
+
+    LinearLayout root = new LinearLayout(context);
+    root.setOrientation(LinearLayout.VERTICAL);
+    root.setPadding(32, 24, 32, 24);
+
+    // BC Spinner
+    Spinner bcSpinner = new Spinner(context);
+    ArrayAdapter<String> bcSpinAdapter =
+            new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
+    bcSpinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    bcSpinAdapter.add("Select BC");
+    for (Bc bc : bcData) bcSpinAdapter.add(bc.name);
+    bcSpinner.setAdapter(bcSpinAdapter);
+    root.addView(bcSpinner);
+
+    // Member Spinner
+    Spinner memberSpinner = new Spinner(context);
+    ArrayAdapter<String> memAdapter =
+            new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
+    memAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    memberSpinner.setAdapter(memAdapter);
+    root.addView(memberSpinner);
+
+    // Amount
+    EditText amountInput = new EditText(context);
+    amountInput.setHint("Enter Paid BC Amount");
+    amountInput.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+    root.addView(amountInput);
+
+    bcSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> p, View v, int pos, long id) {
+            memAdapter.clear();
+            if (pos > 0) {
+                memAdapter.addAll(bcData.get(pos - 1).members);
+            }
+            memAdapter.notifyDataSetChanged();
+        }
+        @Override public void onNothingSelected(AdapterView<?> p) {}
+    });
+
+    builder.setView(root);
+
+    builder.setPositiveButton("OK", (d, w) -> {
+
+        int bcPos = bcSpinner.getSelectedItemPosition();
+        int memPos = memberSpinner.getSelectedItemPosition();
+        String amtStr = amountInput.getText().toString().trim();
+
+        if (bcPos <= 0 || memPos < 0 || amtStr.isEmpty()) {
+            Toast.makeText(context, "Fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double amt = Double.parseDouble(amtStr);
+
+        Bc bc = bcData.get(bcPos - 1);
+        String member = bc.members.get(memPos);
+
+        bc.paidBcAmount.put(member, amt);
+
+        saveAllToRoom();
+        renderMainTable(bc);
+    });
+
+    builder.setNegativeButton("Cancel", null);
     builder.show();
 }
 
