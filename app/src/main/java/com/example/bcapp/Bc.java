@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Bc {
+
     public String name;
     public int months;
     public String startDateIso; // "yyyy-MM-dd"
@@ -23,14 +24,16 @@ public class Bc {
     // key: member_monthIndex → paid amount
     public HashMap<String, Double> paidAmount = new HashMap<>();
 
-    // 🔹 STEP 2 NEW: Store all payment entries (multiple + partial)
+    // 🔹 STEP 2: Store all payment entries (multiple + partial)
     public List<PaymentEntry> payments = new ArrayList<>();
 
+    // key: member_monthIndex → list of payments
     public HashMap<String, List<PaymentEntry>> paymentEntries = new HashMap<>();
+
     // 🔹 NEW: Paid BC per member
     public HashMap<String, Double> paidBcAmount = new HashMap<>();
 
-    // REQUIRED: no-argument constructor (Room/Gson)
+    // ✅ REQUIRED: no-argument constructor (Room / Gson)
     public Bc() {
         this.name = "";
         this.months = 0;
@@ -39,12 +42,15 @@ public class Bc {
         this.afterTaken = false;
         this.afterTakenAmount = 0.0;
         this.amounts = new ArrayList<>();
+
         this.paid = new HashMap<>();
         this.paidAmount = new HashMap<>();
         this.payments = new ArrayList<>();
+        this.paymentEntries = new HashMap<>();
+        this.paidBcAmount = new HashMap<>();
     }
 
-    // Original constructor
+    // ✅ Original constructor
     public Bc(String name, int months, String startDateIso) {
         this.name = name;
         this.months = months;
@@ -53,9 +59,12 @@ public class Bc {
         this.afterTaken = false;
         this.afterTakenAmount = 0.0;
         this.amounts = new ArrayList<>();
+
         this.paid = new HashMap<>();
         this.paidAmount = new HashMap<>();
         this.payments = new ArrayList<>();
+        this.paymentEntries = new HashMap<>();
+        this.paidBcAmount = new HashMap<>();
     }
 
     public String getPaidKey(String member, int monthIndex) {
