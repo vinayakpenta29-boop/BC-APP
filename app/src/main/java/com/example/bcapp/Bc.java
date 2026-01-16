@@ -27,6 +27,8 @@ public class Bc {
     public List<PaymentEntry> payments = new ArrayList<>();
 
     public HashMap<String, List<PaymentEntry>> paymentEntries = new HashMap<>();
+    // 🔹 NEW: Paid BC per member
+    public HashMap<String, Double> paidBcAmount = new HashMap<>();
 
     // REQUIRED: no-argument constructor (Room/Gson)
     public Bc() {
