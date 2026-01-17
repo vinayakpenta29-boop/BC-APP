@@ -24,8 +24,18 @@ public class BcEntity {
     // Amount when "After Taken BC" is enabled
     public double afterTakenAmount;
 
-    public List<String> members = new ArrayList<>();
+    // Monthly contribution amount
     public List<Double> amounts = new ArrayList<>();
+
+    // 🔹 NEW: Receive Amount
+    // true = Fixed, false = Random
+    public boolean isReceiveAmountFixed = true;
+
+    // If fixed → index 0 used
+    // If random → size == months
+    public List<Double> receiveAmounts = new ArrayList<>();
+
+    public List<String> members = new ArrayList<>();
 
     // key: member_monthIndex → paid or not
     public Map<String, Boolean> paid = new HashMap<>();
@@ -33,19 +43,22 @@ public class BcEntity {
     // key: member_monthIndex → total paid amount
     public HashMap<String, Double> paidAmount = new HashMap<>();
 
-    // 🔹 NEW: Paid BC per member
+    // 🔹 Paid BC per member
     public HashMap<String, Double> paidBcAmount = new HashMap<>();
 
-    // 🔹 STEP 2: Full payment history (multiple + partial)
+    // 🔹 Full payment history (multiple + partial)
     public List<PaymentEntry> payments = new ArrayList<>();
 
     // ✅ Required by Room
     public BcEntity() {
         this.members = new ArrayList<>();
         this.amounts = new ArrayList<>();
+        this.receiveAmounts = new ArrayList<>();
+
         this.paid = new HashMap<>();
         this.paidAmount = new HashMap<>();
         this.paidBcAmount = new HashMap<>();
+
         this.payments = new ArrayList<>();
     }
 
@@ -59,9 +72,14 @@ public class BcEntity {
         // Safety init
         this.members = new ArrayList<>();
         this.amounts = new ArrayList<>();
+        this.receiveAmounts = new ArrayList<>();
+
+        this.isReceiveAmountFixed = true;
+
         this.paid = new HashMap<>();
         this.paidAmount = new HashMap<>();
         this.paidBcAmount = new HashMap<>();
+
         this.payments = new ArrayList<>();
     }
 }
