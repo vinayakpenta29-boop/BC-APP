@@ -16,7 +16,16 @@ public class Bc {
     // NEW: amount entered when After Taken BC is checked
     public double afterTakenAmount = 0.0;
 
+    // Monthly contribution amount
     public List<Double> amounts = new ArrayList<>();
+
+    // 🔹 NEW: Receive Amount
+    // true = Fixed, false = Random
+    public boolean isReceiveAmountFixed = true;
+
+    // If fixed → index 0 used
+    // If random → size == months
+    public List<Double> receiveAmounts = new ArrayList<>();
 
     // key: member_monthIndex (paid or not)
     public Map<String, Boolean> paid = new HashMap<>();
@@ -30,7 +39,7 @@ public class Bc {
     // key: member_monthIndex → list of payments
     public HashMap<String, List<PaymentEntry>> paymentEntries = new HashMap<>();
 
-    // 🔹 NEW: Paid BC per member
+    // 🔹 Paid BC per member
     public HashMap<String, Double> paidBcAmount = new HashMap<>();
 
     // ✅ REQUIRED: no-argument constructor (Room / Gson)
@@ -39,12 +48,18 @@ public class Bc {
         this.months = 0;
         this.startDateIso = "";
         this.members = new ArrayList<>();
+
         this.afterTaken = false;
         this.afterTakenAmount = 0.0;
+
         this.amounts = new ArrayList<>();
+
+        this.isReceiveAmountFixed = true;
+        this.receiveAmounts = new ArrayList<>();
 
         this.paid = new HashMap<>();
         this.paidAmount = new HashMap<>();
+
         this.payments = new ArrayList<>();
         this.paymentEntries = new HashMap<>();
         this.paidBcAmount = new HashMap<>();
@@ -55,18 +70,26 @@ public class Bc {
         this.name = name;
         this.months = months;
         this.startDateIso = startDateIso;
+
         this.members = new ArrayList<>();
+
         this.afterTaken = false;
         this.afterTakenAmount = 0.0;
+
         this.amounts = new ArrayList<>();
+
+        this.isReceiveAmountFixed = true;
+        this.receiveAmounts = new ArrayList<>();
 
         this.paid = new HashMap<>();
         this.paidAmount = new HashMap<>();
+
         this.payments = new ArrayList<>();
         this.paymentEntries = new HashMap<>();
         this.paidBcAmount = new HashMap<>();
     }
 
+    // 🔹 Helper to build payment key
     public String getPaidKey(String member, int monthIndex) {
         return member + "_" + monthIndex;
     }
@@ -93,12 +116,23 @@ public class Bc {
         return total;
     }
 
-    // ✅ STEP 2: Expected total for BC
+    // ✅ Expected total contribution for BC
     public double getExpectedTotal() {
         double total = 0.0;
         for (double amt : amounts) {
             total += amt;
         }
         return total;
+    }
+
+    // ✅ NEW: Get receive amount for a month safely
+    public double getReceiveAmountForMonth(int monthIndex) {
+        if (isReceiveAmountFixed) {
+            return receiveAmounts.isEmpty() ? 0.0 : receiveAmounts.get(0);
+        } else {
+            return (monthIndex < receiveAmounts.size())
+                    ? receiveAmounts.get(monthIndex)
+                    : 0.0;
+        }
     }
 }
