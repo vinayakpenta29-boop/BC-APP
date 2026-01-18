@@ -331,7 +331,29 @@ private void openCreateBcDialog() {
     EditText editStartDate = dialogView.findViewById(R.id.editStartDate);  
     LinearLayout layoutMembers = dialogView.findViewById(R.id.layoutMembers);  
     Spinner spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);  
-    LinearLayout layoutAmounts = dialogView.findViewById(R.id.layoutAmounts);  
+    
+    LinearLayout layoutAmounts = dialogView.findViewById(R.id.layoutAmounts); 
+    // 🔹 Receive Amount Type Adapter
+    ArrayAdapter<String> receiveTypeAdapter = new ArrayAdapter<>(
+            context,
+            android.R.layout.simple_spinner_item,
+            Arrays.asList("Select Receive Amount Type", "Fixed", "Random")
+    );
+    receiveTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    spinnerReceiveType.setAdapter(receiveTypeAdapter);
+
+    // 🔹 INSERT Receive Amount UI BETWEEN Members & Start Date
+    LinearLayout root = (LinearLayout) dialogView;
+    int membersIndex = root.indexOfChild(layoutMembers);
+
+    root.addView(spinnerReceiveType, membersIndex + 1);
+    root.addView(layoutReceiveAmounts, membersIndex + 2);
+    // 🔹 RECEIVE AMOUNT TYPE
+    Spinner spinnerReceiveType = new Spinner(context);
+
+    // 🔹 RECEIVE AMOUNT INPUT HOLDER
+    LinearLayout layoutReceiveAmounts = new LinearLayout(context);
+    layoutReceiveAmounts.setOrientation(LinearLayout.VERTICAL);
     CheckBox checkAfterTaken = dialogView.findViewById(R.id.checkAfterTaken);  
     Button buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);  
     Button buttonCancelBc = dialogView.findViewById(R.id.buttonCancelBc);  
@@ -397,7 +419,33 @@ private void openCreateBcDialog() {
     });  
 
     // Also update amounts when amount type changes  
-    spinnerAmountType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {  
+    spinnerAmountType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    spinnerReceiveType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+        layoutReceiveAmounts.removeAllViews();
+        int months = safeParseInt(editMonths.getText().toString());
+
+        if (position == 1) { // FIXED
+            EditText e = new EditText(context);
+            e.setHint("Receive Amount");
+            e.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            layoutReceiveAmounts.addView(e);
+
+        } else if (position == 2) { // RANDOM
+            for (int i = 0; i < months; i++) {
+                EditText e = new EditText(context);
+                e.setHint("Receive Amount - Month " + (i + 1));
+                e.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                layoutReceiveAmounts.addView(e);
+            }
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) { }
+});
         @Override  
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {  
             amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);  
@@ -440,6 +488,18 @@ private void openCreateBcDialog() {
                 bc.amounts.add(a.isEmpty() ? 0.0 : Double.parseDouble(a));  
             }  
         }  
+
+        // 🔹 RECEIVE AMOUNT SAVE
+        bc.isReceiveAmountFixed = spinnerReceiveType.getSelectedItemPosition() == 1;
+        bc.receiveAmounts.clear();
+
+        for (int i = 0; i < layoutReceiveAmounts.getChildCount(); i++) {
+            View child = layoutReceiveAmounts.getChildAt(i);
+            if (child instanceof EditText) {
+                String v = ((EditText) child).getText().toString().trim();
+                bc.receiveAmounts.add(v.isEmpty() ? 0.0 : Double.parseDouble(v));
+            }
+        }
 
         bc.afterTaken = checkAfterTaken.isChecked();  
         bc.afterTakenAmount = bc.afterTaken ? afterTakenAmountHolder[0] : 0.0; // NEW  
