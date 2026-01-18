@@ -587,6 +587,7 @@ private void showBcListTable() {
         addCell(header, "Sr", true);  
         addCell(header, "Date", true);  
         addCell(header, "Amount", true);  
+        addCell(header, "Receive Amount", true);
         if (bc.afterTaken) {  
         addCell(header, "After Taken", true);  
         }  
@@ -605,6 +606,11 @@ private void showBcListTable() {
                     ? bc.amounts.get(i)  
                     : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);  
             addCell(row, String.valueOf(amount), false);  
+            double receiveAmt = bc.receiveAmounts.size() > i
+                    ? bc.receiveAmounts.get(i)
+                    : (!bc.receiveAmounts.isEmpty() ? bc.receiveAmounts.get(0) : 0.0);
+
+            addCell(row, String.valueOf(receiveAmt), false);
             if (bc.afterTaken) {  
             addCell(row, String.valueOf(bc.afterTakenAmount), false);  
             }  
