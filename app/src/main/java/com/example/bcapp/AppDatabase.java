@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(
         entities = {BcEntity.class},
-        version = 6, // ✅ INCREASE VERSION
+        version = 6,
         exportSchema = false
 )
 @TypeConverters({Converters.class})
@@ -32,7 +32,7 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
-    // 🔹 Migration 2 → 3 : paidAmount (Map<String, Double>)
+    // 🔹 Migration 2 → 3 : paidAmount
     private static final Migration MIGRATION_2_3 = new Migration(2, 3) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -43,7 +43,7 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
-    // 🔹 Migration 3 → 4 : payments (List<PaymentEntry>)
+    // 🔹 Migration 3 → 4 : payments
     private static final Migration MIGRATION_3_4 = new Migration(3, 4) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -54,7 +54,7 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
-    // 🔹 Migration 4 → 5 : paidBcAmount (Paid BC per member)
+    // 🔹 Migration 4 → 5 : paidBcAmount
     private static final Migration MIGRATION_4_5 = new Migration(4, 5) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -75,7 +75,7 @@ public abstract class AppDatabase extends RoomDatabase {
             );
             database.execSQL(
                     "ALTER TABLE bc_table " +
-                    "ADD COLUMN isReceiveAmountFixed INTEGER NOT NULL DEFAULT 0"
+                    "ADD COLUMN isReceiveAmountFixed INTEGER NOT NULL DEFAULT 1"
             );
         }
     };
@@ -94,7 +94,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     MIGRATION_2_3,
                                     MIGRATION_3_4,
                                     MIGRATION_4_5,
-                                    MIGRATION_5_6 // ✅ NEW
+                                    MIGRATION_5_6
                             )
                             .build();
                 }
