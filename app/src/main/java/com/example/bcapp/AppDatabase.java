@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(
         entities = {BcEntity.class},
-        version = 5, // ✅ INCREASE VERSION
+        version = 6, // ✅ INCREASE VERSION
         exportSchema = false
 )
 @TypeConverters({Converters.class})
@@ -65,6 +65,21 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    // 🔹 Migration 5 → 6 : Receive Amount
+    private static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL(
+                    "ALTER TABLE bc_table " +
+                    "ADD COLUMN receiveAmounts TEXT"
+            );
+            database.execSQL(
+                    "ALTER TABLE bc_table " +
+                    "ADD COLUMN isReceiveAmountFixed INTEGER NOT NULL DEFAULT 0"
+            );
+        }
+    };
+
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -78,7 +93,8 @@ public abstract class AppDatabase extends RoomDatabase {
                                     MIGRATION_1_2,
                                     MIGRATION_2_3,
                                     MIGRATION_3_4,
-                                    MIGRATION_4_5
+                                    MIGRATION_4_5,
+                                    MIGRATION_5_6 // ✅ NEW
                             )
                             .build();
                 }
