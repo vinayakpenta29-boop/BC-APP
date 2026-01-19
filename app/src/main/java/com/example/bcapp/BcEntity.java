@@ -16,40 +16,54 @@ public class BcEntity {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
+    // ================= BASIC INFO =================
+
     public String name;
     public int months;
     public String startDateIso;
+
+    // ================= AFTER TAKEN =================
+
     public boolean afterTaken;
 
     // Amount when "After Taken BC" is enabled
     public double afterTakenAmount;
 
-    // Monthly contribution amount
-    public List<Double> amounts = new ArrayList<>();
+    // ================= CONTRIBUTION AMOUNT =================
 
-    // 🔹 NEW: Receive Amount
+    // Monthly contribution amount
+    public List<Double> amounts;
+
+    // ================= 🔹 RECEIVE AMOUNT =================
+
     // true = Fixed, false = Random
-    public boolean isReceiveAmountFixed = true;
+    public boolean isReceiveAmountFixed;
 
     // If fixed → index 0 used
     // If random → size == months
-    public List<Double> receiveAmounts = new ArrayList<>();
+    public List<Double> receiveAmounts;
 
-    public List<String> members = new ArrayList<>();
+    // ================= MEMBERS =================
+
+    public List<String> members;
 
     // key: member_monthIndex → paid or not
-    public Map<String, Boolean> paid = new HashMap<>();
+    public Map<String, Boolean> paid;
 
     // key: member_monthIndex → total paid amount
-    public HashMap<String, Double> paidAmount = new HashMap<>();
+    public HashMap<String, Double> paidAmount;
 
-    // 🔹 Paid BC per member
-    public HashMap<String, Double> paidBcAmount = new HashMap<>();
+    // Paid BC per member
+    public HashMap<String, Double> paidBcAmount;
 
-    // 🔹 Full payment history (multiple + partial)
-    public List<PaymentEntry> payments = new ArrayList<>();
+    // ================= PAYMENT HISTORY =================
 
-    // ✅ Required by Room
+    // Full payment history (multiple + partial)
+    public List<PaymentEntry> payments;
+
+    // ================= CONSTRUCTORS =================
+
+    // ✅ Required empty constructor for Room
     public BcEntity() {
         this.members = new ArrayList<>();
         this.amounts = new ArrayList<>();
@@ -60,6 +74,9 @@ public class BcEntity {
         this.paidBcAmount = new HashMap<>();
 
         this.payments = new ArrayList<>();
+
+        this.isReceiveAmountFixed = true;
+        this.afterTakenAmount = 0.0;
     }
 
     public BcEntity(String name, int months, String startDateIso, boolean afterTaken) {
@@ -67,14 +84,13 @@ public class BcEntity {
         this.months = months;
         this.startDateIso = startDateIso;
         this.afterTaken = afterTaken;
-        this.afterTakenAmount = 0.0;
 
-        // Safety init
+        this.afterTakenAmount = 0.0;
+        this.isReceiveAmountFixed = true;
+
         this.members = new ArrayList<>();
         this.amounts = new ArrayList<>();
         this.receiveAmounts = new ArrayList<>();
-
-        this.isReceiveAmountFixed = true;
 
         this.paid = new HashMap<>();
         this.paidAmount = new HashMap<>();
