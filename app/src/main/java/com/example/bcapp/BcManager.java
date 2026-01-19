@@ -570,52 +570,81 @@ private void updateMembersDropdown() {
     renderMainTable(bc);  
 }  
 
-private void showBcListTable() {  
-    tableContainer.removeAllViews();  
-    for (Bc bc : bcData) {  
-        TextView title = new TextView(context);  
-        title.setText(bc.name);  
-        title.setTextSize(16f);  
-        title.setPadding(0, 8, 0, 4);  
-        tableContainer.addView(title);  
+private void showBcListTable() {
 
-        TableLayout table = new TableLayout(context);  
-        table.setStretchAllColumns(true);  
-        table.setShrinkAllColumns(true);  
-        table.setColumnStretchable(0, true);  
-        table.setColumnShrinkable(0, true);  
+    tableContainer.removeAllViews();
 
-        TableRow header = new TableRow(context);  
-        addCell(header, "Sr", true);  
-        addCell(header, "Date", true);  
-        addCell(header, "Amount", true);  
-        if (bc.afterTaken) {  
-        addCell(header, "After Taken", true);  
-        }  
-        table.addView(header);  
+    for (Bc bc : bcData) {
 
-        for (int i = 0; i < bc.months; i++) {  
-            TableRow row = new TableRow(context);  
-            addCell(row, String.valueOf(i + 1), false);  
+        TextView title = new TextView(context);
+        title.setText(bc.name);
+        title.setTextSize(16f);
+        title.setPadding(0, 8, 0, 4);
+        tableContainer.addView(title);
 
-            Calendar cal = parseIsoDate(bc.startDateIso);  
-            if (cal != null) cal.add(Calendar.MONTH, i);  
-            String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";  
-            addCell(row, dateStr, false);  
+        TableLayout table = new TableLayout(context);
+        table.setStretchAllColumns(true);
+        table.setShrinkAllColumns(true);
+        table.setColumnStretchable(0, true);
+        table.setColumnShrinkable(0, true);
 
-            double amount = bc.amounts.size() > i  
-                    ? bc.amounts.get(i)  
-                    : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);  
-            addCell(row, String.valueOf(amount), false);  
-            if (bc.afterTaken) {  
-            addCell(row, String.valueOf(bc.afterTakenAmount), false);  
-            }  
-            table.addView(row);  
-        }  
+        /* ---------- HEADER ---------- */
 
-        tableContainer.addView(table);  
-    }  
-}  
+        TableRow header = new TableRow(context);
+        addCell(header, "Sr", true);
+        addCell(header, "Date", true);
+        addCell(header, "Amount", true);
+        addCell(header, "Receive Amount", true);
+
+        if (bc.afterTaken) {
+            addCell(header, "After Taken", true);
+        }
+        table.addView(header);
+
+        /* ---------- ROWS ---------- */
+
+        for (int i = 0; i < bc.months; i++) {
+
+            TableRow row = new TableRow(context);
+            addCell(row, String.valueOf(i + 1), false);
+
+            Calendar cal = parseIsoDate(bc.startDateIso);
+            if (cal != null) cal.add(Calendar.MONTH, i);
+            String dateStr = cal != null
+                    ? displayFormat.format(cal.getTime())
+                    : "-";
+            addCell(row, dateStr, false);
+
+            // Amount
+            double amount = bc.amounts.size() > i
+                    ? bc.amounts.get(i)
+                    : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+            addCell(row, String.valueOf(amount), false);
+
+            // 🔹 RECEIVE AMOUNT
+            double receiveAmount;
+            if (bc.receiveAmounts.isEmpty()) {
+                receiveAmount = 0.0;
+            } else if (bc.isReceiveAmountFixed) {
+                receiveAmount = bc.receiveAmounts.get(0);
+            } else {
+                receiveAmount = bc.receiveAmounts.size() > i
+                        ? bc.receiveAmounts.get(i)
+                        : 0.0;
+            }
+            addCell(row, String.valueOf(receiveAmount), false);
+
+            // After Taken
+            if (bc.afterTaken) {
+                addCell(row, String.valueOf(bc.afterTakenAmount), false);
+            }
+
+            table.addView(row);
+        }
+
+        tableContainer.addView(table);
+    }
+}
 
 private void renderMainTable(Bc bc) {
     tableContainer.removeAllViews();
