@@ -322,139 +322,201 @@ private interface AfterTakenCallback {
 
 /* ---------- Create BC dialog ---------- */  
 
-private void openCreateBcDialog() {  
-    View dialogView = activity.getLayoutInflater()  
-            .inflate(R.layout.dialog_create_bc, null);  
+private void openCreateBcDialog() {
 
-    EditText editBcName = dialogView.findViewById(R.id.editBcName);  
-    EditText editMonths = dialogView.findViewById(R.id.editMonths);  
-    EditText editStartDate = dialogView.findViewById(R.id.editStartDate);  
-    LinearLayout layoutMembers = dialogView.findViewById(R.id.layoutMembers);  
-    Spinner spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);  
-    LinearLayout layoutAmounts = dialogView.findViewById(R.id.layoutAmounts);  
-    CheckBox checkAfterTaken = dialogView.findViewById(R.id.checkAfterTaken);  
-    Button buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);  
-    Button buttonCancelBc = dialogView.findViewById(R.id.buttonCancelBc);  
+    View dialogView = activity.getLayoutInflater()
+            .inflate(R.layout.dialog_create_bc, null);
 
-    // holder for after-taken amount while dialog is open  
-    final double[] afterTakenAmountHolder = new double[]{0.0};  
+    EditText editBcName = dialogView.findViewById(R.id.editBcName);
+    EditText editMonths = dialogView.findViewById(R.id.editMonths);
+    EditText editStartDate = dialogView.findViewById(R.id.editStartDate);
+    LinearLayout layoutMembers = dialogView.findViewById(R.id.layoutMembers);
+    Spinner spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);
+    LinearLayout layoutAmounts = dialogView.findViewById(R.id.layoutAmounts);
+    CheckBox checkAfterTaken = dialogView.findViewById(R.id.checkAfterTaken);
+    Button buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);
+    Button buttonCancelBc = dialogView.findViewById(R.id.buttonCancelBc);
 
-    // If checked -> ask amount now  
-    checkAfterTaken.setOnCheckedChangeListener((btn, isChecked) -> {  
-        if (isChecked) {  
-            askAfterTakenAmount(new AfterTakenCallback() {  
-                @Override  
-                public void onValue(double amount) {  
-                    afterTakenAmountHolder[0] = amount;  
-                }  
+    /* ---------- RECEIVE AMOUNT UI ---------- */
 
-                @Override  
-                public void onCancelled() {  
-                    checkAfterTaken.setChecked(false);  
-                    afterTakenAmountHolder[0] = 0.0;  
-                }  
-            });  
-        } else {  
-            afterTakenAmountHolder[0] = 0.0;  
-        }  
-    });  
+    Spinner spinnerReceiveType = new Spinner(context);
+    LinearLayout layoutReceiveAmounts = new LinearLayout(context);
+    layoutReceiveAmounts.setOrientation(LinearLayout.VERTICAL);
 
-    // Start date picker  
-    editStartDate.setOnClickListener(v -> {  
-        final Calendar c = Calendar.getInstance();  
-        int year = c.get(Calendar.YEAR);  
-        int month = c.get(Calendar.MONTH);  
-        int day = c.get(Calendar.DAY_OF_MONTH);  
+    ArrayAdapter<String> receiveTypeAdapter = new ArrayAdapter<>(
+            context,
+            android.R.layout.simple_spinner_item,
+            Arrays.asList("Select Receive Amount Type", "Fixed", "Random")
+    );
+    receiveTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    spinnerReceiveType.setAdapter(receiveTypeAdapter);
 
-        DatePickerDialog dp = new DatePickerDialog(context,  
-                (view, year1, month1, dayOfMonth) -> {  
-                    Calendar cal = Calendar.getInstance();  
-                    cal.set(year1, month1, dayOfMonth, 0, 0, 0);  
-                    editStartDate.setText(isoFormat.format(cal.getTime()));  
-                },  
-                year, month, day);  
-        dp.show();  
-    });  
+    // Insert between Members and Start Date
+    LinearLayout root = (LinearLayout) dialogView;
+    int membersIndex = root.indexOfChild(layoutMembers);
+    root.addView(spinnerReceiveType, membersIndex + 1);
+    root.addView(layoutReceiveAmounts, membersIndex + 2);
 
-    // Amount type spinner  
-    ArrayAdapter<String> amountTypeAdapter = new ArrayAdapter<>(  
-            context,  
-            android.R.layout.simple_spinner_item,  
-            Arrays.asList("Select Amount Type", "Fixed", "Random")  
-    );  
-    amountTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);  
-    spinnerAmountType.setAdapter(amountTypeAdapter);  
+    /* ---------- AFTER TAKEN ---------- */
 
-    // Update Members + Amounts whenever Months changes  
-    editMonths.addTextChangedListener(new TextWatcher() {  
-        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }  
-        @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }  
-        @Override  
-        public void afterTextChanged(Editable s) {  
-            createMemberInputs(editMonths, layoutMembers);  
-            amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);  
-        }  
-    });  
+    final double[] afterTakenAmountHolder = new double[]{0.0};
 
-    // Also update amounts when amount type changes  
-    spinnerAmountType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {  
-        @Override  
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {  
-            amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);  
-        }  
-        @Override  
-        public void onNothingSelected(AdapterView<?> parent) { }  
-    });  
+    checkAfterTaken.setOnCheckedChangeListener((btn, isChecked) -> {
+        if (isChecked) {
+            askAfterTakenAmount(new AfterTakenCallback() {
+                @Override
+                public void onValue(double amount) {
+                    afterTakenAmountHolder[0] = amount;
+                }
 
-    AlertDialog dialog = new AlertDialog.Builder(context)  
-            .setView(dialogView)  
-            .setCancelable(false)  
-            .create();  
+                @Override
+                public void onCancelled() {
+                    checkAfterTaken.setChecked(false);
+                    afterTakenAmountHolder[0] = 0.0;
+                }
+            });
+        } else {
+            afterTakenAmountHolder[0] = 0.0;
+        }
+    });
 
-    buttonSaveBc.setOnClickListener(v -> {  
-        String name = editBcName.getText().toString().trim();  
-        int months = safeParseInt(editMonths.getText().toString());  
-        String startDate = editStartDate.getText().toString().trim();  
+    /* ---------- DATE PICKER ---------- */
 
-        if (name.isEmpty() || months <= 0 || startDate.isEmpty()) {  
-            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show();  
-            return;  
-        }  
+    editStartDate.setOnClickListener(v -> {
+        Calendar c = Calendar.getInstance();
+        new DatePickerDialog(context,
+                (view, y, m, d) -> {
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(y, m, d, 0, 0, 0);
+                    editStartDate.setText(isoFormat.format(cal.getTime()));
+                },
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH)
+        ).show();
+    });
 
-        Bc bc = new Bc(name, months, startDate);  
+    /* ---------- AMOUNT TYPE ---------- */
 
-        // Members  
-        for (int i = 0; i < layoutMembers.getChildCount(); i++) {  
-            View child = layoutMembers.getChildAt(i);  
-            if (child instanceof EditText) {  
-                String m = ((EditText) child).getText().toString().trim();  
-                if (!m.isEmpty()) bc.members.add(m);  
-            }  
-        }  
+    ArrayAdapter<String> amountTypeAdapter = new ArrayAdapter<>(
+            context,
+            android.R.layout.simple_spinner_item,
+            Arrays.asList("Select Amount Type", "Fixed", "Random")
+    );
+    amountTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    spinnerAmountType.setAdapter(amountTypeAdapter);
 
-        // Amounts  
-        for (int i = 0; i < layoutAmounts.getChildCount(); i++) {  
-            View child = layoutAmounts.getChildAt(i);  
-            if (child instanceof EditText) {  
-                String a = ((EditText) child).getText().toString().trim();  
-                bc.amounts.add(a.isEmpty() ? 0.0 : Double.parseDouble(a));  
-            }  
-        }  
+    editMonths.addTextChangedListener(new TextWatcher() {
+        @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
+        @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
+        @Override
+        public void afterTextChanged(Editable s) {
+            createMemberInputs(editMonths, layoutMembers);
+            amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);
+        }
+    });
 
-        bc.afterTaken = checkAfterTaken.isChecked();  
-        bc.afterTakenAmount = bc.afterTaken ? afterTakenAmountHolder[0] : 0.0; // NEW  
+    spinnerAmountType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> p, View v, int pos, long id) {
+            amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);
+        }
+        @Override public void onNothingSelected(AdapterView<?> p) {}
+    });
 
-        bcData.add(bc);  
-        bcAdapter.add(bc.name);  
-        bcAdapter.notifyDataSetChanged();  
+    /* ---------- RECEIVE AMOUNT LISTENER ---------- */
 
-        saveAllToRoom();  
-        dialog.dismiss();  
-    });  
+    spinnerReceiveType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-    buttonCancelBc.setOnClickListener(v -> dialog.dismiss());  
-    dialog.show();  
-}  
+            layoutReceiveAmounts.removeAllViews();
+            int months = safeParseInt(editMonths.getText().toString());
+
+            if (position == 1) { // FIXED
+                EditText e = new EditText(context);
+                e.setHint("Receive Amount");
+                e.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                layoutReceiveAmounts.addView(e);
+
+            } else if (position == 2) { // RANDOM
+                for (int i = 0; i < months; i++) {
+                    EditText e = new EditText(context);
+                    e.setHint("Receive Amount - Month " + (i + 1));
+                    e.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    layoutReceiveAmounts.addView(e);
+                }
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {}
+    });
+
+    /* ---------- DIALOG ---------- */
+
+    AlertDialog dialog = new AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create();
+
+    buttonSaveBc.setOnClickListener(v -> {
+
+        String name = editBcName.getText().toString().trim();
+        int months = safeParseInt(editMonths.getText().toString());
+        String startDate = editStartDate.getText().toString().trim();
+
+        if (name.isEmpty() || months <= 0 || startDate.isEmpty()) {
+            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Bc bc = new Bc(name, months, startDate);
+
+        // Members
+        for (int i = 0; i < layoutMembers.getChildCount(); i++) {
+            View v1 = layoutMembers.getChildAt(i);
+            if (v1 instanceof EditText) {
+                String m = ((EditText) v1).getText().toString().trim();
+                if (!m.isEmpty()) bc.members.add(m);
+            }
+        }
+
+        // Amounts
+        for (int i = 0; i < layoutAmounts.getChildCount(); i++) {
+            View v1 = layoutAmounts.getChildAt(i);
+            if (v1 instanceof EditText) {
+                String a = ((EditText) v1).getText().toString().trim();
+                bc.amounts.add(a.isEmpty() ? 0.0 : Double.parseDouble(a));
+            }
+        }
+
+        // 🔹 RECEIVE AMOUNTS SAVE
+        bc.isReceiveAmountFixed = spinnerReceiveType.getSelectedItemPosition() == 1;
+        bc.receiveAmounts.clear();
+
+        for (int i = 0; i < layoutReceiveAmounts.getChildCount(); i++) {
+            View v1 = layoutReceiveAmounts.getChildAt(i);
+            if (v1 instanceof EditText) {
+                String r = ((EditText) v1).getText().toString().trim();
+                bc.receiveAmounts.add(r.isEmpty() ? 0.0 : Double.parseDouble(r));
+            }
+        }
+
+        bc.afterTaken = checkAfterTaken.isChecked();
+        bc.afterTakenAmount = bc.afterTaken ? afterTakenAmountHolder[0] : 0.0;
+
+        bcData.add(bc);
+        bcAdapter.add(bc.name);
+        bcAdapter.notifyDataSetChanged();
+
+        saveAllToRoom();
+        dialog.dismiss();
+    });
+
+    buttonCancelBc.setOnClickListener(v -> dialog.dismiss());
+    dialog.show();
+}
 
 private void createMemberInputs(EditText editMonths, LinearLayout layoutMembers) {  
     layoutMembers.removeAllViews();  
