@@ -330,6 +330,9 @@ private void openCreateBcDialog() {
     EditText editBcName = dialogView.findViewById(R.id.editBcName);
     EditText editMonths = dialogView.findViewById(R.id.editMonths);
     EditText editStartDate = dialogView.findViewById(R.id.editStartDate);
+    // 🔹 RECEIVE AMOUNT views (FROM XML — DO NOT CREATE MANUALLY)
+    Spinner spinnerReceiveType = dialogView.findViewById(R.id.spinnerReceiveType);
+    LinearLayout layoutReceiveAmounts = dialogView.findViewById(R.id.layoutReceiveAmounts);
     LinearLayout layoutMembers = dialogView.findViewById(R.id.layoutMembers);
     Spinner spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);
     LinearLayout layoutAmounts = dialogView.findViewById(R.id.layoutAmounts);
@@ -337,26 +340,7 @@ private void openCreateBcDialog() {
     Button buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);
     Button buttonCancelBc = dialogView.findViewById(R.id.buttonCancelBc);
 
-    /* ---------- RECEIVE AMOUNT UI ---------- */
-
-    Spinner spinnerReceiveType = new Spinner(context);
-    LinearLayout layoutReceiveAmounts = new LinearLayout(context);
-    layoutReceiveAmounts.setOrientation(LinearLayout.VERTICAL);
-
-    ArrayAdapter<String> receiveTypeAdapter = new ArrayAdapter<>(
-            context,
-            android.R.layout.simple_spinner_item,
-            Arrays.asList("Select Receive Amount Type", "Fixed", "Random")
-    );
-    receiveTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    spinnerReceiveType.setAdapter(receiveTypeAdapter);
-
-    // Insert between Members and Start Date
-    LinearLayout root = (LinearLayout) dialogView;
-    int membersIndex = root.indexOfChild(layoutMembers);
-    root.addView(spinnerReceiveType, membersIndex + 1);
-    root.addView(layoutReceiveAmounts, membersIndex + 2);
-
+    
     /* ---------- AFTER TAKEN ---------- */
 
     final double[] afterTakenAmountHolder = new double[]{0.0};
@@ -405,6 +389,15 @@ private void openCreateBcDialog() {
     );
     amountTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     spinnerAmountType.setAdapter(amountTypeAdapter);
+
+    // 🔹 Receive Amount type spinner
+    ArrayAdapter<String> receiveTypeAdapter = new ArrayAdapter<>(
+            context,
+            android.R.layout.simple_spinner_item,
+            Arrays.asList("Select Receive Amount Type", "Fixed", "Random")
+    );
+    receiveTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    spinnerReceiveType.setAdapter(receiveTypeAdapter);
 
     editMonths.addTextChangedListener(new TextWatcher() {
         @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
