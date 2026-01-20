@@ -1,4 +1,4 @@
-package com.example.bcapp;
+qpackage com.example.bcapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -182,22 +182,35 @@ private void loadFromRoomAndRefreshUi() {
     }).start();
 }
 
-private void saveAllToRoom() {  
-    new Thread(() -> {  
-        bcDao.deleteAll();  
-        for (Bc bc : bcData) {  
-            BcEntity e = new BcEntity(bc.name, bc.months, bc.startDateIso, bc.afterTaken);  
-            e.afterTakenAmount = bc.afterTakenAmount; // NEW  
-            e.members = bc.members;  
-            e.amounts = bc.amounts;  
-            e.paid = bc.paid;  
-            e.paidAmount = bc.paidAmount;
-            e.payments = bc.payments;
-            e.paidBcAmount = bc.paidBcAmount;
-            bcDao.insert(e);  
-        }  
-    }).start();  
-}  
+private void saveAllToRoom() {
+    new Thread(() -> {
+        bcDao.deleteAll();
+        for (Bc bc : bcData) {
+
+            BcEntity e = new BcEntity(
+                    bc.name,
+                    bc.months,
+                    bc.startDateIso,
+                    bc.afterTaken
+            );
+
+            // Existing fields
+            e.afterTakenAmount = bc.afterTakenAmount;
+            e.members = new ArrayList<>(bc.members);
+            e.amounts = new ArrayList<>(bc.amounts);
+            e.paid = new HashMap<>(bc.paid);
+            e.paidAmount = new HashMap<>(bc.paidAmount);
+            e.payments = new ArrayList<>(bc.payments);
+            e.paidBcAmount = new HashMap<>(bc.paidBcAmount);
+
+            // 🔴 🔴 🔴 MISSING RECEIVE AMOUNT (ROOT CAUSE FIX)
+            e.isReceiveAmountFixed = bc.isReceiveAmountFixed;
+            e.receiveAmounts = new ArrayList<>(bc.receiveAmounts);
+
+            bcDao.insert(e);
+        }
+    }).start();
+}
 
 /* ---------- Menu ---------- */  
 
