@@ -1,4 +1,4 @@
-qpackage com.example.bcapp;
+package com.example.bcapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
