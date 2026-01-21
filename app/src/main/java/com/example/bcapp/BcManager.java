@@ -127,13 +127,6 @@ public void init() {
 private void loadFromRoomAndRefreshUi() {
     new Thread(() -> {
         List<BcEntity> entities = bcDao.getAll();
-
-        for (BcEntity e : entities) {
-            Log.e("DEBUG_LOAD",
-                    "Fixed=" + e.isReceiveAmountFixed +
-                    " Receive=" + e.receiveAmounts);
-                }
-      
         List<Bc> loaded = new ArrayList<>();
 
         for (BcEntity e : entities) {
@@ -189,6 +182,7 @@ private void loadFromRoomAndRefreshUi() {
 
     }).start();
 }
+
 
 private void saveAllToRoom() {
     new Thread(() -> {
