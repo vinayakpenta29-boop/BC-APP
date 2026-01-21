@@ -584,78 +584,71 @@ private void updateMembersDropdown() {
 }  
 
 private void showBcListTable() {
-
     tableContainer.removeAllViews();
 
     for (Bc bc : bcData) {
-
+        // Title
         TextView title = new TextView(context);
         title.setText(bc.name);
         title.setTextSize(16f);
         title.setPadding(0, 8, 0, 4);
         tableContainer.addView(title);
 
+        // 🔹 HORIZONTAL SCROLL + TABLE
+        HorizontalScrollView hScroll = new HorizontalScrollView(context);
+        hScroll.setHorizontalScrollBarEnabled(true);
+        
         TableLayout table = new TableLayout(context);
         table.setStretchAllColumns(true);
         table.setShrinkAllColumns(true);
-        table.setColumnStretchable(0, true);
-        table.setColumnShrinkable(0, true);
 
-        /* ---------- HEADER ---------- */
-
+        // ========== HEADER ==========
         TableRow header = new TableRow(context);
-        addCell(header, "Sr", true);
-        addCell(header, "Date", true);
-        addCell(header, "Amount", true);
-        addCell(header, "Receive Amount", true);
-
+        addCellFixedWidth(header, "Sr", true, 80);  // Fixed width for short text
+        addCellFixedWidth(header, "Date", true, 100);
+        addCellFixedWidth(header, "Amount", true, 120);
+        addCellFixedWidth(header, "Receive
+Amount", true, 140);  // 
+ for 2 lines
         if (bc.afterTaken) {
-            addCell(header, "After Taken", true);
+            addCellFixedWidth(header, "After
+Taken", true, 120);
         }
         table.addView(header);
 
-        /* ---------- ROWS ---------- */
-
+        // ========== ROWS ==========
         for (int i = 0; i < bc.months; i++) {
-
             TableRow row = new TableRow(context);
-            addCell(row, String.valueOf(i + 1), false);
-
+            addCellFixedWidth(row, String.valueOf(i + 1), false, 80);
+            
             Calendar cal = parseIsoDate(bc.startDateIso);
             if (cal != null) cal.add(Calendar.MONTH, i);
-            String dateStr = cal != null
-                    ? displayFormat.format(cal.getTime())
-                    : "-";
-            addCell(row, dateStr, false);
+            String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
+            addCellFixedWidth(row, dateStr, false, 100);
 
             // Amount
-            double amount = bc.amounts.size() > i
-                    ? bc.amounts.get(i)
-                    : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
-            addCell(row, String.valueOf(amount), false);
+            double amount = bc.amounts.size() > i ? bc.amounts.get(i) : 0.0;
+            addCellFixedWidth(row, "₹" + String.format("%.0f", amount), false, 120);
 
-            // 🔹 RECEIVE AMOUNT
-            double receiveAmount;
-            if (bc.receiveAmounts.isEmpty()) {
-                receiveAmount = 0.0;
-            } else if (bc.isReceiveAmountFixed) {
-                receiveAmount = bc.receiveAmounts.get(0);
-            } else {
-                receiveAmount = bc.receiveAmounts.size() > i
-                        ? bc.receiveAmounts.get(i)
-                        : 0.0;
+            // Receive Amount
+            double receiveAmount = 0.0;
+            if (!bc.receiveAmounts.isEmpty()) {
+                if (bc.isReceiveAmountFixed) {
+                    receiveAmount = bc.receiveAmounts.get(0);
+                } else if (bc.receiveAmounts.size() > i) {
+                    receiveAmount = bc.receiveAmounts.get(i);
+                }
             }
-            addCell(row, String.valueOf(receiveAmount), false);
+            addCellFixedWidth(row, "₹" + String.format("%.0f", receiveAmount), false, 140);
 
-            // After Taken
             if (bc.afterTaken) {
-                addCell(row, String.valueOf(bc.afterTakenAmount), false);
+                addCellFixedWidth(row, "₹" + String.format("%.0f", bc.afterTakenAmount), false, 120);
             }
-
             table.addView(row);
         }
 
-        tableContainer.addView(table);
+        hScroll.addView(table);
+        tableContainer.addView(hScroll);
     }
 }
 
