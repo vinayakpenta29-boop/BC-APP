@@ -604,10 +604,10 @@ private void showBcListTable() {
         addCellFixedWidth(header, "Sr", true, 80);  // Fixed width for short text
         addCellFixedWidth(header, "Date", true, 100);
         addCellFixedWidth(header, "Amount", true, 120);
-        addCellFixedWidth(header, "Receive Amount", true, 140);  // 
+        addCellFixedWidth(header, "Receive\nAmount", true, 140);  // 
         for 2 lines
                if (bc.afterTaken) {
-                   addCellFixedWidth(header, "After Taken", true, 120);
+                   addCellFixedWidth(header, "After\nTaken", true, 120);
         }
         table.addView(header);
 
