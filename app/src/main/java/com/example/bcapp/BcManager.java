@@ -1080,6 +1080,41 @@ private void addCell(TableRow row, String text, boolean header) {
     row.addView(tv);  
 }  
 
+private void addCellFixedWidth(TableRow row, String text, boolean header, int widthDp) {
+    TextView tv = new TextView(context);
+    tv.setText(text);
+    tv.setGravity(Gravity.CENTER);
+    tv.setPadding(8, 12, 8, 12);
+    tv.setMinHeight(dpToPx(56));  // Consistent height
+    
+    // 🔹 TEXT WRAPPING: Single words 1 line, multi-word 2 lines max
+    tv.setSingleLine(false);
+    tv.setMaxLines(2);
+    tv.setEllipsize(null);  // No ellipsis - show full text
+    
+    // Fixed width
+    int widthPx = dpToPx(widthDp);
+    TableRow.LayoutParams lp = new TableRow.LayoutParams(widthPx, TableRow.LayoutParams.MATCH_PARENT);
+    lp.setMargins(1, 1, 1, 1);
+    tv.setLayoutParams(lp);
+
+    if (header) {
+        tv.setTypeface(null, Typeface.BOLD);
+        tv.setTextSize(14f);
+        tv.setTextColor(Color.BLACK);
+        tv.setBackgroundResource(R.drawable.table_header_border);
+    } else {
+        tv.setTextSize(13f);
+        tv.setTextColor(Color.parseColor("#424242"));
+        tv.setBackgroundResource(R.drawable.table_cell_border);
+    }
+
+    row.addView(tv);
+}
+
+private int dpToPx(int dp) {
+    return (int) (dp * context.getResources().getDisplayMetrics().density);
+}
 
 private int safeParseInt(String s) {  
     try {  
