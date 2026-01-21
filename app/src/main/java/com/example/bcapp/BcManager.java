@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.HashMap;
+import android.util.Log;
 
 public class BcManager {
 
@@ -127,7 +128,7 @@ private void loadFromRoomAndRefreshUi() {
     new Thread(() -> {
         List<BcEntity> entities = bcDao.getAll();
 
-        for (BcEntity e : list) {
+        for (BcEntity e : entities) {
             Log.e("DEBUG_LOAD",
                     "Fixed=" + e.isReceiveAmountFixed +
                     " Receive=" + e.receiveAmounts);
