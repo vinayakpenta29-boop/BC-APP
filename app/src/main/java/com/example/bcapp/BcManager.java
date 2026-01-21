@@ -608,11 +608,11 @@ private void showBcListTable() {
         addCellFixedWidth(header, "Date", true, 100);
         addCellFixedWidth(header, "Amount", true, 120);
         addCellFixedWidth(header, "Receive
-Amount", true, 140);  // 
- for 2 lines
-        if (bc.afterTaken) {
-            addCellFixedWidth(header, "After
-Taken", true, 120);
+                          Amount", true, 140);  // 
+        for 2 lines
+               if (bc.afterTaken) {
+                   addCellFixedWidth(header, "After
+                                     Taken", true, 120);
         }
         table.addView(header);
 
@@ -1084,6 +1084,7 @@ private void addCell(TableRow row, String text, boolean header) {
 
     row.addView(tv);  
 }  
+
 
 private int safeParseInt(String s) {  
     try {  
