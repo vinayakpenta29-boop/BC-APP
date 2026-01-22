@@ -602,12 +602,12 @@ private void showBcListTable() {
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
-        addCellFixedWidth(header, "Sr", true, 80);  // Fixed width for short text
-        addCellFixedWidth(header, "Date", true, 100);
-        addCellFixedWidth(header, "Amount", true, 120);
-        addCellFixedWidth(header, "Receive\nAmount", true, 140);  // 
+        addCellFixedWidth(header, "Sr", true, "sr");  // Fixed width for short text
+        addCellFixedWidth(header, "Date", true, "date");
+        addCellFixedWidth(header, "Amount", true, "amount");
+        addCellFixedWidth(header, "Receive\nAmount", true, "receive");  // 
         if (bc.afterTaken) {
-        addCellFixedWidth(header, "After\nTaken", true, 120);
+        addCellFixedWidth(header, "After\nTaken", true, "after");
         }
         table.addView(header);
 
@@ -619,7 +619,7 @@ private void showBcListTable() {
             Calendar cal = parseIsoDate(bc.startDateIso);
             if (cal != null) cal.add(Calendar.MONTH, i);
             String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
-            addCellFixedWidth(row, dateStr, false, 100);
+            addCellFixedWidth(row, dateStr, false, "date");
 
             // Amount
             double amount = bc.amounts.size() > i ? bc.amounts.get(i) : 0.0;
@@ -1080,36 +1080,48 @@ private void addCell(TableRow row, String text, boolean header) {
     row.addView(tv);  
 }  
 
-private void addCellFixedWidth(TableRow row, String text, boolean header, int widthDp) {
+private void addCellFixedWidth(TableRow row, String text, boolean header, String columnType) {
     TextView tv = new TextView(context);
     tv.setText(text);
     tv.setGravity(Gravity.CENTER);
-    tv.setPadding(8, 12, 8, 12);
-    tv.setMinHeight(dpToPx(56));  // Consistent height
+    tv.setPadding(dpToPx(2), 12, dpToPx(2), 12);  // ← 2dp left/right padding
     
-    // 🔹 TEXT WRAPPING: Single words 1 line, multi-word 2 lines max
-    tv.setSingleLine(false);
-    tv.setMaxLines(2);
-    tv.setEllipsize(null);  // No ellipsis - show full text
+    // 🔹 DATE COLUMN: Single line, smaller font, no wrap
+    if ("date".equals(columnType)) {
+        tv.setSingleLine(true);
+        tv.setTextSize(header ? 13f : 12f);  // Smaller for dates
+    } else {
+        // Other columns: max 2 lines
+        tv.setSingleLine(false);
+        tv.setMaxLines(2);
+        tv.setEllipsize(null);
+        tv.setTextSize(header ? 14f : 13f);
+    }
     
-    // Fixed width
-    int widthPx = dpToPx(widthDp);
+    // 🔹 AUTO WIDTH based on content
+    int widthPx = measureTextWidth(text, tv.getTextSize()) + dpToPx(8);  // Text + 4dp padding total
     TableRow.LayoutParams lp = new TableRow.LayoutParams(widthPx, TableRow.LayoutParams.MATCH_PARENT);
     lp.setMargins(1, 1, 1, 1);
     tv.setLayoutParams(lp);
 
     if (header) {
         tv.setTypeface(null, Typeface.BOLD);
-        tv.setTextSize(14f);
         tv.setTextColor(Color.BLACK);
         tv.setBackgroundResource(R.drawable.table_header_border);
     } else {
-        tv.setTextSize(13f);
         tv.setTextColor(Color.parseColor("#424242"));
         tv.setBackgroundResource(R.drawable.table_cell_border);
     }
-
     row.addView(tv);
+}
+
+// 🔹 Measure text width for auto-fit
+private int measureTextWidth(String text, float textSize) {
+    TextView temp = new TextView(context);
+    temp.setText(text);
+    temp.setTextSize(textSize / context.getResources().getDisplayMetrics().scaledDensity);
+    temp.measure(0, 0);
+    return temp.getMeasuredWidth();
 }
 
 private int dpToPx(int dp) {
