@@ -619,7 +619,7 @@ private void showBcListTable() {
             Calendar cal = parseIsoDate(bc.startDateIso);
             if (cal != null) cal.add(Calendar.MONTH, i);
             String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
-            addCellFixedWidth(row, dateStr, false, "date");
+            addCellFixedWidth(row, dateStr, false, 100);
 
             // Amount
             double amount = bc.amounts.size() > i ? bc.amounts.get(i) : 0.0;
@@ -634,7 +634,7 @@ private void showBcListTable() {
                     receiveAmount = bc.receiveAmounts.get(i);
                 }
             }
-            addCellFixedWidth(row, "₹" + String.format("%.0f", receiveAmount), false, 140);
+            addCellFixedWidth(row, "₹" + String.format("%.0f", receiveAmount), false, 120);
 
             if (bc.afterTaken) {
                 addCellFixedWidth(row, "₹" + String.format("%.0f", bc.afterTakenAmount), false, 120);
