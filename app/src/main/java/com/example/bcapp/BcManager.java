@@ -602,12 +602,12 @@ private void showBcListTable() {
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
-        addCellFixedWidth(header, "Sr", true, "sr");  // Fixed width for short text
-        addCellFixedWidth(header, "Date", true, "date");
-        addCellFixedWidth(header, "Amount", true, "amount");
-        addCellFixedWidth(header, "Receive\nAmount", true, "receive");  // 
+        addCellFixedWidth(header, "Sr", true, 80);  // Fixed width for short text
+        addCellFixedWidth(header, "Date", true, 100);
+        addCellFixedWidth(header, "Amount", true, 120);
+        addCellFixedWidth(header, "Receive\nAmount", true, 120);  // 
         if (bc.afterTaken) {
-        addCellFixedWidth(header, "After\nTaken", true, "after");
+        addCellFixedWidth(header, "After\nTaken", true, 120);
         }
         table.addView(header);
 
@@ -1080,27 +1080,23 @@ private void addCell(TableRow row, String text, boolean header) {
     row.addView(tv);  
 }  
 
-private void addCellFixedWidth(TableRow row, String text, boolean header, String columnType) {
+private void addCellFixedWidth(TableRow row, String text, boolean header, int widthDp) {
     TextView tv = new TextView(context);
     tv.setText(text);
     tv.setGravity(Gravity.CENTER);
-    tv.setPadding(dpToPx(2), 12, dpToPx(2), 12);  // ← 2dp left/right padding
+    tv.setPadding(dpToPx(2), 12, dpToPx(2), 12);  // 2dp left/right
     
-    // 🔹 DATE COLUMN: Single line, smaller font, no wrap
-    if ("date".equals(columnType)) {
+    // Single line for dates (check text length)
+    if (text.length() > 8 || text.contains("/")) {  // Dates like "19/01/2026"
         tv.setSingleLine(true);
-        tv.setTextSize(header ? 13f : 12f);  // Smaller for dates
+        tv.setTextSize(header ? 13f : 12f);
     } else {
-        // Other columns: max 2 lines
         tv.setSingleLine(false);
         tv.setMaxLines(2);
-        tv.setEllipsize(null);
         tv.setTextSize(header ? 14f : 13f);
     }
     
-    // 🔹 AUTO WIDTH based on content
-    int widthPx = measureTextWidth(text, tv.getTextSize()) + dpToPx(8);  // Text + 4dp padding total
-    TableRow.LayoutParams lp = new TableRow.LayoutParams(widthPx, TableRow.LayoutParams.MATCH_PARENT);
+    TableRow.LayoutParams lp = new TableRow.LayoutParams(widthDp * 4, TableRow.LayoutParams.MATCH_PARENT);  // Scale width
     lp.setMargins(1, 1, 1, 1);
     tv.setLayoutParams(lp);
 
