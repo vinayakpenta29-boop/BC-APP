@@ -1088,6 +1088,7 @@ private void addCellFixedWidth(TableRow row, String text, boolean header, int wi
     tv.setSingleLine(false);
     tv.setMaxLines(2);
     tv.setEllipsize(null); 
+    tv.setMinHeight(dpToPx(44));
     
     if (header) {
         tv.setTypeface(null, Typeface.BOLD);
