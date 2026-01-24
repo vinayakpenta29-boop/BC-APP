@@ -602,12 +602,12 @@ private void showBcListTable() {
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
-        addCellFixedWidth(header, "Sr", true, 80);  // Fixed width for short text
+        addCellFixedWidth(header, "Sr", true, 100);  // Fixed width for short text
         addCellFixedWidth(header, "Date", true, 100);
-        addCellFixedWidth(header, "Amount", true, 120);
-        addCellFixedWidth(header, "Receive\nAmount", true, 120);  // 
+        addCellFixedWidth(header, "Amount", true, 100);
+        addCellFixedWidth(header, "Receive\nAmount", true, 100);  // 
         if (bc.afterTaken) {
-        addCellFixedWidth(header, "After\nTaken", true, 120);
+        addCellFixedWidth(header, "After\nTaken", true, 100);
         }
         table.addView(header);
 
@@ -634,10 +634,10 @@ private void showBcListTable() {
                     receiveAmount = bc.receiveAmounts.get(i);
                 }
             }
-            addCellFixedWidth(row, "₹" + String.format("%.0f", receiveAmount), false, 120);
+            addCellFixedWidth(row, "₹" + String.format("%.0f", receiveAmount), false, 100);
 
             if (bc.afterTaken) {
-                addCellFixedWidth(row, "₹" + String.format("%.0f", bc.afterTakenAmount), false, 120);
+                addCellFixedWidth(row, "₹" + String.format("%.0f", bc.afterTakenAmount), false, 100);
             }
             table.addView(row);
         }
