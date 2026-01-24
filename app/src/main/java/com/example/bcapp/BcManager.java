@@ -1090,22 +1090,18 @@ private void addCellFixedWidth(TableRow row, String text, boolean header, int wi
     tv.setEllipsize(null); 
     
     if (isHeader) {
-    tv.setTypeface(null, Typeface.BOLD);
-    tv.setBackgroundColor(Color.parseColor("#FFD54F"));
+        tv.setTypeface(null, Typeface.BOLD);
+        tv.setBackgroundColor(Color.parseColor("#FFD54F"));
+        tv.setBackgroundResource(R.drawable.table_header_border);
+    } else {
+        tv.setTextColor(Color.parseColor("#424242"));
+        tv.setBackgroundResource(R.drawable.table_cell_border);
     }
     
     TableRow.LayoutParams params =
         new TableRow.LayoutParams(dpToPx(widthDp), TableRow.LayoutParams.WRAP_CONTENT);
         tv.setLayoutParams(params);
 
-    if (header) {
-        tv.setTypeface(null, Typeface.BOLD);
-        tv.setTextColor(Color.BLACK);
-        tv.setBackgroundResource(R.drawable.table_header_border);
-    } else {
-        tv.setTextColor(Color.parseColor("#424242"));
-        tv.setBackgroundResource(R.drawable.table_cell_border);
-    }
     row.addView(tv);
 }
 
