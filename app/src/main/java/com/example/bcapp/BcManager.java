@@ -1089,7 +1089,7 @@ private void addCellFixedWidth(TableRow row, String text, boolean header, int wi
     tv.setMaxLines(2);
     tv.setEllipsize(null); 
     
-    if (isHeader) {
+    if (header) {
         tv.setTypeface(null, Typeface.BOLD);
         tv.setBackgroundColor(Color.parseColor("#FFD54F"));
         tv.setBackgroundResource(R.drawable.table_header_border);
