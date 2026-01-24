@@ -603,7 +603,7 @@ private void showBcListTable() {
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
         addCellFixedWidth(header, "Sr", true, 40);  // Fixed width for short text
-        addCellFixedWidth(header, "Date", true, 120);
+        addCellFixedWidth(header, "Date", true, 130);
         addCellFixedWidth(header, "Amount", true, 100);
         addCellFixedWidth(header, "Receive\nAmount", true, 100);  // 
         if (bc.afterTaken) {
@@ -1091,7 +1091,6 @@ private void addCellFixedWidth(TableRow row, String text, boolean header, int wi
     
     if (header) {
         tv.setTypeface(null, Typeface.BOLD);
-        tv.setBackgroundColor(Color.parseColor("#FFD54F"));
         tv.setBackgroundResource(R.drawable.table_header_border);
     } else {
         tv.setTextColor(Color.parseColor("#424242"));
