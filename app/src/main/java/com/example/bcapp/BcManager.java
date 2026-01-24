@@ -603,7 +603,7 @@ private void showBcListTable() {
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
         addCellFixedWidth(header, "Sr", true, 40);  // Fixed width for short text
-        addCellFixedWidth(header, "Date", true, 140);
+        addCellFixedWidth(header, "Date", true, 120);
         addCellFixedWidth(header, "Amount", true, 100);
         addCellFixedWidth(header, "Receive\nAmount", true, 100);  // 
         if (bc.afterTaken) {
@@ -1089,19 +1089,14 @@ private void addCellFixedWidth(TableRow row, String text, boolean header, int wi
     tv.setMaxLines(2);
     tv.setEllipsize(null); 
     
-    // Single line for dates (check text length)
-    if (text.length() > 8 || text.contains("/")) {  // Dates like "19/01/2026"
-        tv.setSingleLine(true);
-        tv.setTextSize(header ? 13f : 12f);
-    } else {
-        tv.setSingleLine(false);
-        tv.setMaxLines(2);
-        tv.setTextSize(header ? 14f : 13f);
+    if (isHeader) {
+    tv.setTypeface(null, Typeface.BOLD);
+    tv.setBackgroundColor(Color.parseColor("#FFD54F"));
     }
     
-    TableRow.LayoutParams lp = new TableRow.LayoutParams(widthDp * 4, TableRow.LayoutParams.MATCH_PARENT);  // Scale width
-    lp.setMargins(1, 1, 1, 1);
-    tv.setLayoutParams(lp);
+    TableRow.LayoutParams params =
+        new TableRow.LayoutParams(dpToPx(widthDp), TableRow.LayoutParams.WRAP_CONTENT);
+        tv.setLayoutParams(params);
 
     if (header) {
         tv.setTypeface(null, Typeface.BOLD);
