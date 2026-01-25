@@ -1083,7 +1083,11 @@ private void addCell(TableRow row, String text, boolean header) {
 private void addCellFixedWidth(TableRow row, String text, boolean header, int widthDp) {
     TextView tv = new TextView(context);
     tv.setText(text);
-    tv.setGravity(Gravity.CENTER);
+    if (header) {
+        tv.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+    } else {
+        tv.setGravity(Gravity.CENTER);
+    }
     tv.setPadding(8, 8, 8, 8);
     tv.setSingleLine(false);
     tv.setMaxLines(2);
