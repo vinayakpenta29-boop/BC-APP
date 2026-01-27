@@ -622,7 +622,16 @@ private void showBcListTable() {
             addCellFixedWidth(row, dateStr, false, 100);
 
             // Amount
-            double amount = bc.amounts.size() > i ? bc.amounts.get(i) : 0.0;
+            double amount = 0.0;
+            if (!bc.amounts.isEmpty()) {
+                if (bc.amounts.size() == 1) {
+                    // FIXED amount
+                    amount = bc.amounts.get(0);
+                } else if (bc.amounts.size() > i) {
+                    // RANDOM amount
+                    amount = bc.amounts.get(i);
+                }
+            }
             addCellFixedWidth(row, "₹" + String.format("%.0f", amount), false, 120);
 
             // Receive Amount
