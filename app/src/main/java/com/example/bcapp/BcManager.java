@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.provider.MediaStore;
@@ -235,6 +236,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 1, 0, "Create New BC");  
         popup.getMenu().add(0, 2, 1, "Show BC List");  
         popup.getMenu().add(0, 3, 2, "Paid BC");
+        popup.getMenu().add(0, 4, 3, "Summary");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -275,6 +277,10 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     }  else if (item.getItemId() == 3) {
         showPaidBcDialog();
         return true;
+    }
+    else if (item.getItemId() == 4) {
+    showSummaryDialog();
+    return true;
     }
     return false;  
 }  
@@ -1387,6 +1393,111 @@ private void showPaidBcDialog() {
 
     builder.setNegativeButton("Cancel", null);
     builder.show();
+}
+
+private void showSummaryDialog() {
+
+    ScrollView scrollView = new ScrollView(context);
+    LinearLayout root = new LinearLayout(context);
+    root.setOrientation(LinearLayout.VERTICAL);
+    root.setPadding(32, 32, 32, 32);
+    scrollView.addView(root);
+
+    double grandCollected = 0;
+    double grandPaid = 0;
+
+    for (Bc bc : bcData) {
+
+        double collected = 0;
+        double paid = 0;
+
+        // 🔹 TOTAL COLLECTED
+        for (int i = 0; i < bc.months; i++) {
+            double amount = 0;
+
+            if (!bc.amounts.isEmpty()) {
+                if (bc.amounts.size() == 1) amount = bc.amounts.get(0);
+                else if (bc.amounts.size() > i) amount = bc.amounts.get(i);
+            }
+
+            collected += amount * bc.members.size();
+        }
+
+        // 🔹 TOTAL PAID BC
+        for (double v : bc.paidBcAmount.values()) {
+            paid += v;
+        }
+
+        grandCollected += collected;
+        grandPaid += paid;
+
+        // 🔹 BC NAME
+        TextView title = new TextView(context);
+        title.setText(bc.name);
+        title.setTextSize(18f);
+        title.setTypeface(null, Typeface.BOLD);
+        title.setPadding(0, 24, 0, 12);
+        root.addView(title);
+
+        root.addView(createSummaryBox("Total Collected", collected, "#E3F2FD"));
+        root.addView(createSummaryBox("Total BC Paid", paid, "#E8F5E9"));
+
+        double balance = collected - paid;
+        root.addView(createSummaryBox("Balance", balance, "#FFF3E0"));
+    }
+
+    // 🔷 OVERALL TOTAL
+    TextView grandTitle = new TextView(context);
+    grandTitle.setText("Overall Summary");
+    grandTitle.setTextSize(20f);
+    grandTitle.setTypeface(null, Typeface.BOLD);
+    grandTitle.setPadding(0, 32, 0, 16);
+    root.addView(grandTitle);
+
+    root.addView(createSummaryBox("All BC Collected", grandCollected, "#BBDEFB"));
+    root.addView(createSummaryBox("All BC Paid", grandPaid, "#C8E6C9"));
+    root.addView(createSummaryBox("Final Balance", grandCollected - grandPaid, "#FFE0B2"));
+
+    new AlertDialog.Builder(context)
+            .setTitle("BC Summary")
+            .setView(scrollView)
+            .setPositiveButton("OK", null)
+            .show();
+}
+
+private View createSummaryBox(String label, double amount, String color) {
+
+    LinearLayout box = new LinearLayout(context);
+    box.setOrientation(LinearLayout.VERTICAL);
+    box.setPadding(24, 24, 24, 24);
+
+    GradientDrawable bg = new GradientDrawable();
+    bg.setColor(Color.parseColor(color));
+    bg.setCornerRadius(30);
+    box.setBackground(bg);
+
+    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+    );
+    params.setMargins(0, 12, 0, 12);
+    box.setLayoutParams(params);
+
+    TextView tvLabel = new TextView(context);
+    tvLabel.setText(label);
+    tvLabel.setTextSize(14f);
+    tvLabel.setTextColor(Color.DKGRAY);
+
+    TextView tvAmount = new TextView(context);
+    tvAmount.setText("₹ " + String.format("%,.0f", amount));
+    tvAmount.setTextSize(18f);
+    tvAmount.setTypeface(null, Typeface.BOLD);
+    tvAmount.setTextColor(Color.BLACK);
+
+    box.addView(tvLabel);
+    box.addView(tvAmount);
+
+    return box;
 }
 
 }
