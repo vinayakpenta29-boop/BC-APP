@@ -593,11 +593,6 @@ private void showBcListTable() {
 
     for (Bc bc : bcData) {
 
-        LinearLayout captureLayout = new LinearLayout(context);
-        captureLayout.setOrientation(LinearLayout.VERTICAL);
-        captureLayout.setPadding(0, 16, 0, 16);
-      
-        // 🔹 Title Row Layout (Name + Print Button)
         LinearLayout titleRow = new LinearLayout(context);
         titleRow.setOrientation(LinearLayout.HORIZONTAL);
         titleRow.setGravity(Gravity.CENTER_VERTICAL);
@@ -619,13 +614,13 @@ private void showBcListTable() {
         btnPrint.setPadding(20, 8, 20, 8);
         btnPrint.setBackgroundResource(R.drawable.bg_print_button); // we create this next
 
-        btnPrint.setOnClickListener(v -> captureAndSaveTable(captureLayout, bc.name));
-
         titleRow.addView(title);
         titleRow.addView(btnPrint);
 
-        // Add title row to capture layout
-        captureLayout.addView(titleRow);
+        tableContainer.addView(titleRow);
+
+        LinearLayout tableCaptureLayout = new LinearLayout(context);
+        tableCaptureLayout.setOrientation(LinearLayout.VERTICAL);
 
         // 🔹 HORIZONTAL SCROLL + TABLE
         HorizontalScrollView hScroll = new HorizontalScrollView(context);
@@ -687,9 +682,11 @@ private void showBcListTable() {
         }
 
         hScroll.addView(table);
-        captureLayout.addView(hScroll);
+        tableCaptureLayout.addView(hScroll);
 
-      tableContainer.addView(captureLayout);
+      tableContainer.addView(tableCaptureLayout);
+
+      btnPrint.setOnClickListener(v -> captureAndSaveTable(tableCaptureLayout, bc.name));
     }
 }
 
