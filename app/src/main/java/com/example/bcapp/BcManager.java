@@ -5,6 +5,13 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.provider.MediaStore;
+import android.content.ContentValues;
+import android.net.Uri;
+import android.os.Environment;
+import java.io.OutputStream;
 import androidx.core.content.ContextCompat;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -682,6 +689,32 @@ private void showBcListTable() {
 
         hScroll.addView(captureLayout);
         tableContainer.addView(hScroll);
+    }
+}
+
+private void captureAndSaveTable(View view, String bcName) {
+    try {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        String filename = "BC_" + bcName + ".png";
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/BCApp");
+
+        Uri uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        OutputStream out = context.getContentResolver().openOutputStream(uri);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+        out.close();
+
+        Toast.makeText(context, "Image Saved to Gallery", Toast.LENGTH_SHORT).show();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        Toast.makeText(context, "Failed to save image", Toast.LENGTH_SHORT).show();
     }
 }
 
