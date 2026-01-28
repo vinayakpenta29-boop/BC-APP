@@ -1,7 +1,6 @@
 package com.example.bcapp;
 
 import android.app.DatePickerDialog;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
