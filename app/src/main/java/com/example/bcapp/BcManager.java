@@ -585,12 +585,37 @@ private void showBcListTable() {
     tableContainer.removeAllViews();
 
     for (Bc bc : bcData) {
-        // Title
+        // 🔹 Title Row Layout (Name + Print Button)
+        LinearLayout titleRow = new LinearLayout(context);
+        titleRow.setOrientation(LinearLayout.HORIZONTAL);
+        titleRow.setGravity(Gravity.CENTER_VERTICAL);
+        titleRow.setPadding(0, 12, 0, 6);
+
+        // BC Name
         TextView title = new TextView(context);
         title.setText(bc.name);
         title.setTextSize(16f);
-        title.setPadding(0, 8, 0, 4);
-        tableContainer.addView(title);
+        title.setTypeface(null, Typeface.BOLD);
+        title.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+        // 🖨 Print Button
+        Button btnPrint = new Button(context);
+        btnPrint.setText("Print");
+        btnPrint.setTextSize(12f);
+        btnPrint.setTextColor(Color.WHITE);
+        btnPrint.setAllCaps(false);
+        btnPrint.setPadding(20, 8, 20, 8);
+        btnPrint.setBackgroundResource(R.drawable.bg_print_button); // we create this next
+
+        // Add click action later
+        titleRow.addView(title);
+        titleRow.addView(btnPrint);
+
+        btnPrint.setOnClickListener(v -> {
+            captureAndSaveTable(captureLayout, bc.name);
+        });
+
+        tableContainer.addView(titleRow);
 
         // 🔹 HORIZONTAL SCROLL + TABLE
         HorizontalScrollView hScroll = new HorizontalScrollView(context);
@@ -599,6 +624,10 @@ private void showBcListTable() {
         TableLayout table = new TableLayout(context);
         table.setStretchAllColumns(true);
         table.setShrinkAllColumns(true);
+
+        LinearLayout captureLayout = new LinearLayout(context);
+        captureLayout.setOrientation(LinearLayout.VERTICAL);
+        captureLayout.addView(table);
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
@@ -651,7 +680,7 @@ private void showBcListTable() {
             table.addView(row);
         }
 
-        hScroll.addView(table);
+        hScroll.addView(captureLayout);
         tableContainer.addView(hScroll);
     }
 }
