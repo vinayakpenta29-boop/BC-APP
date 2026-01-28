@@ -18,10 +18,20 @@
     <Spinner
         android:id="@+id/spinnerBC"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="52dp"
         android:background="@drawable/bg_input_field"
+        android:paddingStart="12dp"
         android:padding="12dp"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="14dp"/>
+
+    <Spinner
+        android:id="@+id/spinnerMember"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@drawable/bg_input_field"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_marginBottom="14dp"/>
 
     <EditText
         android:id="@+id/etPaidAmount"
