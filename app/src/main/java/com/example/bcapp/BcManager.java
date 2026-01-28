@@ -1325,36 +1325,36 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 private void showPaidBcDialog() {
 
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setTitle("Paid BC");
+    LayoutInflater inflater = LayoutInflater.from(context);
+    View view = inflater.inflate(R.layout.dialog_bc_paid, null);
+    builder.setView(view);
 
-    LinearLayout root = new LinearLayout(context);
-    root.setOrientation(LinearLayout.VERTICAL);
-    root.setPadding(32, 24, 32, 24);
+    AlertDialog dialog = builder.create();
+    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    dialog.show();
 
-    // BC Spinner
-    Spinner bcSpinner = new Spinner(context);
+    // Views from custom layout
+    Spinner bcSpinner = view.findViewById(R.id.spinnerBC);
+    Spinner memberSpinner = view.findViewById(R.id.spinnerMember);
+    EditText amountInput = view.findViewById(R.id.etPaidAmount);
+    TextView btnCancel = view.findViewById(R.id.btnCancel);
+    TextView btnOk = view.findViewById(R.id.btnOk);
+
+    // BC Spinner Adapter
     ArrayAdapter<String> bcSpinAdapter =
             new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
     bcSpinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     bcSpinAdapter.add("Select BC");
     for (Bc bc : bcData) bcSpinAdapter.add(bc.name);
     bcSpinner.setAdapter(bcSpinAdapter);
-    root.addView(bcSpinner);
 
-    // Member Spinner
-    Spinner memberSpinner = new Spinner(context);
+    // Member Adapter
     ArrayAdapter<String> memAdapter =
             new ArrayAdapter<>(context, android.R.layout.simple_spinner_item);
     memAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     memberSpinner.setAdapter(memAdapter);
-    root.addView(memberSpinner);
 
-    // Amount
-    EditText amountInput = new EditText(context);
-    amountInput.setHint("Enter Paid BC Amount");
-    amountInput.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-    root.addView(amountInput);
-
+    // BC selection → load members
     bcSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> p, View v, int pos, long id) {
@@ -1367,9 +1367,11 @@ private void showPaidBcDialog() {
         @Override public void onNothingSelected(AdapterView<?> p) {}
     });
 
-    builder.setView(root);
+    // Cancel button
+    btnCancel.setOnClickListener(v -> dialog.dismiss());
 
-    builder.setPositiveButton("OK", (d, w) -> {
+    // OK button (YOUR SAME LOGIC)
+    btnOk.setOnClickListener(v -> {
 
         int bcPos = bcSpinner.getSelectedItemPosition();
         int memPos = memberSpinner.getSelectedItemPosition();
@@ -1389,10 +1391,9 @@ private void showPaidBcDialog() {
 
         saveAllToRoom();
         renderMainTable(bc);
-    });
 
-    builder.setNegativeButton("Cancel", null);
-    builder.show();
+        dialog.dismiss();
+    });
 }
 
 private void showSummaryDialog() {
