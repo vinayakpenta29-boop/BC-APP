@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_rounded">
 
     <LinearLayout
         android:orientation="vertical"
-        android:padding="15dp"
+        android:padding="24dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <!-- Title -->
         <TextView
             android:text="Create New BC"
-            android:textSize="18sp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:layout_marginBottom="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -20,51 +24,64 @@
         <EditText
             android:id="@+id/editBcName"
             android:hint="BC Name"
-            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_field"
+            android:padding="14dp"
+            android:layout_marginBottom="12dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="50dp" />
 
         <!-- 2. Months -->
         <EditText
             android:id="@+id/editMonths"
             android:hint="Months"
             android:inputType="number"
-            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_field"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="50dp" />
 
         <!-- 3. Members Names -->
         <TextView
             android:text="Members Names"
-            android:layout_marginTop="8dp"
+            android:textStyle="bold"
+            android:textColor="#444"
+            android:layout_marginBottom="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <LinearLayout
             android:id="@+id/layoutMembers"
             android:orientation="vertical"
-            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_input_field"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- 🔹 NEW: Receive Amount Type -->
+        <!-- Receive Amount Type -->
         <TextView
             android:text="Receive Amount Type"
-            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:textColor="#444"
+            android:layout_marginBottom="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Spinner
             android:id="@+id/spinnerReceiveType"
-            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_input_field"
+            android:layout_marginBottom="12dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="50dp" />
 
-        <!-- 🔹 NEW: Receive Amount Inputs -->
+        <!-- Receive Amount Inputs -->
         <LinearLayout
             android:id="@+id/layoutReceiveAmounts"
             android:orientation="vertical"
-            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_input_field"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -74,73 +91,87 @@
             android:hint="Start Date"
             android:focusable="false"
             android:inputType="none"
-            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_field"
+            android:padding="14dp"
+            android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="50dp" />
 
-        <!-- 5. Amount Type -->
+        <!-- Amount Type -->
         <TextView
             android:text="Amount Type"
-            android:layout_marginTop="8dp"
+            android:textStyle="bold"
+            android:textColor="#444"
+            android:layout_marginBottom="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Spinner
             android:id="@+id/spinnerAmountType"
-            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_input_field"
+            android:layout_marginBottom="12dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="50dp" />
 
-        <!-- 6. Amount inputs -->
+        <!-- Amount inputs -->
         <LinearLayout
             android:id="@+id/layoutAmounts"
             android:orientation="vertical"
-            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_input_field"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- 7. After Taken BC -->
+        <!-- After Taken BC -->
         <LinearLayout
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
                 android:text="After Taken BC"
+                android:textStyle="bold"
+                android:textColor="#444"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <CheckBox
                 android:id="@+id/checkAfterTaken"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- 8. Buttons -->
+        <!-- Buttons -->
         <LinearLayout
             android:orientation="horizontal"
             android:gravity="end"
-            android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/buttonSaveBc"
-                android:text="Save BC"
+            <TextView
+                android:id="@+id/buttonCancelBc"
+                android:text="CLOSE"
+                android:textStyle="bold"
+                android:textColor="#009688"
+                android:padding="12dp"
+                android:layout_marginEnd="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <Button
-                android:id="@+id/buttonCancelBc"
-                android:text="Close"
-                android:layout_marginStart="8dp"
+            <TextView
+                android:id="@+id/buttonSaveBc"
+                android:text="SAVE BC"
+                android:textStyle="bold"
+                android:textColor="#009688"
+                android:padding="12dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
         </LinearLayout>
 
     </LinearLayout>
-
 </ScrollView>
