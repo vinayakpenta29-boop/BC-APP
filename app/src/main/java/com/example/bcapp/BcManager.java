@@ -643,7 +643,7 @@ private void showBcListTable() {
         TableRow header = new TableRow(context);
         addCellFixedWidth(header, "Sr", true, 40);  // Fixed width for short text
         addCellFixedWidth(header, "Date", true, 130);
-        addCellFixedWidth(header, "Amount", true, 100);
+        addCellFixedWidth(header, "installment\nAmount", true, 100);
         addCellFixedWidth(header, "Receive\nAmount", true, 100);  // 
         if (bc.afterTaken) {
         addCellFixedWidth(header, "After\nTaken", true, 100);
