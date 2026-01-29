@@ -240,6 +240,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 2, 1, "Show BC List");  
         popup.getMenu().add(0, 3, 2, "Paid BC");
         popup.getMenu().add(0, 4, 3, "Summary");
+        popup.getMenu().add(0, 5, 4, "Delete BC");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -283,6 +284,10 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     }
     else if (item.getItemId() == 4) {
     showSummaryDialog();
+    return true;
+    }
+    else if (item.getItemId() == 5) {
+    showDeleteBcDialog();
     return true;
     }
     return false;  
@@ -1502,6 +1507,66 @@ private View createSummaryBox(String label, double amount, String color) {
     box.addView(tvAmount);
 
     return box;
+}
+
+private void showDeleteBcDialog() {
+    if (bcData.isEmpty()) {
+        Toast.makeText(context, "No BC available to delete", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    builder.setTitle("Select BCs to Delete");
+
+    LinearLayout layout = new LinearLayout(context);
+    layout.setOrientation(LinearLayout.VERTICAL);
+    layout.setPadding(32, 16, 32, 16);
+
+    // Create a checkbox for each BC
+    List<CheckBox> checkBoxes = new ArrayList<>();
+    for (Bc bc : bcData) {
+        CheckBox cb = new CheckBox(context);
+        cb.setText(bc.name);
+        layout.addView(cb);
+        checkBoxes.add(cb);
+    }
+
+    builder.setView(layout);
+    builder.setPositiveButton("Delete", (dialog, which) -> {
+        List<Bc> toRemove = new ArrayList<>();
+        for (int i = 0; i < checkBoxes.size(); i++) {
+            if (checkBoxes.get(i).isChecked()) {
+                toRemove.add(bcData.get(i));
+            }
+        }
+
+        if (toRemove.isEmpty()) {
+            Toast.makeText(context, "No BC selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Remove selected BCs from list
+        bcData.removeAll(toRemove);
+
+        // Update Room database: delete all and re-insert remaining
+        saveAllToRoom();
+
+        // Refresh UI
+        bcAdapter.clear();
+        bcAdapter.add("Select BC");
+        for (Bc bc : bcData) {
+            bcAdapter.add(bc.name);
+        }
+        bcAdapter.notifyDataSetChanged();
+        spinnerBc.setSelection(0);
+
+        tableContainer.removeAllViews(); // Clear tables
+
+        Toast.makeText(context, "Selected BC(s) deleted", Toast.LENGTH_SHORT).show();
+    });
+
+    builder.setNegativeButton("Cancel", null);
+    builder.show();
 }
 
 }
