@@ -371,8 +371,8 @@ private void openCreateBcDialog() {
     Spinner spinnerAmountType = dialogView.findViewById(R.id.spinnerAmountType);
     LinearLayout layoutAmounts = dialogView.findViewById(R.id.layoutAmounts);
     CheckBox checkAfterTaken = dialogView.findViewById(R.id.checkAfterTaken);
-    Button buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);
-    Button buttonCancelBc = dialogView.findViewById(R.id.buttonCancelBc);
+    TextView buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);
+    TextView buttonCancelBc = dialogView.findViewById(R.id.buttonCancelBc);
 
     
     /* ---------- AFTER TAKEN ---------- */
