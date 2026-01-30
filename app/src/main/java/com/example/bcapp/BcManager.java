@@ -241,6 +241,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 3, 2, "Paid BC");
         popup.getMenu().add(0, 4, 3, "Summary");
         popup.getMenu().add(0, 5, 4, "Delete BC");
+        popup.getMenu().add(0, 6, 5, "Delete A Member");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -288,6 +289,10 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     }
     else if (item.getItemId() == 5) {
     showDeleteBcDialog();
+    return true;
+    }
+    else if (item.getItemId() == 6) {
+    showDeleteMemberDialog();
     return true;
     }
     return false;  
@@ -1563,6 +1568,91 @@ private void showDeleteBcDialog() {
         tableContainer.removeAllViews(); // Clear tables
 
         Toast.makeText(context, "Selected BC(s) deleted", Toast.LENGTH_SHORT).show();
+    });
+
+    builder.setNegativeButton("Cancel", null);
+    builder.show();
+}
+
+private void showDeleteMemberDialog() {
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    builder.setTitle("Delete Members");
+
+    LinearLayout root = new LinearLayout(context);
+    root.setOrientation(LinearLayout.VERTICAL);
+    root.setPadding(40, 30, 40, 10);
+
+    // 🔹 BC Selection Spinner
+    Spinner bcSpinner = new Spinner(context);
+    ArrayAdapter<String> bcAdapter = new ArrayAdapter<>(context,
+            android.R.layout.simple_spinner_item);
+    bcAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    bcAdapter.add("Select BC");
+    for (Bc bc : bcData) bcAdapter.add(bc.name);
+    bcSpinner.setAdapter(bcAdapter);
+    root.addView(bcSpinner);
+
+    // 🔹 Members Multi Select Layout
+    LinearLayout membersLayout = new LinearLayout(context);
+    membersLayout.setOrientation(LinearLayout.VERTICAL);
+    membersLayout.setPadding(0, 20, 0, 10);
+    root.addView(membersLayout);
+
+    List<CheckBox> memberCheckBoxes = new ArrayList<>();
+
+    bcSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            membersLayout.removeAllViews();
+            memberCheckBoxes.clear();
+
+            if (pos > 0) {
+                Bc selectedBc = bcData.get(pos - 1);
+
+                for (String member : selectedBc.members) {
+                    CheckBox cb = new CheckBox(context);
+                    cb.setText(member);
+                    membersLayout.addView(cb);
+                    memberCheckBoxes.add(cb);
+                }
+            }
+        }
+
+        @Override public void onNothingSelected(AdapterView<?> parent) {}
+    });
+
+    builder.setView(root);
+
+    builder.setPositiveButton("Delete", (d, w) -> {
+
+        int bcPos = bcSpinner.getSelectedItemPosition();
+        if (bcPos <= 0) {
+            Toast.makeText(context, "Select BC", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Bc bc = bcData.get(bcPos - 1);
+
+        for (CheckBox cb : memberCheckBoxes) {
+            if (cb.isChecked()) {
+                String memberName = cb.getText().toString();
+
+                // 🔥 REMOVE MEMBER
+                bc.members.remove(memberName);
+
+                // 🔥 REMOVE THEIR PAYMENT RECORDS
+                bc.paid.remove(memberName);
+                bc.paidAmount.remove(memberName);
+                bc.paidBcAmount.remove(memberName);
+                bc.payments.remove(memberName);
+            }
+        }
+
+        saveAllToRoom();       // persist changes
+        showBcListTable();     // refresh BC tables
+        showSummaryDialog();   // refresh summary if open
+        Toast.makeText(context, "Members Deleted", Toast.LENGTH_SHORT).show();
     });
 
     builder.setNegativeButton("Cancel", null);
