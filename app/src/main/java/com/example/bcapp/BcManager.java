@@ -25,6 +25,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.widget.ImageButton;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -92,8 +93,8 @@ private final Context context;
 
 // UI  
 private final TextView menuButton;  
-private final Button btnUndo;
-private final Button btnRedo;
+private final ImageButton btnUndo;
+private final ImageButton btnRedo;
 private final Spinner spinnerBc, spinnerMember;  
 private final EditText editPayDate, editPayAmount;  
 private final Button buttonAdd;  
@@ -120,7 +121,8 @@ public BcManager(AppCompatActivity activity,
                  EditText editPayAmount,  
                  Button buttonAdd,  
                  LinearLayout tableContainer,  
-                 Button btnUndo, Button btnRedo,
+                 ImageButton btnUndo,
+                 ImageButton btnRedo,
                  List<Bc> bcData,  
                  SimpleDateFormat isoFormat,  
                  SimpleDateFormat displayFormat) {  
