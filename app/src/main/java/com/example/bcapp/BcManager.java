@@ -71,12 +71,29 @@ private static class DeletedMemberBackup {
 
 // Stores last deleted members
 private final List<DeletedMemberBackup> deletedMembersBackup = new ArrayList<>();
+
+// 🔥 UNDO / REDO SYSTEM (MAX 10 HISTORY)
+private static class HistoryAction {
+    Runnable undoAction;
+    Runnable redoAction;
+
+    HistoryAction(Runnable undoAction, Runnable redoAction) {
+        this.undoAction = undoAction;
+        this.redoAction = redoAction;
+    }
+}
+
+private final List<HistoryAction> undoStack = new ArrayList<>();
+private final List<HistoryAction> redoStack = new ArrayList<>();
+private static final int MAX_HISTORY = 10;
   
 private final AppCompatActivity activity;  
 private final Context context;  
 
 // UI  
 private final TextView menuButton;  
+private final Button btnUndo;
+private final Button btnRedo;
 private final Spinner spinnerBc, spinnerMember;  
 private final EditText editPayDate, editPayAmount;  
 private final Button buttonAdd;  
@@ -103,6 +120,7 @@ public BcManager(AppCompatActivity activity,
                  EditText editPayAmount,  
                  Button buttonAdd,  
                  LinearLayout tableContainer,  
+                 Button btnUndo, Button btnRedo,
                  List<Bc> bcData,  
                  SimpleDateFormat isoFormat,  
                  SimpleDateFormat displayFormat) {  
@@ -116,6 +134,8 @@ public BcManager(AppCompatActivity activity,
     this.editPayAmount = editPayAmount;  
     this.buttonAdd = buttonAdd;  
     this.tableContainer = tableContainer;  
+    this.btnUndo = btnUndo;
+    this.btnRedo = btnRedo;
     this.bcData = bcData;  
     this.isoFormat = isoFormat;  
     this.displayFormat = displayFormat;  
@@ -140,6 +160,10 @@ public void init() {
     spinnerMember.setAdapter(memberAdapter);  
     spinnerMember.setSelection(0);  
 
+    btnUndo.setOnClickListener(v -> undoLastAction());
+    btnRedo.setOnClickListener(v -> redoLastAction());
+    updateUndoRedoButtons();
+
     setupMenu();  
     setupDatePickers();  
     setupListeners();  
@@ -147,6 +171,11 @@ public void init() {
     // Load saved data from Room  
     loadFromRoomAndRefreshUi();  
 }  
+
+private void updateUndoRedoButtons() {
+    if (btnUndo != null) btnUndo.setEnabled(!undoStack.isEmpty());
+    if (btnRedo != null) btnRedo.setEnabled(!redoStack.isEmpty());
+}
 
 /* -------------------- ROOM: load/save -------------------- */  
 
@@ -1648,8 +1677,6 @@ private void showDeleteMemberDialog() {
 
         Bc bc = bcData.get(bcPos - 1);
 
-        deletedMembersBackup.clear(); // 🔹 Clear old undo history
-
         for (CheckBox cb : memberCheckBoxes) {
             if (cb.isChecked()) {
 
@@ -1700,47 +1727,84 @@ private void showDeleteMemberDialog() {
             }
         }
 
+        List<DeletedMemberBackup> actionBackup = new ArrayList<>(deletedMembersBackup);
+
+        pushToHistory(
+            // 🔙 UNDO
+            () -> {
+                for (DeletedMemberBackup backup : actionBackup) {
+                    Bc bc1 = backup.bc;
+                    String member = backup.memberName;
+
+                    if (!bc1.members.contains(member)) bc1.members.add(member);
+                    bc1.paid.putAll(backup.paidMapBackup);
+                    bc1.paidAmount.putAll(backup.paidAmountBackup);
+                    bc1.paidBcAmount.putAll(backup.paidBcAmountBackup);
+                    bc1.payments.addAll(backup.paymentEntriesBackup);
+                }
+            },
+            // 🔁 REDO
+            () -> {
+                for (DeletedMemberBackup backup : actionBackup) {
+                    Bc bc1 = backup.bc;
+                    String member = backup.memberName;
+
+                    bc1.members.remove(member);
+                    bc1.paid.keySet().removeIf(k -> k.startsWith(member + "_"));
+                    bc1.paidAmount.keySet().removeIf(k -> k.startsWith(member + "_"));
+                    bc1.paidBcAmount.remove(member);
+                    bc1.payments.removeIf(pe -> pe.member.equals(member));
+                }
+            }
+        );
+
         saveAllToRoom();       // persist changes
         showBcListTable();     // refresh BC tables
         showSummaryDialog();   // refresh summary
 
         // 🔥 SHOW UNDO SNACKBAR
-        Snackbar.make(tableContainer, "Member(s) deleted", Snackbar.LENGTH_LONG)
-                .setAction("UNDO", v -> undoDeleteMembers())
-                .show();
+        Snackbar.make(tableContainer, "Member(s) deleted", Snackbar.LENGTH_LONG).show();
     });
 
     builder.setNegativeButton("Cancel", null);
     builder.show();
 }
 
-private void undoDeleteMembers() {
+private void pushToHistory(Runnable undo, Runnable redo) {
+    if (undoStack.size() == MAX_HISTORY) {
+        undoStack.remove(0);
+    }
+    undoStack.add(new HistoryAction(undo, redo));
+    redoStack.clear(); // once new action happens, redo history resets
+    updateUndoRedoButtons();
+}
 
-    for (DeletedMemberBackup backup : deletedMembersBackup) {
-
-        Bc bc = backup.bc;
-        String member = backup.memberName;
-
-        // Restore member name
-        if (!bc.members.contains(member)) {
-            bc.members.add(member);
-        }
-
-        // Restore paid maps
-        bc.paid.putAll(backup.paidMapBackup);
-        bc.paidAmount.putAll(backup.paidAmountBackup);
-
-        // Restore BC paid
-        bc.paidBcAmount.putAll(backup.paidBcAmountBackup);
-
-        // Restore payment entries
-        bc.payments.addAll(backup.paymentEntriesBackup);
+public void undoLastAction() {
+    if (undoStack.isEmpty()) {
+        Toast.makeText(context, "Nothing to undo", Toast.LENGTH_SHORT).show();
+        return;
     }
 
+    HistoryAction action = undoStack.remove(undoStack.size() - 1);
+    action.undoAction.run();
+    redoStack.add(action);
     saveAllToRoom();
     showBcListTable();
+    updateUndoRedoButtons();
+}
 
-    Toast.makeText(context, "Deleted members restored", Toast.LENGTH_SHORT).show();
+public void redoLastAction() {
+    if (redoStack.isEmpty()) {
+        Toast.makeText(context, "Nothing to redo", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    HistoryAction action = redoStack.remove(redoStack.size() - 1);
+    action.redoAction.run();
+    undoStack.add(action);
+    saveAllToRoom();
+    showBcListTable();
+    updateUndoRedoButtons();
 }
 
 }
