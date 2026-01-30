@@ -39,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.HorizontalScrollView;  // ← ADD THIS LINE
 import android.widget.ScrollView;
+import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -58,6 +59,19 @@ import android.util.Log;
 
 public class BcManager {
 
+// 🔹 Backup for Undo Delete Member
+private static class DeletedMemberBackup {
+    Bc bc;
+    String memberName;
+    HashMap<String, Boolean> paidMapBackup = new HashMap<>();
+    HashMap<String, Double> paidAmountBackup = new HashMap<>();
+    HashMap<String, Double> paidBcAmountBackup = new HashMap<>();
+    List<PaymentEntry> paymentEntriesBackup = new ArrayList<>();
+}
+
+// Stores last deleted members
+private final List<DeletedMemberBackup> deletedMembersBackup = new ArrayList<>();
+  
 private final AppCompatActivity activity;  
 private final Context context;  
 
@@ -1634,29 +1648,99 @@ private void showDeleteMemberDialog() {
 
         Bc bc = bcData.get(bcPos - 1);
 
+        deletedMembersBackup.clear(); // 🔹 Clear old undo history
+
         for (CheckBox cb : memberCheckBoxes) {
             if (cb.isChecked()) {
+
                 String memberName = cb.getText().toString();
 
-                // 🔥 REMOVE MEMBER
+                // ================= BACKUP DATA FOR UNDO =================
+                DeletedMemberBackup backup = new DeletedMemberBackup();
+                backup.bc = bc;
+                backup.memberName = memberName;
+
+                // Backup paid installment map
+                for (String key : bc.paid.keySet()) {
+                    if (key.startsWith(memberName + "_")) {
+                        backup.paidMapBackup.put(key, bc.paid.get(key));
+                    }
+                }
+
+                // Backup paid installment amounts
+                for (String key : bc.paidAmount.keySet()) {
+                    if (key.startsWith(memberName + "_")) {
+                        backup.paidAmountBackup.put(key, bc.paidAmount.get(key));
+                    }
+                }
+
+                // Backup BC paid amount
+                if (bc.paidBcAmount.containsKey(memberName)) {
+                    backup.paidBcAmountBackup.put(memberName, bc.paidBcAmount.get(memberName));
+                }
+
+                // Backup payment history entries
+                for (PaymentEntry pe : bc.payments) {
+                    if (pe.member.equals(memberName)) {
+                        backup.paymentEntriesBackup.add(pe);
+                    }
+                }
+
+                deletedMembersBackup.add(backup);
+
+                // ================= DELETE MEMBER DATA =================
+
                 bc.members.remove(memberName);
 
-                // 🔥 REMOVE THEIR PAYMENT RECORDS
-                bc.paid.remove(memberName);
-                bc.paidAmount.remove(memberName);
+                bc.paid.keySet().removeIf(k -> k.startsWith(memberName + "_"));
+                bc.paidAmount.keySet().removeIf(k -> k.startsWith(memberName + "_"));
                 bc.paidBcAmount.remove(memberName);
-                bc.payments.remove(memberName);
+
+                bc.payments.removeIf(pe -> pe.member.equals(memberName));
             }
         }
 
         saveAllToRoom();       // persist changes
         showBcListTable();     // refresh BC tables
-        showSummaryDialog();   // refresh summary if open
-        Toast.makeText(context, "Members Deleted", Toast.LENGTH_SHORT).show();
+        showSummaryDialog();   // refresh summary
+
+        // 🔥 SHOW UNDO SNACKBAR
+        Snackbar.make(tableContainer, "Member(s) deleted", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", v -> undoDeleteMembers())
+                .show();
     });
 
     builder.setNegativeButton("Cancel", null);
     builder.show();
+}
+
+private void undoDeleteMembers() {
+
+    for (DeletedMemberBackup backup : deletedMembersBackup) {
+
+        Bc bc = backup.bc;
+        String member = backup.memberName;
+
+        // Restore member name
+        if (!bc.members.contains(member)) {
+            bc.members.add(member);
+        }
+
+        // Restore paid maps
+        bc.paid.putAll(backup.paidMapBackup);
+        bc.paidAmount.putAll(backup.paidAmountBackup);
+
+        // Restore BC paid
+        bc.paidBcAmount.putAll(backup.paidBcAmountBackup);
+
+        // Restore payment entries
+        bc.payments.addAll(backup.paymentEntriesBackup);
+    }
+
+    saveAllToRoom();
+    showBcListTable();
+
+    Toast.makeText(context, "Deleted members restored", Toast.LENGTH_SHORT).show();
 }
 
 }
