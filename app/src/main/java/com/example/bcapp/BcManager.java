@@ -1760,7 +1760,6 @@ private void showDeleteMemberDialog() {
 
         saveAllToRoom();       // persist changes
         showBcListTable();     // refresh BC tables
-        showSummaryDialog();   // refresh summary
 
         // 🔥 SHOW UNDO SNACKBAR
         Snackbar.make(tableContainer, "Member(s) deleted", Snackbar.LENGTH_LONG).show();
