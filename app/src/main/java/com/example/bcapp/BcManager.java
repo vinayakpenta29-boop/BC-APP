@@ -1215,6 +1215,8 @@ private void addCell(TableRow row, String text, boolean header) {
     tv.setPadding(16, 12, 16, 12);  
     tv.setGravity(Gravity.CENTER);  
     tv.setMinHeight(64);  
+    tv.setTypeface(null, Typeface.BOLD);
+    tv.setTextColor(Color.BLACK);
 
     if (header) {  
         tv.setTypeface(null, Typeface.BOLD);  
@@ -1222,8 +1224,15 @@ private void addCell(TableRow row, String text, boolean header) {
         tv.setTextColor(Color.BLACK);  
         tv.setBackgroundResource(R.drawable.table_header_border);  // ← NEW HEADER  
     } else {  
-        tv.setTextSize(14f);  
-        if ("✅".equals(text)) {  
+        tv.setTextSize(14f); 
+        boolean isSrNumber = text.matches("\\d+");                  // 1, 2, 3...
+        boolean isDate = text.matches("\\d{2}/\\d{2}/\\d{4}");      // dd/MM/yyyy
+        boolean isAmount = text.matches("\\d+(\\.\\d+)?");          // 100 or 100.50
+
+        if (isSrNumber || isDate || isAmount) {
+            tv.setTypeface(null, Typeface.BOLD);
+            tv.setTextColor(Color.BLACK);
+        } else if ("✅".equals(text)) {  
         tv.setTextColor(Color.parseColor("#2E7D32"));  
         } else {  
         tv.setTextColor(Color.parseColor("#424242"));  
