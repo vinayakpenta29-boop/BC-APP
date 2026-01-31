@@ -1094,46 +1094,71 @@ private void markInstallment() {
     if (bc.payments == null) bc.payments = new ArrayList<>();
     if (bc.paymentEntries == null) bc.paymentEntries = new HashMap<>();
 
-    // ✅ ADD PAYMENT ENTRY
+    // 🔹 BACKUP OLD VALUES BEFORE CHANGE
+    double previousPaid = bc.paidAmount.getOrDefault(key, 0.0);
+    boolean previousPaidStatus = bc.paid.getOrDefault(key, false);
+
+    double newPaid = previousPaid + enteredAmount;
+
     PaymentEntry pe = new PaymentEntry(member, monthIndex, enteredAmount, dateVal);
+
+    // 🔥 APPLY PAYMENT
     bc.payments.add(pe);
+    rebuildPaymentEntries(bc);
 
-    // ✅ IMMEDIATE REBUILD (FIX FOR POPUP NOT UPDATING)
-    bc.paymentEntries.clear();
-    for (PaymentEntry p : bc.payments) {
-        String k = bc.getPaidKey(p.member, p.monthIndex);
-        List<PaymentEntry> list = bc.paymentEntries.get(k);
-        if (list == null) {
-            list = new ArrayList<>();
-            bc.paymentEntries.put(k, list);
-        }
-        list.add(p);
-    }
-
-    // 🔹 Accumulate paid amount (PARTIAL SUPPORT)
-    double currentPaid = bc.paidAmount.containsKey(key)
-            ? bc.paidAmount.get(key)
-            : 0.0;
-
-    double newPaid = currentPaid + enteredAmount;
     bc.paidAmount.put(key, newPaid);
 
-    // 🔹 Expected amount for that month
     double expectedAmount =
             bc.amounts.size() > monthIndex
                     ? bc.amounts.get(monthIndex)
                     : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
 
-    // 🔹 Mark paid only if fully completed
     bc.paid.put(key, newPaid >= expectedAmount);
 
-    // 💾 Save + UI refresh
+    // 🧠 UNDO / REDO SUPPORT
+    pushToUndoStack(
+        () -> { // UNDO
+            bc.payments.remove(pe);
+            rebuildPaymentEntries(bc);
+
+            if (previousPaid == 0.0)
+                bc.paidAmount.remove(key);
+            else
+                bc.paidAmount.put(key, previousPaid);
+
+            bc.paid.put(key, previousPaidStatus);
+
+            saveAllToRoom();
+            renderMainTable(bc);
+        },
+        () -> { // REDO
+            bc.payments.add(pe);
+            rebuildPaymentEntries(bc);
+
+            bc.paidAmount.put(key, newPaid);
+            bc.paid.put(key, newPaid >= expectedAmount);
+
+            saveAllToRoom();
+            renderMainTable(bc);
+        }
+    );
+
     saveAllToRoom();
     activity.runOnUiThread(() -> renderMainTable(bc));
 
-    // 🧹 Clear inputs
     editPayDate.setText("");
     editPayAmount.setText("");
+}
+
+private void rebuildPaymentEntries(Bc bc) {
+    bc.paymentEntries.clear();
+    for (PaymentEntry p : bc.payments) {
+        String k = bc.getPaidKey(p.member, p.monthIndex);
+        List<PaymentEntry> list = bc.paymentEntries.get(k);
+        if (list == null) list = new ArrayList<>();
+        list.add(p);
+        bc.paymentEntries.put(k, list);
+    }
 }
 
 // 🔴 Highlight unpaid member name until due date
@@ -1445,10 +1470,26 @@ private void showPaidBcDialog() {
         Bc bc = bcData.get(bcPos - 1);
         String member = bc.members.get(memPos);
 
-        bc.paidBcAmount.put(member, amt);
+        Double oldAmount = bc.paidBcAmount.get(member);
 
+        bc.paidBcAmount.put(member, amt);
         saveAllToRoom();
         renderMainTable(bc);
+
+        pushToUndoStack(
+            () -> { // UNDO
+                if (oldAmount == null) bc.paidBcAmount.remove(member);
+                else bc.paidBcAmount.put(member, oldAmount);
+
+                saveAllToRoom();
+                renderMainTable(bc);
+            },
+            () -> { // REDO
+                bc.paidBcAmount.put(member, amt);
+                saveAllToRoom();
+                renderMainTable(bc);
+            }
+        );
 
         dialog.dismiss();
     });
@@ -1583,10 +1624,14 @@ private void showDeleteBcDialog() {
 
     builder.setView(layout);
     builder.setPositiveButton("Delete", (dialog, which) -> {
+
         List<Bc> toRemove = new ArrayList<>();
+        List<Integer> removedIndexes = new ArrayList<>();
+
         for (int i = 0; i < checkBoxes.size(); i++) {
             if (checkBoxes.get(i).isChecked()) {
                 toRemove.add(bcData.get(i));
+                removedIndexes.add(i);
             }
         }
 
@@ -1595,10 +1640,12 @@ private void showDeleteBcDialog() {
             return;
         }
 
-        // Remove selected BCs from list
-        bcData.removeAll(toRemove);
+        // 🔹 Backup for Undo
+        List<Bc> backupList = new ArrayList<>(toRemove);
+        List<Integer> backupIndexes = new ArrayList<>(removedIndexes);
 
-        // Update Room database: delete all and re-insert remaining
+        // 🔥 DELETE SELECTED BCs
+        bcData.removeAll(toRemove);
         saveAllToRoom();
 
         // Refresh UI
@@ -1609,10 +1656,39 @@ private void showDeleteBcDialog() {
         }
         bcAdapter.notifyDataSetChanged();
         spinnerBc.setSelection(0);
-
-        tableContainer.removeAllViews(); // Clear tables
+        tableContainer.removeAllViews();
 
         Toast.makeText(context, "Selected BC(s) deleted", Toast.LENGTH_SHORT).show();
+
+        // 🧠 ADD TO UNDO STACK
+        pushToUndoStack(
+            () -> { // UNDO
+                for (int i = 0; i < backupList.size(); i++) {
+                    int index = Math.min(backupIndexes.get(i), bcData.size());
+                    bcData.add(index, backupList.get(i));
+                }
+
+                saveAllToRoom();
+
+                bcAdapter.clear();
+                bcAdapter.add("Select BC");
+                for (Bc bc : bcData) bcAdapter.add(bc.name);
+                bcAdapter.notifyDataSetChanged();
+                spinnerBc.setSelection(0);
+            },
+            () -> { // REDO
+                bcData.removeAll(backupList);
+                saveAllToRoom();
+
+                bcAdapter.clear();
+                bcAdapter.add("Select BC");
+                for (Bc bc : bcData) bcAdapter.add(bc.name);
+                bcAdapter.notifyDataSetChanged();
+                spinnerBc.setSelection(0);
+                tableContainer.removeAllViews();
+            }
+        );
+
     });
 
     builder.setNegativeButton("Cancel", null);
@@ -1808,4 +1884,30 @@ public void redoLastAction() {
     updateUndoRedoButtons();
 }
 
+private void pushToUndoStack(Runnable undo, Runnable redo) {
+    if (undoStack.size() >= MAX_HISTORY) {
+        undoStack.remove(0);
+    }
+    undoStack.add(new HistoryAction(undo, redo));
+    redoStack.clear();
+    updateUndoRedoButtons();
+}
+
+public void undoLastAction() {
+    if (undoStack.isEmpty()) return;
+
+    HistoryAction action = undoStack.remove(undoStack.size() - 1);
+    action.undoAction.run();
+    redoStack.add(action);
+    updateUndoRedoButtons();
+}
+
+public void redoLastAction() {
+    if (redoStack.isEmpty()) return;
+
+    HistoryAction action = redoStack.remove(redoStack.size() - 1);
+    action.redoAction.run();
+    undoStack.add(action);
+    updateUndoRedoButtons();
+}
 }
