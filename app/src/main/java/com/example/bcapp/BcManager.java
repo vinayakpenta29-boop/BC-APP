@@ -667,6 +667,7 @@ private void showBcListTable() {
         title.setText(bc.name);
         title.setTextSize(16f);
         title.setTypeface(null, Typeface.BOLD);
+        title.setTextColor(Color.BLACK);
         title.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
         // 🖨 Print Button
@@ -787,6 +788,7 @@ private void renderMainTable(Bc bc) {
     TextView title = new TextView(context);
     title.setText("Main BC Table");
     title.setTextSize(16f);
+    title.setTypeface(null, Typeface.BOLD);
     title.setPadding(0, 8, 0, 4);
     tableContainer.addView(title);
 
@@ -854,7 +856,7 @@ private void renderMainTable(Bc bc) {
         // Apply highlight only for valid month
         // default
         memberCell.setTextColor(Color.parseColor("#424242"));
-        memberCell.setTypeface(null, Typeface.NORMAL);
+        memberCell.setTypeface(null, Typeface.BOLD);
         memberCell.setBackgroundResource(R.drawable.table_cell_border);
 
         // Apply highlight only for valid month
@@ -1027,6 +1029,8 @@ private void renderMainTable(Bc bc) {
         paidBcCell.setText(paidBc != null ? "₹" + String.format("%.0f", paidBc) : "-");
         paidBcCell.setGravity(Gravity.CENTER);
         paidBcCell.setTextSize(14f);
+        paidBcCell.setTypeface(null, Typeface.BOLD);
+        paidBcCell.setTextColor(Color.BLACK);
         paidBcCell.setPadding(16, 12, 16, 12);
         paidBcCell.setMinHeight(64);
         paidBcCell.setBackgroundResource(R.drawable.table_cell_border);
