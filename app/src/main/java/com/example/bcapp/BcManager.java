@@ -1883,31 +1883,4 @@ public void redoLastAction() {
     showBcListTable();
     updateUndoRedoButtons();
 }
-
-private void pushToUndoStack(Runnable undo, Runnable redo) {
-    if (undoStack.size() >= MAX_HISTORY) {
-        undoStack.remove(0);
-    }
-    undoStack.add(new HistoryAction(undo, redo));
-    redoStack.clear();
-    updateUndoRedoButtons();
-}
-
-public void undoLastAction() {
-    if (undoStack.isEmpty()) return;
-
-    HistoryAction action = undoStack.remove(undoStack.size() - 1);
-    action.undoAction.run();
-    redoStack.add(action);
-    updateUndoRedoButtons();
-}
-
-public void redoLastAction() {
-    if (redoStack.isEmpty()) return;
-
-    HistoryAction action = redoStack.remove(redoStack.size() - 1);
-    action.redoAction.run();
-    undoStack.add(action);
-    updateUndoRedoButtons();
-}
 }
