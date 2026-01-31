@@ -1258,6 +1258,7 @@ private void addCellFixedWidth(TableRow row, String text, boolean header, int wi
     
     if (header) {
         tv.setTypeface(null, Typeface.BOLD);
+        tv.setTextColor(Color.BLACK);
         tv.setBackgroundResource(R.drawable.table_header_border);
     } else {
         tv.setTextColor(Color.parseColor("#424242"));
