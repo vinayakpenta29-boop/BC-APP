@@ -1254,6 +1254,8 @@ private void addCell(TableRow row, String text, boolean header) {
 private void addCellFixedWidth(TableRow row, String text, boolean header, int widthDp) {
     TextView tv = new TextView(context);
     tv.setText(text);
+    tv.setTypeface(null, Typeface.BOLD);
+    tv.setTextColor(Color.BLACK);
     if (header) {
         tv.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
     } else {
