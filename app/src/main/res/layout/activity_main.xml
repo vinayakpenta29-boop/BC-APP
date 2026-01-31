@@ -19,39 +19,45 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- LEFT SIDE — Undo & Redo -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/btnUndo"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/bg_input_curved"
-                    android:src="@drawable/ic_undo"
-                    android:padding="10dp"
-                    android:contentDescription="Undo"
-                    android:tint="#333" />
-
-                <ImageButton
-                    android:id="@+id/btnRedo"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:background="@drawable/bg_input_curved"
-                    android:src="@drawable/ic_redo"
-                    android:padding="10dp"
-                    android:contentDescription="Redo"
-                    android:tint="#333" />
-            </LinearLayout>
-
-            <!-- Spacer pushes menu to right -->
+            <!-- Spacer pushes everything to right -->
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
+
+            <!-- BIG CURVED CONTAINER (Undo + Redo) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_big_curve"
+                android:padding="4dp"
+                android:layout_marginEnd="6dp">
+
+                <!-- UNDO BUTTON -->
+                <ImageButton
+                    android:id="@+id/btnUndo"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_small_curve"
+                    android:src="@android:drawable/ic_menu_revert"
+                    android:scaleType="centerInside"
+                    android:contentDescription="Undo" />
+
+                <Space
+                    android:layout_width="4dp"
+                    android:layout_height="wrap_content" />
+
+                <!-- REDO BUTTON -->
+                <ImageButton
+                    android:id="@+id/btnRedo"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_small_curve"
+                    android:src="@android:drawable/ic_menu_rotate"
+                    android:scaleType="centerInside"
+                    android:contentDescription="Redo" />
+            </LinearLayout>
 
             <!-- RIGHT SIDE — 3 Dot Menu -->
             <TextView
