@@ -1527,16 +1527,15 @@ private void showSummaryDialog() {
         double collected = 0;
         double paid = 0;
 
-        // 🔹 TOTAL COLLECTED
-        for (int i = 0; i < bc.months; i++) {
-            double amount = 0;
+        // 🔹 TOTAL COLLECTED (ONLY PAID INSTALLMENTS)
+        for (Member member : bc.members) {
 
-            if (!bc.amounts.isEmpty()) {
-                if (bc.amounts.size() == 1) amount = bc.amounts.get(0);
-                else if (bc.amounts.size() > i) amount = bc.amounts.get(i);
+            // Assuming each member has a map of month → paid amount
+            if (member.installments != null) {
+                for (double amt : member.installments.values()) {
+                    collected += amt;   // Add only what is actually paid
+                }
             }
-
-            collected += amount * bc.members.size();
         }
 
         // 🔹 TOTAL PAID BC
