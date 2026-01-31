@@ -1883,4 +1883,39 @@ public void redoLastAction() {
     showBcListTable();
     updateUndoRedoButtons();
 }
+
+// 🔥 ADD ACTION TO UNDO STACK
+private void pushToUndoStack(Runnable undo, Runnable redo) {
+
+    if (undoStack.size() >= MAX_HISTORY) {
+        undoStack.remove(0); // remove oldest
+    }
+
+    undoStack.add(new HistoryAction(undo, redo));
+    redoStack.clear(); // once new action happens, redo history resets
+
+    updateUndoRedoButtons();
+}
+
+// ↩️ UNDO LAST ACTION
+private void undoLastAction() {
+    if (undoStack.isEmpty()) return;
+
+    HistoryAction action = undoStack.remove(undoStack.size() - 1);
+    action.undoAction.run();
+    redoStack.add(action);
+
+    updateUndoRedoButtons();
+}
+
+// ↪️ REDO LAST ACTION
+private void redoLastAction() {
+    if (redoStack.isEmpty()) return;
+
+    HistoryAction action = redoStack.remove(redoStack.size() - 1);
+    action.redoAction.run();
+    undoStack.add(action);
+
+    updateUndoRedoButtons();
+}
 }
