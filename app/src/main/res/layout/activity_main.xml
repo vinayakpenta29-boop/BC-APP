@@ -40,7 +40,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@drawable/bg_small_curve"
-                    android:src="@android:drawable/ic_menu_revert"
+                    android:src="@drawable/ic_undo"
                     android:scaleType="centerInside"
                     android:contentDescription="Undo" />
 
@@ -54,7 +54,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@drawable/bg_small_curve"
-                    android:src="@android:drawable/ic_menu_rotate"
+                    android:src="@drawable/ic_redo"
                     android:scaleType="centerInside"
                     android:contentDescription="Redo" />
             </LinearLayout>
