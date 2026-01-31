@@ -1896,26 +1896,4 @@ private void pushToUndoStack(Runnable undo, Runnable redo) {
 
     updateUndoRedoButtons();
 }
-
-// ↩️ UNDO LAST ACTION
-private void undoLastAction() {
-    if (undoStack.isEmpty()) return;
-
-    HistoryAction action = undoStack.remove(undoStack.size() - 1);
-    action.undoAction.run();
-    redoStack.add(action);
-
-    updateUndoRedoButtons();
-}
-
-// ↪️ REDO LAST ACTION
-private void redoLastAction() {
-    if (redoStack.isEmpty()) return;
-
-    HistoryAction action = redoStack.remove(redoStack.size() - 1);
-    action.redoAction.run();
-    undoStack.add(action);
-
-    updateUndoRedoButtons();
-}
 }
