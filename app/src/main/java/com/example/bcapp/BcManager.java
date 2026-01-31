@@ -1527,15 +1527,9 @@ private void showSummaryDialog() {
         double collected = 0;
         double paid = 0;
 
-        // 🔹 TOTAL COLLECTED (ONLY PAID INSTALLMENTS)
-        for (Member member : bc.members) {
-
-            // Assuming each member has a map of month → paid amount
-            if (member.installments != null) {
-                for (double amt : member.installments.values()) {
-                    collected += amt;   // Add only what is actually paid
-                }
-            }
+        // 🔹 TOTAL COLLECTED (ONLY REAL PAID INSTALLMENTS)
+        for (double payment : bc.memberPaidAmount.values()) {
+            collected += payment;
         }
 
         // 🔹 TOTAL PAID BC
@@ -1852,7 +1846,6 @@ private void showDeleteMemberDialog() {
         );
 
         saveAllToRoom();       // persist changes
-        showBcListTable();     // refresh BC tables
 
         // 🔥 SHOW UNDO SNACKBAR
         Snackbar.make(tableContainer, "Member(s) deleted", Snackbar.LENGTH_LONG).show();
