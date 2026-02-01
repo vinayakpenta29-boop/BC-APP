@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import androidx.cardview.widget.CardView;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -657,101 +658,133 @@ private void showBcListTable() {
 
     for (Bc bc : bcData) {
 
+        // 🔷 ===== BC TITLE ROW =====
         LinearLayout titleRow = new LinearLayout(context);
         titleRow.setOrientation(LinearLayout.HORIZONTAL);
         titleRow.setGravity(Gravity.CENTER_VERTICAL);
-        titleRow.setPadding(0, 12, 0, 6);
+        titleRow.setPadding(16, 16, 16, 8);
 
-        // BC Name
+        // BC Name (Premium Style)
         TextView title = new TextView(context);
         title.setText(bc.name);
-        title.setTextSize(16f);
-        title.setTypeface(null, Typeface.BOLD);
-        title.setTextColor(Color.BLACK);
+        title.setTextSize(18f);
+        title.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
+        title.setTextColor(Color.parseColor("#0D47A1")); // Premium blue
         title.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
-        // 🖨 Print Button
+        // 🖨 Print Button (Elevated Style)
         Button btnPrint = new Button(context);
         btnPrint.setText("Print");
         btnPrint.setTextSize(12f);
         btnPrint.setTextColor(Color.WHITE);
         btnPrint.setAllCaps(false);
         btnPrint.setPadding(20, 8, 20, 8);
-        btnPrint.setBackgroundResource(R.drawable.bg_print_button); // we create this next
+        btnPrint.setBackgroundResource(R.drawable.bg_print_button);
+        btnPrint.setElevation(8f);
+
+        LinearLayout.LayoutParams printParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        printParams.setMargins(12, 0, 0, 0);
+        btnPrint.setLayoutParams(printParams);
 
         titleRow.addView(title);
         titleRow.addView(btnPrint);
-
         tableContainer.addView(titleRow);
+
+        // 🔷 ===== CARD WRAPPER (PREMIUM LOOK) =====
+        CardView card = new CardView(context);
+        card.setRadius(26f);
+        card.setCardElevation(12f);
+        card.setUseCompatPadding(true);
+        card.setCardBackgroundColor(Color.WHITE);
+
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.setMargins(16, 8, 16, 24);
+        card.setLayoutParams(cardParams);
 
         LinearLayout tableCaptureLayout = new LinearLayout(context);
         tableCaptureLayout.setOrientation(LinearLayout.VERTICAL);
+        card.addView(tableCaptureLayout);
 
-        // 🔹 HORIZONTAL SCROLL + TABLE
+        // 🔷 ===== HORIZONTAL SCROLL + TABLE =====
         HorizontalScrollView hScroll = new HorizontalScrollView(context);
         hScroll.setHorizontalScrollBarEnabled(true);
-        
+        hScroll.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+
         TableLayout table = new TableLayout(context);
         table.setStretchAllColumns(true);
         table.setShrinkAllColumns(true);
+        table.setPadding(8, 8, 8, 8);
+        table.setBackgroundColor(Color.parseColor("#ECEFF1")); // Soft outer tint
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
-        addCellFixedWidth(header, "Sr", true, 40);  // Fixed width for short text
+        header.setElevation(6f); // Floating header effect
+
+        addCellFixedWidth(header, "Sr", true, 40);
         addCellFixedWidth(header, "Date", true, 130);
-        addCellFixedWidth(header, "installment\nAmount", true, 100);
-        addCellFixedWidth(header, "Receive\nAmount", true, 100);  // 
+        addCellFixedWidth(header, "Installment\nAmount", true, 120);
+        addCellFixedWidth(header, "Receive\nAmount", true, 120);
+
         if (bc.afterTaken) {
-        addCellFixedWidth(header, "After\nTaken", true, 100);
+            addCellFixedWidth(header, "After\nTaken", true, 120);
         }
+
         table.addView(header);
 
         // ========== ROWS ==========
         for (int i = 0; i < bc.months; i++) {
+
             TableRow row = new TableRow(context);
+
+            // Zebra striping
+            if (i % 2 == 0) {
+                row.setBackgroundColor(Color.parseColor("#F8FAFC"));
+            } else {
+                row.setBackgroundColor(Color.WHITE);
+            }
+
             addCellFixedWidth(row, String.valueOf(i + 1), false, 80);
-            
+
             Calendar cal = parseIsoDate(bc.startDateIso);
             if (cal != null) cal.add(Calendar.MONTH, i);
             String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
-            addCellFixedWidth(row, dateStr, false, 100);
+            addCellFixedWidth(row, dateStr, false, 120);
 
-            // Amount
+            // Installment Amount
             double amount = 0.0;
             if (!bc.amounts.isEmpty()) {
-                if (bc.amounts.size() == 1) {
-                    // FIXED amount
-                    amount = bc.amounts.get(0);
-                } else if (bc.amounts.size() > i) {
-                    // RANDOM amount
-                    amount = bc.amounts.get(i);
-                }
+                if (bc.amounts.size() == 1) amount = bc.amounts.get(0);
+                else if (bc.amounts.size() > i) amount = bc.amounts.get(i);
             }
-            addCellFixedWidth(row, "₹" + String.format("%.0f", amount), false, 120);
+            addCellFixedWidth(row, "₹" + String.format("%.0f", amount), false, 130);
 
             // Receive Amount
             double receiveAmount = 0.0;
             if (!bc.receiveAmounts.isEmpty()) {
-                if (bc.isReceiveAmountFixed) {
-                    receiveAmount = bc.receiveAmounts.get(0);
-                } else if (bc.receiveAmounts.size() > i) {
-                    receiveAmount = bc.receiveAmounts.get(i);
-                }
+                if (bc.isReceiveAmountFixed) receiveAmount = bc.receiveAmounts.get(0);
+                else if (bc.receiveAmounts.size() > i) receiveAmount = bc.receiveAmounts.get(i);
             }
-            addCellFixedWidth(row, "₹" + String.format("%.0f", receiveAmount), false, 100);
+            addCellFixedWidth(row, "₹" + String.format("%.0f", receiveAmount), false, 130);
 
             if (bc.afterTaken) {
-                addCellFixedWidth(row, "₹" + String.format("%.0f", bc.afterTakenAmount), false, 100);
+                addCellFixedWidth(row, "₹" + String.format("%.0f", bc.afterTakenAmount), false, 130);
             }
+
             table.addView(row);
         }
 
         hScroll.addView(table);
         tableCaptureLayout.addView(hScroll);
 
-      tableContainer.addView(tableCaptureLayout);
+        tableContainer.addView(card);
 
-      btnPrint.setOnClickListener(v -> captureAndSaveTable(tableCaptureLayout, bc.name));
+        btnPrint.setOnClickListener(v -> captureAndSaveTable(tableCaptureLayout, bc.name));
     }
 }
 
@@ -793,9 +826,18 @@ private void renderMainTable(Bc bc) {
     tableContainer.addView(title);
 
     TableLayout table = new TableLayout(context);
+    table.setPadding(8, 8, 8, 8);
+    table.setBackgroundColor(Color.parseColor("#ECEFF1")); // soft outer background
     table.setStretchAllColumns(false);
 
     TableRow header = new TableRow(context);
+    if (r % 2 == 0) {
+    row.setBackgroundColor(Color.parseColor("#FAFAFA"));
+    } else {
+    row.setBackgroundColor(Color.WHITE);
+    }
+    header.setElevation(6f); // floating header feel
+    header.setBackgroundColor(Color.parseColor("#E3F2FD")); // light premium blue
     addCell(header, "Sr", true);
     addCell(header, "Date", true);
     addCell(header, "Amount", true);
@@ -839,7 +881,8 @@ private void renderMainTable(Bc bc) {
         memberCell.setPadding(16, 12, 16, 12);
         memberCell.setGravity(Gravity.CENTER);
         memberCell.setMinHeight(64);
-        memberCell.setTextSize(14f);
+        memberCell.setTextSize(15f);
+        memberCell.setLetterSpacing(0.05f);
 
         // 🔴 CHECK CURRENT MONTH (IMPORTANT)
         // Use CURRENT month index based on today
@@ -893,8 +936,9 @@ private void renderMainTable(Bc bc) {
             LinearLayout cellContainer = new LinearLayout(context);
             cellContainer.setOrientation(LinearLayout.VERTICAL);
             cellContainer.setGravity(Gravity.CENTER);
-            cellContainer.setPadding(6, 6, 6, 6);
-            cellContainer.setMinimumHeight(72);
+            cellContainer.setPadding(8, 10, 8, 10);
+            cellContainer.setMinimumHeight(84);
+            cellContainer.setElevation(2f);
             cellContainer.setBackgroundResource(R.drawable.table_cell_border);
 
             String key = bc.getPaidKey(member, m);
@@ -994,7 +1038,8 @@ private void renderMainTable(Bc bc) {
         TextView totalCell = new TextView(context);
         totalCell.setText("₹" + String.format("%.0f", totalPaid));
         totalCell.setGravity(Gravity.CENTER);
-        totalCell.setTextSize(14f);
+        totalCell.setTextSize(15f);
+        totalCell.setLetterSpacing(0.04f);
         totalCell.setTypeface(null, Typeface.BOLD);
         totalCell.setPadding(16, 12, 16, 12);
         totalCell.setMinHeight(64);
@@ -1028,7 +1073,8 @@ private void renderMainTable(Bc bc) {
         TextView paidBcCell = new TextView(context);
         paidBcCell.setText(paidBc != null ? "₹" + String.format("%.0f", paidBc) : "-");
         paidBcCell.setGravity(Gravity.CENTER);
-        paidBcCell.setTextSize(14f);
+        paidBcCell.setTextSize(15f);
+        paidBcCell.setLetterSpacing(0.04f);
         paidBcCell.setTypeface(null, Typeface.BOLD);
         paidBcCell.setTextColor(Color.BLACK);
         paidBcCell.setPadding(16, 12, 16, 12);
@@ -1048,8 +1094,26 @@ private void renderMainTable(Bc bc) {
         table.addView(row);
     }
 
-    tableContainer.addView(table);
-}
+    CardView card = new CardView(context);
+    card.setRadius(28f);
+    card.setCardElevation(14f);
+    card.setUseCompatPadding(true);
+    card.setCardBackgroundColor(Color.WHITE);
+
+    LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+    );
+    cardParams.setMargins(16, 12, 16, 24);
+    card.setLayoutParams(cardParams);
+
+    HorizontalScrollView scrollWrap = new HorizontalScrollView(context);
+    scrollWrap.setHorizontalScrollBarEnabled(true);
+    scrollWrap.addView(table);
+
+    card.addView(scrollWrap);
+    tableContainer.addView(card);
+    }
 
 /* ---------- Installments ---------- */  
 
