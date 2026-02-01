@@ -1209,76 +1209,87 @@ private boolean isOverDue(Bc bc, String member, int monthIndex) {
 
 /* ---------- Helpers ---------- */  
 
-private void addCell(TableRow row, String text, boolean header) {  
-    TextView tv = new TextView(context);  
-    tv.setText(text);  
-    tv.setPadding(16, 12, 16, 12);  
-    tv.setGravity(Gravity.CENTER);  
-    tv.setMinHeight(64);  
-    tv.setTypeface(null, Typeface.BOLD);
-    tv.setTextColor(Color.BLACK);
+private void addCell(TableRow row, String text, boolean header) {
 
-    if (header) {  
-        tv.setTypeface(null, Typeface.BOLD);  
-        tv.setTextSize(15f);  
-        tv.setTextColor(Color.BLACK);  
-        tv.setBackgroundResource(R.drawable.table_header_border);  // ← NEW HEADER  
-    } else {  
-        tv.setTextSize(14f); 
-        boolean isSrNumber = text.matches("\\d+");                  // 1, 2, 3...
-        boolean isDate = text.matches("\\d{2}/\\d{2}/\\d{4}");      // dd/MM/yyyy
-        boolean isAmount = text.matches("\\d+(\\.\\d+)?");          // 100 or 100.50
-
-        if (isSrNumber || isDate || isAmount) {
-            tv.setTypeface(null, Typeface.BOLD);
-            tv.setTextColor(Color.BLACK);
-        } else if ("✅".equals(text)) {  
-        tv.setTextColor(Color.parseColor("#2E7D32"));  
-        } else {  
-        tv.setTextColor(Color.parseColor("#424242"));  
-        }  
-        tv.setBackgroundResource(R.drawable.table_cell_border);  
-    }  
-
-    TableRow.LayoutParams lp =  
-        new TableRow.LayoutParams(  
-                TableRow.LayoutParams.WRAP_CONTENT,  
-                TableRow.LayoutParams.MATCH_PARENT  
-        );  
-    lp.setMargins(1, 1, 1, 1);  
-    tv.setLayoutParams(lp);  
-
-    row.addView(tv);  
-}  
-
-private void addCellFixedWidth(TableRow row, String text, boolean header, int widthDp) {
     TextView tv = new TextView(context);
     tv.setText(text);
-    tv.setTypeface(null, Typeface.BOLD);
-    tv.setTextColor(Color.BLACK);
+    tv.setPadding(20, 16, 20, 16);   // More breathing space
+    tv.setGravity(Gravity.CENTER);
+    tv.setMinHeight(72);
+
+    if (header) {
+        // 🔷 PREMIUM HEADER STYLE
+        tv.setTypeface(null, Typeface.BOLD);
+        tv.setTextSize(15f);
+        tv.setTextColor(Color.WHITE);
+        tv.setBackgroundColor(Color.parseColor("#1565C0")); // Premium blue header
+    } else {
+
+        tv.setTextSize(14f);
+        tv.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        tv.setTextColor(Color.parseColor("#212121")); // Dark premium text
+
+        boolean isSrNumber = text.matches("\\d+");
+        boolean isDate = text.matches("\\d{2}/\\d{2}/\\d{4}");
+        boolean isAmount = text.matches("\\d+(\\.\\d+)?");
+
+        // 🔹 Highlight important columns
+        if (isSrNumber || isDate) {
+            tv.setTypeface(null, Typeface.BOLD);
+            tv.setTextColor(Color.BLACK);
+        }
+
+        // 💰 Premium money style
+        if (isAmount) {
+            tv.setTypeface(null, Typeface.BOLD);
+            tv.setTextColor(Color.parseColor("#2E7D32")); // Rich green
+        }
+
+        // ✅ Paid tick style
+        if ("✅".equals(text)) {
+            tv.setTextSize(16f);
+            tv.setTypeface(null, Typeface.BOLD);
+            tv.setTextColor(Color.parseColor("#1B5E20"));
+            tv.setBackgroundResource(R.drawable.premium_paid_bg);
+        } else {
+            tv.setBackgroundResource(R.drawable.premium_cell_bg);
+        }
+    }
+
+    TableRow.LayoutParams lp = new TableRow.LayoutParams(
+            TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.MATCH_PARENT
+    );
+    lp.setMargins(2, 2, 2, 2); // Softer spacing
+    tv.setLayoutParams(lp);
+
+    row.addView(tv);
+}
+
+private void addCellFixedWidth(TableRow row, String text, boolean header, int widthDp) {
+
+    TextView tv = new TextView(context);
+    tv.setText(text);
+    tv.setPadding(12, 12, 12, 12);
+    tv.setMinHeight(dpToPx(48));
+
     if (header) {
         tv.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        tv.setTypeface(null, Typeface.BOLD);
+        tv.setTextColor(Color.WHITE);
+        tv.setBackgroundColor(Color.parseColor("#1565C0")); // Same premium header
+        tv.setTextSize(14f);
     } else {
         tv.setGravity(Gravity.CENTER);
+        tv.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        tv.setTextColor(Color.parseColor("#212121"));
+        tv.setBackgroundResource(R.drawable.premium_cell_bg);
     }
-    tv.setPadding(8, 8, 8, 8);
-    tv.setSingleLine(false);
-    tv.setMaxLines(2);
-    tv.setEllipsize(null); 
-    tv.setMinHeight(dpToPx(44));
-    
-    if (header) {
-        tv.setTypeface(null, Typeface.BOLD);
-        tv.setTextColor(Color.BLACK);
-        tv.setBackgroundResource(R.drawable.table_header_border);
-    } else {
-        tv.setTextColor(Color.parseColor("#424242"));
-        tv.setBackgroundResource(R.drawable.table_cell_border);
-    }
-    
+
     TableRow.LayoutParams params =
-        new TableRow.LayoutParams(dpToPx(widthDp), TableRow.LayoutParams.WRAP_CONTENT);
-        tv.setLayoutParams(params);
+            new TableRow.LayoutParams(dpToPx(widthDp), TableRow.LayoutParams.WRAP_CONTENT);
+    params.setMargins(2, 2, 2, 2);
+    tv.setLayoutParams(params);
 
     row.addView(tv);
 }
