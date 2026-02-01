@@ -831,11 +831,6 @@ private void renderMainTable(Bc bc) {
     table.setStretchAllColumns(false);
 
     TableRow header = new TableRow(context);
-    if (r % 2 == 0) {
-    row.setBackgroundColor(Color.parseColor("#FAFAFA"));
-    } else {
-    row.setBackgroundColor(Color.WHITE);
-    }
     header.setElevation(6f); // floating header feel
     header.setBackgroundColor(Color.parseColor("#E3F2FD")); // light premium blue
     addCell(header, "Sr", true);
@@ -862,6 +857,11 @@ private void renderMainTable(Bc bc) {
     for (int r = 0; r < bc.members.size(); r++) {
         String member = bc.members.get(r);
         TableRow row = new TableRow(context);
+        if (r % 2 == 0) {
+        row.setBackgroundColor(Color.parseColor("#F7F9FC"));
+        } else {
+        row.setBackgroundColor(Color.WHITE);
+        }
 
         addCell(row, String.valueOf(r + 1), false);
 
