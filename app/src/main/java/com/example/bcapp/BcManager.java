@@ -1527,9 +1527,10 @@ private void showSummaryDialog() {
         double collected = 0;
         double paid = 0;
 
-        // 🔹 TOTAL COLLECTED (ONLY REAL PAID INSTALLMENTS)
-        for (double payment : bc.memberPaidAmount.values()) {
-            collected += payment;
+        // 🔹 TOTAL COLLECTED = sum of all member installment payments
+        double collected = 0;
+        for (double amt : bc.paidAmount.values()) {
+            collected += amt;
         }
 
         // 🔹 TOTAL PAID BC
