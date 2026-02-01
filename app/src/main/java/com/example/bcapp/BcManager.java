@@ -729,13 +729,13 @@ private void showBcListTable() {
         TableRow header = new TableRow(context);
         header.setElevation(6f); // Floating header effect
 
-        addCellFixedWidth(header, "Sr", true, 40);
-        addCellFixedWidth(header, "Date", true, 130);
-        addCellFixedWidth(header, "Installment\nAmount", true, 130);
-        addCellFixedWidth(header, "Receive\nAmount", true, 120);
+        addCellFixedWidth(header, "Sr", true, 20);
+        addCellFixedWidth(header, "Date", true, 110);
+        addCellFixedWidth(header, "Installment\nAmount", true, 100);
+        addCellFixedWidth(header, "Receive\nAmount", true, 90);
 
         if (bc.afterTaken) {
-            addCellFixedWidth(header, "After\nTaken", true, 120);
+            addCellFixedWidth(header, "After\nTaken", true, 90);
         }
 
         table.addView(header);
@@ -902,7 +902,7 @@ private void renderMainTable(Bc bc) {
 
         // Apply highlight only for valid month
         // default
-        memberCell.setTextColor(Color.parseColor("#424242"));
+        memberCell.setTextColor(Color.parseColor("#000000"));
         memberCell.setTypeface(null, Typeface.BOLD);
         memberCell.setBackgroundResource(R.drawable.table_cell_border);
 
