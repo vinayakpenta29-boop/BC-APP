@@ -714,11 +714,14 @@ private void showBcListTable() {
         // 🔷 ===== HORIZONTAL SCROLL + TABLE =====
         HorizontalScrollView hScroll = new HorizontalScrollView(context);
         hScroll.setHorizontalScrollBarEnabled(true);
-        hScroll.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+        hScroll.setFillViewport(false);
+        hScroll.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+        hScroll.setFadingEdgeLength(50);
+        hScroll.setHorizontalFadingEdgeEnabled(true);
 
         TableLayout table = new TableLayout(context);
-        table.setStretchAllColumns(true);
-        table.setShrinkAllColumns(true);
+        table.setStretchAllColumns(false);
+        table.setShrinkAllColumns(false);
         table.setPadding(8, 8, 8, 8);
         table.setBackgroundColor(Color.parseColor("#ECEFF1")); // Soft outer tint
 
@@ -728,7 +731,7 @@ private void showBcListTable() {
 
         addCellFixedWidth(header, "Sr", true, 40);
         addCellFixedWidth(header, "Date", true, 130);
-        addCellFixedWidth(header, "Installment\nAmount", true, 120);
+        addCellFixedWidth(header, "Installment\nAmount", true, 130);
         addCellFixedWidth(header, "Receive\nAmount", true, 120);
 
         if (bc.afterTaken) {
@@ -820,6 +823,7 @@ private void renderMainTable(Bc bc) {
 
     TextView title = new TextView(context);
     title.setText("Main BC Table");
+    title.setTextColor(Color.parseColor("#000000"));
     title.setTextSize(16f);
     title.setTypeface(null, Typeface.BOLD);
     title.setPadding(0, 8, 0, 4);
@@ -1020,7 +1024,7 @@ private void renderMainTable(Bc bc) {
                 TextView checkbox = new TextView(context);
                 checkbox.setText("☐");
                 checkbox.setTextSize(18f);
-                checkbox.setTextColor(Color.GRAY);
+                checkbox.setTextColor(Color.BLACK);
                 checkbox.setGravity(Gravity.CENTER);
                 cellContainer.addView(checkbox);
             }
