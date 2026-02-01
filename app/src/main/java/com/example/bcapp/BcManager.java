@@ -1528,7 +1528,6 @@ private void showSummaryDialog() {
         double paid = 0;
 
         // 🔹 TOTAL COLLECTED = sum of all member installment payments
-        double collected = 0;
         for (double amt : bc.paidAmount.values()) {
             collected += amt;
         }
