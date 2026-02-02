@@ -729,13 +729,13 @@ private void showBcListTable() {
         TableRow header = new TableRow(context);
         header.setElevation(6f); // Floating header effect
 
-        addCellFixedWidth(header, "Sr", true, 20);
-        addCellFixedWidth(header, "Date", true, 110);
-        addCellFixedWidth(header, "Installment\nAmount", true, 100);
-        addCellFixedWidth(header, "Receive\nAmount", true, 90);
+        addCellFixedWidth(header, "Sr", true, 10);
+        addCellFixedWidth(header, "Date", true, 90);
+        addCellFixedWidth(header, "Installment\nAmount", true, 70);
+        addCellFixedWidth(header, "Receive\nAmount", true, 70);
 
         if (bc.afterTaken) {
-            addCellFixedWidth(header, "After\nTaken", true, 90);
+            addCellFixedWidth(header, "After\nTaken", true, 70);
         }
 
         table.addView(header);
