@@ -664,15 +664,13 @@ private void showBcListTable() {
         titleRow.setGravity(Gravity.CENTER_VERTICAL);
         titleRow.setPadding(16, 16, 16, 8);
 
-        // BC Name (Premium Style)
         TextView title = new TextView(context);
         title.setText(bc.name);
         title.setTextSize(18f);
         title.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
-        title.setTextColor(Color.parseColor("#0D47A1")); // Premium blue
+        title.setTextColor(Color.parseColor("#0D47A1"));
         title.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
-        // 🖨 Print Button (Elevated Style)
         Button btnPrint = new Button(context);
         btnPrint.setText("Print");
         btnPrint.setTextSize(12f);
@@ -693,7 +691,7 @@ private void showBcListTable() {
         titleRow.addView(btnPrint);
         tableContainer.addView(titleRow);
 
-        // 🔷 ===== CARD WRAPPER (PREMIUM LOOK) =====
+        // 🔷 ===== CARD WRAPPER =====
         CardView card = new CardView(context);
         card.setRadius(26f);
         card.setCardElevation(12f);
@@ -711,31 +709,28 @@ private void showBcListTable() {
         tableCaptureLayout.setOrientation(LinearLayout.VERTICAL);
         card.addView(tableCaptureLayout);
 
-        // 🔷 ===== HORIZONTAL SCROLL + TABLE =====
+        // 🔷 ===== HORIZONTAL SCROLL =====
         HorizontalScrollView hScroll = new HorizontalScrollView(context);
         hScroll.setHorizontalScrollBarEnabled(true);
         hScroll.setFillViewport(false);
-        hScroll.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
-        hScroll.setFadingEdgeLength(50);
-        hScroll.setHorizontalFadingEdgeEnabled(true);
 
         TableLayout table = new TableLayout(context);
         table.setStretchAllColumns(false);
         table.setShrinkAllColumns(false);
         table.setPadding(8, 8, 8, 8);
-        table.setBackgroundColor(Color.parseColor("#ECEFF1")); // Soft outer tint
+        table.setBackgroundColor(Color.parseColor("#ECEFF1"));
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
-        header.setElevation(6f); // Floating header effect
+        header.setBackgroundColor(Color.parseColor("#1565C0"));
 
-        addCellFixedWidth(header, "Sr", true, 10);
-        addCellFixedWidth(header, "Date", true, 90);
-        addCellFixedWidth(header, "Installment\nAmount", true, 70);
-        addCellFixedWidth(header, "Receive\nAmount", true, 70);
+        addCompactHeaderCell(header, "Sr");
+        addCompactHeaderCell(header, "Date");
+        addCompactHeaderCell(header, "Installment\nAmount");
+        addCompactHeaderCell(header, "Receive\nAmount");
 
         if (bc.afterTaken) {
-            addCellFixedWidth(header, "After\nTaken", true, 70);
+            addCompactHeaderCell(header, "After\nTaken");
         }
 
         table.addView(header);
@@ -744,39 +739,31 @@ private void showBcListTable() {
         for (int i = 0; i < bc.months; i++) {
 
             TableRow row = new TableRow(context);
+            row.setBackgroundColor(i % 2 == 0 ? Color.parseColor("#F8FAFC") : Color.WHITE);
 
-            // Zebra striping
-            if (i % 2 == 0) {
-                row.setBackgroundColor(Color.parseColor("#F8FAFC"));
-            } else {
-                row.setBackgroundColor(Color.WHITE);
-            }
-
-            addCellFixedWidth(row, String.valueOf(i + 1), false, 80);
+            addCompactCell(row, String.valueOf(i + 1));
 
             Calendar cal = parseIsoDate(bc.startDateIso);
             if (cal != null) cal.add(Calendar.MONTH, i);
             String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
-            addCellFixedWidth(row, dateStr, false, 120);
+            addCompactCell(row, dateStr);
 
-            // Installment Amount
             double amount = 0.0;
             if (!bc.amounts.isEmpty()) {
                 if (bc.amounts.size() == 1) amount = bc.amounts.get(0);
                 else if (bc.amounts.size() > i) amount = bc.amounts.get(i);
             }
-            addCellFixedWidth(row, "₹" + String.format("%.0f", amount), false, 130);
+            addCompactCell(row, "₹" + String.format("%.0f", amount));
 
-            // Receive Amount
             double receiveAmount = 0.0;
             if (!bc.receiveAmounts.isEmpty()) {
                 if (bc.isReceiveAmountFixed) receiveAmount = bc.receiveAmounts.get(0);
                 else if (bc.receiveAmounts.size() > i) receiveAmount = bc.receiveAmounts.get(i);
             }
-            addCellFixedWidth(row, "₹" + String.format("%.0f", receiveAmount), false, 130);
+            addCompactCell(row, "₹" + String.format("%.0f", receiveAmount));
 
             if (bc.afterTaken) {
-                addCellFixedWidth(row, "₹" + String.format("%.0f", bc.afterTakenAmount), false, 130);
+                addCompactCell(row, "₹" + String.format("%.0f", bc.afterTakenAmount));
             }
 
             table.addView(row);
@@ -784,7 +771,6 @@ private void showBcListTable() {
 
         hScroll.addView(table);
         tableCaptureLayout.addView(hScroll);
-
         tableContainer.addView(card);
 
         btnPrint.setOnClickListener(v -> captureAndSaveTable(tableCaptureLayout, bc.name));
@@ -1392,6 +1378,41 @@ private Calendar parseIsoDate(String iso) {
     } catch (ParseException e) {  
         return null;  
     }  
+}
+
+private void addCompactHeaderCell(TableRow row, String text) {
+    TextView tv = new TextView(context);
+    tv.setText(text);
+    tv.setTextSize(13f);
+    tv.setTypeface(null, Typeface.BOLD);
+    tv.setTextColor(Color.WHITE);
+    tv.setGravity(Gravity.CENTER);
+    tv.setPadding(16, 12, 16, 12);
+    tv.setBackgroundResource(R.drawable.table_header_border);
+
+    TableRow.LayoutParams params = new TableRow.LayoutParams(
+            TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.WRAP_CONTENT
+    );
+    tv.setLayoutParams(params);
+    row.addView(tv);
+}
+
+private void addCompactCell(TableRow row, String text) {
+    TextView tv = new TextView(context);
+    tv.setText(text);
+    tv.setTextSize(13f);
+    tv.setTextColor(Color.parseColor("#212121"));
+    tv.setGravity(Gravity.CENTER);
+    tv.setPadding(16, 10, 16, 10);
+    tv.setBackgroundResource(R.drawable.table_cell_border);
+
+    TableRow.LayoutParams params = new TableRow.LayoutParams(
+            TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.WRAP_CONTENT
+    );
+    tv.setLayoutParams(params);
+    row.addView(tv);
 }
 
 private void addDivider(LinearLayout root) {
