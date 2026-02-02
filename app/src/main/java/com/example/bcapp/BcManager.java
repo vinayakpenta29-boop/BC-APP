@@ -1281,7 +1281,7 @@ private void addCell(TableRow row, String text, boolean header) {
 
         tv.setTextSize(14f);
         tv.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        tv.setTextColor(Color.parseColor("#212121")); // Dark premium text
+        tv.setTextColor(Color.parseColor("#000000")); // Dark premium text
 
         boolean isSrNumber = text.matches("\\d+");
         boolean isDate = text.matches("\\d{2}/\\d{2}/\\d{4}");
@@ -1388,7 +1388,6 @@ private void addCompactHeaderCell(TableRow row, String text) {
     tv.setTextColor(Color.WHITE);
     tv.setGravity(Gravity.CENTER);
     tv.setPadding(16, 12, 16, 12);
-    tv.setBackgroundResource(R.drawable.table_header_border);
 
     TableRow.LayoutParams params = new TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
@@ -1402,16 +1401,19 @@ private void addCompactCell(TableRow row, String text) {
     TextView tv = new TextView(context);
     tv.setText(text);
     tv.setTextSize(13f);
-    tv.setTextColor(Color.parseColor("#212121"));
+    tv.setTypeface(null, Typeface.BOLD);
+    tv.setTextColor(Color.parseColor("#000000"));
     tv.setGravity(Gravity.CENTER);
     tv.setPadding(16, 10, 16, 10);
     tv.setBackgroundResource(R.drawable.table_cell_border);
 
-    TableRow.LayoutParams params = new TableRow.LayoutParams(
+    TableRow.LayoutParams lp = new TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
             TableRow.LayoutParams.WRAP_CONTENT
     );
-    tv.setLayoutParams(params);
+    lp.setMargins(2, 2, 2, 2); // Softer spacing
+    tv.setLayoutParams(lp);
+    
     row.addView(tv);
 }
 
