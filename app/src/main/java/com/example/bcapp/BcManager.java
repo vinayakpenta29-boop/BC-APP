@@ -1275,7 +1275,7 @@ private void addCell(TableRow row, String text, boolean header) {
         tv.setTypeface(null, Typeface.BOLD);
         tv.setTextSize(15f);
         tv.setTextColor(Color.WHITE);
-        tv.setBackgroundColor(Color.parseColor("#1565C0")); // Premium blue header
+        tv.setBackgroundResource(R.drawable.table_header_border); // Premium blue header
     } else {
 
         tv.setTextSize(14f);
@@ -1330,7 +1330,7 @@ private void addCellFixedWidth(TableRow row, String text, boolean header, int wi
         tv.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         tv.setTypeface(null, Typeface.BOLD);
         tv.setTextColor(Color.WHITE);
-        tv.setBackgroundColor(Color.parseColor("#1565C0")); // Same premium header
+        tv.setBackgroundResource(R.drawable.table_header_border); // Same premium header
         tv.setTextSize(14f);
     } else {
         tv.setGravity(Gravity.CENTER);
