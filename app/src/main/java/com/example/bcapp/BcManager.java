@@ -288,6 +288,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 4, 3, "Summary");
         popup.getMenu().add(0, 5, 4, "Delete BC");
         popup.getMenu().add(0, 6, 5, "Delete A Member");
+        popup.getMenu().add(0, 7, 6, "Add Member");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -339,6 +340,10 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     }
     else if (item.getItemId() == 6) {
     showDeleteMemberDialog();
+    return true;
+    }
+    else if (item.getItemId() == 7) {
+    showAddMemberDialog();
     return true;
     }
     return false;  
@@ -820,7 +825,7 @@ private void renderMainTable(Bc bc) {
     table.setStretchAllColumns(false);
 
     TableRow header = new TableRow(context);
-    
+    header.setElevation(6f); // floating header feel
     addCell(header, "Sr", true);
     addCell(header, "Date", true);
     addCell(header, "Amount", true);
@@ -1257,6 +1262,99 @@ private boolean isOverDue(Bc bc, String member, int monthIndex) {
                     && Boolean.TRUE.equals(bc.paid.get(key));
 
     return !isPaid && today.after(due);
+}
+
+private void showAddMemberDialog() {
+
+    if (bcData.isEmpty()) {
+        Toast.makeText(context, "No BC available", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    // 🔹 BC Name List
+    String[] bcNames = new String[bcData.size()];
+    for (int i = 0; i < bcData.size(); i++) {
+        bcNames[i] = bcData.get(i).name;
+    }
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    builder.setTitle("Select BC");
+
+    builder.setItems(bcNames, (dialog, which) -> {
+
+        Bc selectedBc = bcData.get(which);
+
+        // 🔴 LIMIT CHECK
+        if (selectedBc.members.size() >= selectedBc.months) {
+            Toast.makeText(context,
+                    "This BC already has maximum members (" + selectedBc.months + ")",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        showMemberNameInputDialog(selectedBc);
+    });
+
+    builder.show();
+}
+
+private void showMemberNameInputDialog(Bc bc) {
+
+    EditText input = new EditText(context);
+    input.setHint("Enter Member Name");
+    input.setPadding(40, 20, 40, 20);
+
+    new AlertDialog.Builder(context)
+            .setTitle("Add Member to " + bc.name)
+            .setView(input)
+            .setPositiveButton("Add", (dialog, which) -> {
+
+                String newMember = input.getText().toString().trim();
+
+                if (newMember.isEmpty()) {
+                    Toast.makeText(context, "Member name cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // 🔁 Prevent duplicate names
+                if (bc.members.contains(newMember)) {
+                    Toast.makeText(context, "Member already exists", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                addMemberToBc(bc, newMember);
+
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+}
+
+private void addMemberToBc(Bc bc, String memberName) {
+
+    int oldSize = bc.members.size();
+
+    bc.members.add(memberName);
+
+    // 🧠 UNDO / REDO SUPPORT
+    pushToUndoStack(
+            () -> { // UNDO
+                bc.members.remove(memberName);
+                saveAllToRoom();
+                renderMainTable(bc);
+            },
+            () -> { // REDO
+                bc.members.add(memberName);
+                saveAllToRoom();
+                renderMainTable(bc);
+            }
+    );
+
+    saveAllToRoom();
+    renderMainTable(bc);
+
+    Toast.makeText(context,
+            "Member added (" + (oldSize + 1) + "/" + bc.months + ")",
+            Toast.LENGTH_SHORT).show();
 }
 
 /* ---------- Helpers ---------- */  
