@@ -816,11 +816,10 @@ private void renderMainTable(Bc bc) {
 
     TableLayout table = new TableLayout(context);
     table.setPadding(8, 8, 8, 8);
-    table.setBackgroundColor(Color.parseColor("#ECEFF1")); // soft outer background
+    table.setBackgroundResource(R.drawable.table_header_border); // soft outer background
     table.setStretchAllColumns(false);
 
     TableRow header = new TableRow(context);
-    header.setElevation(6f); // floating header feel
     header.setBackgroundResource(R.drawable.table_header_border);
     addCell(header, "Sr", true);
     addCell(header, "Date", true);
