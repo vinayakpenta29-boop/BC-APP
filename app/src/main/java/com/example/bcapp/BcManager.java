@@ -821,7 +821,7 @@ private void renderMainTable(Bc bc) {
 
     TableRow header = new TableRow(context);
     header.setElevation(6f); // floating header feel
-    header.setBackgroundColor(Color.parseColor("#E3F2FD")); // light premium blue
+    header.setBackgroundResource(R.drawable.table_header_border);
     addCell(header, "Sr", true);
     addCell(header, "Date", true);
     addCell(header, "Amount", true);
