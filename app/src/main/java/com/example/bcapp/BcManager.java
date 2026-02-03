@@ -820,7 +820,7 @@ private void renderMainTable(Bc bc) {
     table.setStretchAllColumns(false);
 
     TableRow header = new TableRow(context);
-    header.setBackgroundResource(R.drawable.table_header_border);
+    
     addCell(header, "Sr", true);
     addCell(header, "Date", true);
     addCell(header, "Amount", true);
