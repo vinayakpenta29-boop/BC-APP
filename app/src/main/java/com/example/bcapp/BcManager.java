@@ -722,8 +722,7 @@ private void showBcListTable() {
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
-        header.setBackgroundColor(Color.parseColor("#1565C0"));
-
+        header.setBackgroundResource(R.drawable.table_header_border);
         addCompactHeaderCell(header, "Sr");
         addCompactHeaderCell(header, "Date");
         addCompactHeaderCell(header, "Installment\nAmount");
