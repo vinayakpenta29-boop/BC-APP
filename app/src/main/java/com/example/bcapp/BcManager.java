@@ -1271,42 +1271,58 @@ private void showAddMemberDialog() {
         return;
     }
 
-    // 🔹 BC Name List
-    String[] bcNames = new String[bcData.size()];
-    for (int i = 0; i < bcData.size(); i++) {
-        bcNames[i] = bcData.get(i).name;
+    List<String> bcNames = new ArrayList<>();
+    List<Bc> selectableBcs = new ArrayList<>();
+
+    for (Bc bc : bcData) {
+        // Show count + allow only if space exists
+        String label = bc.name + "  (" + bc.members.size() + "/" + bc.months + ")";
+        bcNames.add(label);
+        selectableBcs.add(bc);
     }
 
-    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setTitle("Select BC");
+    new MaterialAlertDialogBuilder(context, R.style.RoundDialog)
+            .setTitle("Add Member")
+            .setMessage("Select a BC group")
+            .setItems(bcNames.toArray(new String[0]), (dialog, which) -> {
 
-    builder.setItems(bcNames, (dialog, which) -> {
+                Bc selectedBc = selectableBcs.get(which);
 
-        Bc selectedBc = bcData.get(which);
+                // 🔴 LIMIT CHECK
+                if (selectedBc.members.size() >= selectedBc.months) {
+                    Toast.makeText(context,
+                            "This BC already has maximum members (" + selectedBc.months + ")",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
 
-        // 🔴 LIMIT CHECK
-        if (selectedBc.members.size() >= selectedBc.months) {
-            Toast.makeText(context,
-                    "This BC already has maximum members (" + selectedBc.months + ")",
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        showMemberNameInputDialog(selectedBc);
-    });
-
-    builder.show();
+                showMemberNameInputDialog(selectedBc);
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
 }
 
 private void showMemberNameInputDialog(Bc bc) {
 
-    EditText input = new EditText(context);
-    input.setHint("Enter Member Name");
-    input.setPadding(40, 20, 40, 20);
+    LinearLayout container = new LinearLayout(context);
+    container.setOrientation(LinearLayout.VERTICAL);
+    container.setPadding(60, 30, 60, 10);
 
-    new AlertDialog.Builder(context)
-            .setTitle("Add Member to " + bc.name)
-            .setView(input)
+    TextInputLayout inputLayout = new TextInputLayout(context);
+    inputLayout.setHint("Member Name");
+    inputLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
+    inputLayout.setBoxCornerRadii(28f, 28f, 28f, 28f);
+
+    TextInputEditText input = new TextInputEditText(context);
+    input.setTextSize(16f);
+    inputLayout.addView(input);
+
+    container.addView(inputLayout);
+
+    new MaterialAlertDialogBuilder(context, R.style.RoundDialog)
+            .setTitle("Add Member")
+            .setMessage("Add new member to " + bc.name)
+            .setView(container)
             .setPositiveButton("Add", (dialog, which) -> {
 
                 String newMember = input.getText().toString().trim();
