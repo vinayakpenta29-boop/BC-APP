@@ -1378,7 +1378,6 @@ private void showEditOptionsDialog() {
 }
 
 private void showSelectBcForMemberEdit() {
-private void showSelectBcForMemberEdit() {
 
     if (bcData.isEmpty()) {
         Toast.makeText(context, "No BC available", Toast.LENGTH_SHORT).show();
