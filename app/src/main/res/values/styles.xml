@@ -1,8 +1,15 @@
-<style name="RoundDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-    <item name="shapeAppearanceOverlay">@style/DialogShape</item>
-</style>
+<resources>
 
-<style name="DialogShape">
-    <item name="cornerFamily">rounded</item>
-    <item name="cornerSize">28dp</item>
-</style>
+    <!-- Your existing styles stay here ABOVE or BELOW -->
+
+    <!-- Premium Rounded Dialog -->
+    <style name="RoundDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/DialogShape</item>
+    </style>
+
+    <style name="DialogShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+
+</resources>
