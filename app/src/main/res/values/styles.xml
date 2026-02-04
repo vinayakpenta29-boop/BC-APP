@@ -1,0 +1,8 @@
+<style name="RoundDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <item name="shapeAppearanceOverlay">@style/DialogShape</item>
+</style>
+
+<style name="DialogShape">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSize">28dp</item>
+</style>
