@@ -1284,7 +1284,7 @@ private void showAddMemberDialog() {
         selectableBcs.add(bc);
     }
 
-    new MaterialAlertDialogBuilder(context, R.style.RoundDialog)
+    new MaterialAlertDialogBuilder(activity, R.style.RoundDialog)
             .setTitle("Add Member")
             .setMessage("Select a BC group")
             .setItems(bcNames.toArray(new String[0]), (dialog, which) -> {
@@ -1322,7 +1322,7 @@ private void showMemberNameInputDialog(Bc bc) {
 
     container.addView(inputLayout);
 
-    new MaterialAlertDialogBuilder(context, R.style.RoundDialog)
+    new MaterialAlertDialogBuilder(activity, R.style.RoundDialog)
             .setTitle("Add Member")
             .setMessage("Add new member to " + bc.name)
             .setView(container)
