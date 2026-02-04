@@ -289,6 +289,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 5, 4, "Delete BC");
         popup.getMenu().add(0, 6, 5, "Delete A Member");
         popup.getMenu().add(0, 7, 6, "Add Member");
+        popup.getMenu().add(0, 8, 7, "Edit");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -344,6 +345,10 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     }
     else if (item.getItemId() == 7) {
     showAddMemberDialog();
+    return true;
+    }
+    else if (item.getItemId() == 8) {
+    showEditOptionsDialog();
     return true;
     }
     return false;  
@@ -1355,6 +1360,132 @@ private void addMemberToBc(Bc bc, String memberName) {
     Toast.makeText(context,
             "Member added (" + (oldSize + 1) + "/" + bc.months + ")",
             Toast.LENGTH_SHORT).show();
+}
+
+private void showEditOptionsDialog() {
+    String[] options = {"Edit Member", "Edit Paid BC"};
+
+    new AlertDialog.Builder(context)
+            .setTitle("Edit Options")
+            .setItems(options, (dialog, which) -> {
+                if (which == 0) {
+                    showSelectBcForMemberEdit();
+                } else {
+                    showSelectBcForPaidEdit();
+                }
+            })
+            .show();
+}
+
+private void showSelectBcForMemberEdit() {
+
+    if (bcData.isEmpty()) {
+        Toast.makeText(context, "No BC available", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    String[] bcNames = new String[bcData.size()];
+    for (int i = 0; i < bcData.size(); i++) {
+        bcNames[i] = bcData.get(i).name;
+    }
+
+    new AlertDialog.Builder(context)
+            .setTitle("Select BC")
+            .setItems(bcNames, (d, which) -> showSelectMemberToEdit(bcData.get(which)))
+            .show();
+}
+
+private void showSelectMemberToEdit(Bc bc) {
+
+    if (bc.members.isEmpty()) {
+        Toast.makeText(context, "No members in this BC", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    String[] members = bc.members.toArray(new String[0]);
+
+    new AlertDialog.Builder(context)
+            .setTitle("Select Member")
+            .setItems(members, (d, which) -> showUpdateMemberDialog(bc, members[which]))
+            .show();
+}
+
+private void showUpdateMemberDialog(Bc bc, String oldName) {
+
+    final EditText input = new EditText(context);
+    input.setText(oldName);
+    input.setPadding(40, 20, 40, 20);
+
+    new AlertDialog.Builder(context)
+            .setTitle("Update Member Name")
+            .setView(input)
+            .setPositiveButton("Update", (d, w) -> {
+
+                String newName = input.getText().toString().trim();
+
+                if (newName.isEmpty()) {
+                    Toast.makeText(context, "Name cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                int index = bc.members.indexOf(oldName);
+                if (index != -1) {
+                    bc.members.set(index, newName);
+                    saveAllToRoom();
+                    renderMainTable(bc);
+                    Toast.makeText(context, "Member updated", Toast.LENGTH_SHORT).show();
+                }
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+}
+
+private void showSelectBcForPaidEdit() {
+
+    String[] bcNames = new String[bcData.size()];
+    for (int i = 0; i < bcData.size(); i++) {
+        bcNames[i] = bcData.get(i).name;
+    }
+
+    new AlertDialog.Builder(context)
+            .setTitle("Select BC")
+            .setItems(bcNames, (d, which) -> showSelectMemberForPaidEdit(bcData.get(which)))
+            .show();
+}
+
+private void showSelectMemberForPaidEdit(Bc bc) {
+
+    String[] members = bc.members.toArray(new String[0]);
+
+    new AlertDialog.Builder(context)
+            .setTitle("Select Member")
+            .setItems(members, (d, which) -> showUpdatePaidAmountDialog(bc, members[which]))
+            .show();
+}
+
+private void showUpdatePaidAmountDialog(Bc bc, String memberName) {
+
+    final EditText input = new EditText(context);
+    input.setHint("Enter Amount");
+    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+    input.setPadding(40, 20, 40, 20);
+
+    new AlertDialog.Builder(context)
+            .setTitle("Update Paid Amount")
+            .setView(input)
+            .setPositiveButton("Update", (d, w) -> {
+
+                int amount = safeParseInt(input.getText().toString());
+
+                bc.paid.put(memberName, amount); // adjust if your structure differs
+
+                saveAllToRoom();
+                renderMainTable(bc);
+
+                Toast.makeText(context, "Paid amount updated", Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
 }
 
 /* ---------- Helpers ---------- */  
