@@ -1,8 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Your existing styles stay here ABOVE or BELOW -->
+    <!-- ================= APP THEME ================= -->
+    <!-- Make sure your app theme uses MaterialComponents -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your colors if needed -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+    </style>
 
-    <!-- Premium Rounded Dialog -->
+
+    <!-- ================= PREMIUM ROUNDED DIALOG ================= -->
     <style name="RoundDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="shapeAppearanceOverlay">@style/DialogShape</item>
     </style>
