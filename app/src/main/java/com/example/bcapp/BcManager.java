@@ -1466,23 +1466,54 @@ private void showSelectMemberForPaidEdit(Bc bc) {
 private void showUpdatePaidAmountDialog(Bc bc, String memberName) {
 
     final EditText input = new EditText(context);
-    input.setHint("Enter Amount");
-    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+    input.setHint("Enter Paid BC Amount");
+    input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
     input.setPadding(40, 20, 40, 20);
 
+    Double oldAmount = bc.paidBcAmount.get(memberName);
+    if (oldAmount != null) {
+        input.setText(String.valueOf(oldAmount));
+    }
+
     new AlertDialog.Builder(context)
-            .setTitle("Update Paid Amount")
+            .setTitle("Update Paid BC Amount")
             .setView(input)
             .setPositiveButton("Update", (d, w) -> {
 
-                int amount = safeParseInt(input.getText().toString());
+                double newAmount = 0.0;
+                try {
+                    newAmount = Double.parseDouble(input.getText().toString().trim());
+                } catch (Exception ignored) {}
 
-                bc.paid.put(memberName, amount); // adjust if your structure differs
+                double previousAmount = bc.paidBcAmount.getOrDefault(memberName, 0.0);
+
+                double finalNewAmount = newAmount;
+
+                // 🧠 UNDO / REDO SUPPORT
+                pushToUndoStack(
+                        () -> { // UNDO
+                            if (previousAmount == 0.0)
+                                bc.paidBcAmount.remove(memberName);
+                            else
+                                bc.paidBcAmount.put(memberName, previousAmount);
+
+                            saveAllToRoom();
+                            renderMainTable(bc);
+                        },
+                        () -> { // REDO
+                            bc.paidBcAmount.put(memberName, finalNewAmount);
+                            saveAllToRoom();
+                            renderMainTable(bc);
+                        }
+                );
+
+                // ✅ APPLY CHANGE
+                bc.paidBcAmount.put(memberName, newAmount);
 
                 saveAllToRoom();
                 renderMainTable(bc);
 
-                Toast.makeText(context, "Paid amount updated", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Paid BC amount updated", Toast.LENGTH_SHORT).show();
             })
             .setNegativeButton("Cancel", null)
             .show();
