@@ -1378,6 +1378,7 @@ private void showEditOptionsDialog() {
 }
 
 private void showSelectBcForMemberEdit() {
+private void showSelectBcForMemberEdit() {
 
     if (bcData.isEmpty()) {
         Toast.makeText(context, "No BC available", Toast.LENGTH_SHORT).show();
@@ -1428,13 +1429,44 @@ private void showUpdateMemberDialog(Bc bc, String oldName) {
                     return;
                 }
 
-                int index = bc.members.indexOf(oldName);
-                if (index != -1) {
-                    bc.members.set(index, newName);
-                    saveAllToRoom();
-                    renderMainTable(bc);
-                    Toast.makeText(context, "Member updated", Toast.LENGTH_SHORT).show();
+                if (bc.members.contains(newName)) {
+                    Toast.makeText(context, "Member already exists", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+
+                int index = bc.members.indexOf(oldName);
+                if (index == -1) return;
+
+                // Save old data for undo
+                Boolean oldPaid = bc.paid.get(oldName);
+                Double oldInstallment = bc.paidAmount.get(oldName);
+                Double oldPaidBc = bc.paidBcAmount.get(oldName);
+
+                // 🧠 PUSH TO UNDO STACK
+                pushToUndoStack(
+                        () -> { // UNDO
+                            bc.members.set(index, oldName);
+                            restoreMapsAfterRename(bc, oldName, newName,
+                                    oldPaid, oldInstallment, oldPaidBc);
+                            saveAllToRoom();
+                            renderMainTable(bc);
+                        },
+                        () -> { // REDO
+                            bc.members.set(index, newName);
+                            moveMapsAfterRename(bc, oldName, newName);
+                            saveAllToRoom();
+                            renderMainTable(bc);
+                        }
+                );
+
+                // APPLY CHANGE
+                bc.members.set(index, newName);
+                moveMapsAfterRename(bc, oldName, newName);
+
+                saveAllToRoom();
+                renderMainTable(bc);
+
+                Toast.makeText(context, "Member updated", Toast.LENGTH_SHORT).show();
             })
             .setNegativeButton("Cancel", null)
             .show();
@@ -2213,6 +2245,32 @@ private void showDeleteMemberDialog() {
 
     builder.setNegativeButton("Cancel", null);
     builder.show();
+}
+
+private void moveMapsAfterRename(Bc bc, String oldName, String newName) {
+
+    if (bc.paid.containsKey(oldName))
+        bc.paid.put(newName, bc.paid.remove(oldName));
+
+    if (bc.paidAmount.containsKey(oldName))
+        bc.paidAmount.put(newName, bc.paidAmount.remove(oldName));
+
+    if (bc.paidBcAmount.containsKey(oldName))
+        bc.paidBcAmount.put(newName, bc.paidBcAmount.remove(oldName));
+}
+
+private void restoreMapsAfterRename(Bc bc, String oldName, String newName,
+                                    Boolean paidStatus,
+                                    Double installmentAmount,
+                                    Double paidBcAmount) {
+
+    bc.paid.remove(newName);
+    bc.paidAmount.remove(newName);
+    bc.paidBcAmount.remove(newName);
+
+    if (paidStatus != null) bc.paid.put(oldName, paidStatus);
+    if (installmentAmount != null) bc.paidAmount.put(oldName, installmentAmount);
+    if (paidBcAmount != null) bc.paidBcAmount.put(oldName, paidBcAmount);
 }
 
 private void pushToHistory(Runnable undo, Runnable redo) {
