@@ -41,10 +41,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.HorizontalScrollView;  // ← ADD THIS LINE
 import android.widget.ScrollView;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputLayout;
-import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -1274,58 +1270,42 @@ private void showAddMemberDialog() {
         return;
     }
 
-    List<String> bcNames = new ArrayList<>();
-    List<Bc> selectableBcs = new ArrayList<>();
-
-    for (Bc bc : bcData) {
-        // Show count + allow only if space exists
-        String label = bc.name + "  (" + bc.members.size() + "/" + bc.months + ")";
-        bcNames.add(label);
-        selectableBcs.add(bc);
+    // 🔹 BC Name List
+    String[] bcNames = new String[bcData.size()];
+    for (int i = 0; i < bcData.size(); i++) {
+        bcNames[i] = bcData.get(i).name;
     }
 
-    new MaterialAlertDialogBuilder(activity, R.style.RoundDialog)
-            .setTitle("Add Member")
-            .setMessage("Select a BC group")
-            .setItems(bcNames.toArray(new String[0]), (dialog, which) -> {
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    builder.setTitle("Select BC");
 
-                Bc selectedBc = selectableBcs.get(which);
+    builder.setItems(bcNames, (dialog, which) -> {
 
-                // 🔴 LIMIT CHECK
-                if (selectedBc.members.size() >= selectedBc.months) {
-                    Toast.makeText(context,
-                            "This BC already has maximum members (" + selectedBc.months + ")",
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
+        Bc selectedBc = bcData.get(which);
 
-                showMemberNameInputDialog(selectedBc);
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
+        // 🔴 LIMIT CHECK
+        if (selectedBc.members.size() >= selectedBc.months) {
+            Toast.makeText(context,
+                    "This BC already has maximum members (" + selectedBc.months + ")",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        showMemberNameInputDialog(selectedBc);
+    });
+
+    builder.show();
 }
 
 private void showMemberNameInputDialog(Bc bc) {
 
-    LinearLayout container = new LinearLayout(context);
-    container.setOrientation(LinearLayout.VERTICAL);
-    container.setPadding(60, 30, 60, 10);
+    EditText input = new EditText(context);
+    input.setHint("Enter Member Name");
+    input.setPadding(40, 20, 40, 20);
 
-    TextInputLayout inputLayout = new TextInputLayout(context);
-    inputLayout.setHint("Member Name");
-    inputLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
-    inputLayout.setBoxCornerRadii(28f, 28f, 28f, 28f);
-
-    TextInputEditText input = new TextInputEditText(context);
-    input.setTextSize(16f);
-    inputLayout.addView(input);
-
-    container.addView(inputLayout);
-
-    new MaterialAlertDialogBuilder(activity, R.style.RoundDialog)
-            .setTitle("Add Member")
-            .setMessage("Add new member to " + bc.name)
-            .setView(container)
+    new AlertDialog.Builder(context)
+            .setTitle("Add Member to " + bc.name)
+            .setView(input)
             .setPositiveButton("Add", (dialog, which) -> {
 
                 String newMember = input.getText().toString().trim();
