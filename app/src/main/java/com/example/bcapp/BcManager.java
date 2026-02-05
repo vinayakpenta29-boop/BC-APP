@@ -2263,46 +2263,63 @@ private void moveMapsAfterRename(Bc bc, String oldName, String newName) {
 
     if (oldName.equals(newName)) return;
 
-    // Move PAID STATUS
-    if (bc.paid.containsKey(oldName)) {
-        Boolean value = bc.paid.remove(oldName);
-        bc.paid.put(newName, value);
+    Map<String, Boolean> newPaidMap = new HashMap<>();
+    Map<String, Double> newPaidAmountMap = new HashMap<>();
+    Map<String, List<PaymentEntry>> newPaymentEntriesMap = new HashMap<>();
+
+    // 🔁 MOVE paid + paidAmount month-wise keys
+    for (int m = 0; m < bc.months; m++) {
+
+        String oldKey = bc.getPaidKey(oldName, m);
+        String newKey = bc.getPaidKey(newName, m);
+
+        if (bc.paid.containsKey(oldKey)) {
+            newPaidMap.put(newKey, bc.paid.get(oldKey));
+        }
+
+        if (bc.paidAmount.containsKey(oldKey)) {
+            newPaidAmountMap.put(newKey, bc.paidAmount.get(oldKey));
+        }
+
+        if (bc.paymentEntries.containsKey(oldKey)) {
+            newPaymentEntriesMap.put(newKey, bc.paymentEntries.get(oldKey));
+        }
     }
 
-    // Move INSTALLMENT AMOUNT HISTORY
-    if (bc.paidAmount.containsKey(oldName)) {
-        Double value = bc.paidAmount.remove(oldName);
-        bc.paidAmount.put(newName, value);
+    // 🧹 REMOVE OLD KEYS
+    for (int m = 0; m < bc.months; m++) {
+        String oldKey = bc.getPaidKey(oldName, m);
+        bc.paid.remove(oldKey);
+        bc.paidAmount.remove(oldKey);
+        bc.paymentEntries.remove(oldKey);
     }
 
-    // Move BC PAID AMOUNT HISTORY
+    // ➕ ADD NEW KEYS
+    bc.paid.putAll(newPaidMap);
+    bc.paidAmount.putAll(newPaidAmountMap);
+    bc.paymentEntries.putAll(newPaymentEntriesMap);
+
+    // 🔁 ALSO update member name inside payment history list
+    for (PaymentEntry pe : bc.payments) {
+        if (pe.member.equals(oldName)) {
+            pe.member = newName;
+        }
+    }
+
+    // 🔁 Move Paid BC amount (this one uses direct member key)
     if (bc.paidBcAmount.containsKey(oldName)) {
-        Double value = bc.paidBcAmount.remove(oldName);
-        bc.paidBcAmount.put(newName, value);
+        Double amt = bc.paidBcAmount.remove(oldName);
+        bc.paidBcAmount.put(newName, amt);
     }
 }
 
 private void restoreMapsAfterRename(Bc bc, String oldName, String newName,
-                                    Boolean paidStatus,
-                                    Double installmentAmount,
-                                    Double paidBcAmount) {
+                                    Boolean dummy1, Double dummy2, Double dummy3) {
 
     if (oldName.equals(newName)) return;
 
-    // Remove any data stored under the NEW name
-    bc.paid.remove(newName);
-    bc.paidAmount.remove(newName);
-    bc.paidBcAmount.remove(newName);
-
-    // Restore OLD data exactly as it was
-    if (paidStatus != null)
-        bc.paid.put(oldName, paidStatus);
-
-    if (installmentAmount != null)
-        bc.paidAmount.put(oldName, installmentAmount);
-
-    if (paidBcAmount != null)
-        bc.paidBcAmount.put(oldName, paidBcAmount);
+    // Just reverse rename logic
+    moveMapsAfterRename(bc, newName, oldName);
 }
 
 private void pushToHistory(Runnable undo, Runnable redo) {
