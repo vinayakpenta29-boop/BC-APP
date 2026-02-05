@@ -1416,59 +1416,72 @@ private void showUpdateMemberDialog(Bc bc, String oldName) {
     input.setText(oldName);
     input.setPadding(40, 20, 40, 20);
 
-    new AlertDialog.Builder(context)
+    AlertDialog dialog = new AlertDialog.Builder(context)
             .setTitle("Update Member Name")
             .setView(input)
-            .setPositiveButton("Update", (d, w) -> {
-
-                String newName = input.getText().toString().trim();
-
-                if (newName.isEmpty()) {
-                    Toast.makeText(context, "Name cannot be empty", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (bc.members.contains(newName)) {
-                    Toast.makeText(context, "Member already exists", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                int index = bc.members.indexOf(oldName);
-                if (index == -1) return;
-
-                // Save old data for undo
-                Boolean oldPaid = bc.paid.get(oldName);
-                Double oldInstallment = bc.paidAmount.get(oldName);
-                Double oldPaidBc = bc.paidBcAmount.get(oldName);
-
-                // 🧠 PUSH TO UNDO STACK
-                pushToUndoStack(
-                        () -> { // UNDO
-                            bc.members.set(index, oldName);
-                            restoreMapsAfterRename(bc, oldName, newName,
-                                    oldPaid, oldInstallment, oldPaidBc);
-                            saveAllToRoom();
-                            renderMainTable(bc);
-                        },
-                        () -> { // REDO
-                            bc.members.set(index, newName);
-                            moveMapsAfterRename(bc, oldName, newName);
-                            saveAllToRoom();
-                            renderMainTable(bc);
-                        }
-                );
-
-                // APPLY CHANGE
-                bc.members.set(index, newName);
-                moveMapsAfterRename(bc, oldName, newName);
-
-                saveAllToRoom();
-                renderMainTable(bc);
-
-                Toast.makeText(context, "Member updated", Toast.LENGTH_SHORT).show();
-            })
+            .setPositiveButton("Update", null) // we override click to control closing
             .setNegativeButton("Cancel", null)
-            .show();
+            .create();
+
+    dialog.show();
+
+    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+
+        String newName = input.getText().toString().trim();
+
+        if (newName.isEmpty()) {
+            input.setError("Name cannot be empty");
+            return;
+        }
+
+        if (newName.equals(oldName)) {
+            input.setError("No changes made");
+            return;
+        }
+
+        // 🚫 Prevent duplicate member names
+        if (bc.members.contains(newName)) {
+            input.setError("Member already exists");
+            return;
+        }
+
+        int index = bc.members.indexOf(oldName);
+        if (index == -1) return;
+
+        // 🔹 Save old payment data for UNDO
+        Boolean oldPaidStatus = bc.paid.get(oldName);
+        Double oldInstallmentAmount = bc.paidAmount.get(oldName);
+        Double oldPaidBcAmount = bc.paidBcAmount.get(oldName);
+
+        // 🧠 UNDO / REDO SUPPORT
+        pushToUndoStack(
+                () -> { // UNDO
+                    bc.members.set(index, oldName);
+                    restoreMapsAfterRename(bc, oldName, newName,
+                            oldPaidStatus, oldInstallmentAmount, oldPaidBcAmount);
+                    saveAllToRoom();
+                    renderMainTable(bc);
+                },
+                () -> { // REDO
+                    bc.members.set(index, newName);
+                    moveMapsAfterRename(bc, oldName, newName);
+                    saveAllToRoom();
+                    renderMainTable(bc);
+                }
+        );
+
+        // ✅ APPLY CHANGE
+        bc.members.set(index, newName);
+
+        // ✅ TRANSFER all payment history to new name
+        moveMapsAfterRename(bc, oldName, newName);
+
+        saveAllToRoom();
+        renderMainTable(bc);
+
+        Toast.makeText(context, "Member updated successfully", Toast.LENGTH_SHORT).show();
+        dialog.dismiss();
+    });
 }
 
 private void showSelectBcForPaidEdit() {
@@ -2248,14 +2261,25 @@ private void showDeleteMemberDialog() {
 
 private void moveMapsAfterRename(Bc bc, String oldName, String newName) {
 
-    if (bc.paid.containsKey(oldName))
-        bc.paid.put(newName, bc.paid.remove(oldName));
+    if (oldName.equals(newName)) return;
 
-    if (bc.paidAmount.containsKey(oldName))
-        bc.paidAmount.put(newName, bc.paidAmount.remove(oldName));
+    // Move PAID STATUS
+    if (bc.paid.containsKey(oldName)) {
+        Boolean value = bc.paid.remove(oldName);
+        bc.paid.put(newName, value);
+    }
 
-    if (bc.paidBcAmount.containsKey(oldName))
-        bc.paidBcAmount.put(newName, bc.paidBcAmount.remove(oldName));
+    // Move INSTALLMENT AMOUNT HISTORY
+    if (bc.paidAmount.containsKey(oldName)) {
+        Double value = bc.paidAmount.remove(oldName);
+        bc.paidAmount.put(newName, value);
+    }
+
+    // Move BC PAID AMOUNT HISTORY
+    if (bc.paidBcAmount.containsKey(oldName)) {
+        Double value = bc.paidBcAmount.remove(oldName);
+        bc.paidBcAmount.put(newName, value);
+    }
 }
 
 private void restoreMapsAfterRename(Bc bc, String oldName, String newName,
@@ -2263,13 +2287,22 @@ private void restoreMapsAfterRename(Bc bc, String oldName, String newName,
                                     Double installmentAmount,
                                     Double paidBcAmount) {
 
+    if (oldName.equals(newName)) return;
+
+    // Remove any data stored under the NEW name
     bc.paid.remove(newName);
     bc.paidAmount.remove(newName);
     bc.paidBcAmount.remove(newName);
 
-    if (paidStatus != null) bc.paid.put(oldName, paidStatus);
-    if (installmentAmount != null) bc.paidAmount.put(oldName, installmentAmount);
-    if (paidBcAmount != null) bc.paidBcAmount.put(oldName, paidBcAmount);
+    // Restore OLD data exactly as it was
+    if (paidStatus != null)
+        bc.paid.put(oldName, paidStatus);
+
+    if (installmentAmount != null)
+        bc.paidAmount.put(oldName, installmentAmount);
+
+    if (paidBcAmount != null)
+        bc.paidBcAmount.put(oldName, paidBcAmount);
 }
 
 private void pushToHistory(Runnable undo, Runnable redo) {
