@@ -114,6 +114,8 @@ private final SimpleDateFormat displayFormat;
 // Room  
 private final AppDatabase db;  
 private final BcDao bcDao;  
+// 🔒 Global Edit Mode (true = can edit, false = view only)
+private boolean isEditModeEnabled = true;
 
 public BcManager(AppCompatActivity activity,  
                  TextView menuButton,  
@@ -291,6 +293,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 6, 5, "Delete A Member");
         popup.getMenu().add(0, 7, 6, "Add Member");
         popup.getMenu().add(0, 8, 7, "Edit");
+        popup.getMenu().add(0, 9, 8, "View Only Mode");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -350,6 +353,16 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     }
     else if (item.getItemId() == 8) {
     showEditOptionsDialog();
+    return true;
+    }
+    else if (item.getItemId() == 9) {
+
+    isEditModeEnabled = !isEditModeEnabled;
+
+    Toast.makeText(context,
+            isEditModeEnabled ? "Edit Mode Enabled" : "View Only Mode Enabled",
+            Toast.LENGTH_SHORT).show();
+
     return true;
     }
     return false;  
@@ -424,6 +437,11 @@ private interface AfterTakenCallback {
 /* ---------- Create BC dialog ---------- */  
 
 private void openCreateBcDialog() {
+
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+        return;
+    }
 
     View dialogView = activity.getLayoutInflater()
             .inflate(R.layout.dialog_create_bc, null);
@@ -1117,6 +1135,11 @@ private void renderMainTable(Bc bc) {
 /* ---------- Installments ---------- */  
 
 private void markInstallment() {
+
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "View Only Mode Enabled", Toast.LENGTH_SHORT).show();
+        return;
+    }
     int bcIndex = spinnerBc.getSelectedItemPosition();
     int memberIndex = spinnerMember.getSelectedItemPosition();
     String dateVal = editPayDate.getText().toString().trim();
@@ -1272,6 +1295,11 @@ private boolean isOverDue(Bc bc, String member, int monthIndex) {
 
 private void showAddMemberDialog() {
 
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
     if (bcData.isEmpty()) {
         Toast.makeText(context, "No BC available", Toast.LENGTH_SHORT).show();
         return;
@@ -1380,6 +1408,11 @@ private void showEditOptionsDialog() {
 
 private void showSelectBcForMemberEdit() {
 
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
     if (bcData.isEmpty()) {
         Toast.makeText(context, "No BC available", Toast.LENGTH_SHORT).show();
         return;
@@ -1486,6 +1519,11 @@ private void showUpdateMemberDialog(Bc bc, String oldName) {
 }
 
 private void showSelectBcForPaidEdit() {
+
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+        return;
+    }
 
     String[] bcNames = new String[bcData.size()];
     for (int i = 0; i < bcData.size(); i++) {
@@ -2015,6 +2053,11 @@ private View createSummaryBox(String label, double amount, String color) {
 }
 
 private void showDeleteBcDialog() {
+
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+        return;
+    }
     if (bcData.isEmpty()) {
         Toast.makeText(context, "No BC available to delete", Toast.LENGTH_SHORT).show();
         return;
@@ -2111,6 +2154,10 @@ private void showDeleteBcDialog() {
 
 private void showDeleteMemberDialog() {
 
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+        return;
+    }
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
     builder.setTitle("Delete Members");
 
