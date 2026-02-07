@@ -42,6 +42,7 @@ import android.widget.Toast;
 import android.widget.HorizontalScrollView;  // ← ADD THIS LINE
 import android.widget.ScrollView;
 import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.widget.SwitchCompat;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -2376,8 +2377,7 @@ private void restoreMapsAfterRename(Bc bc, String oldName, String newName,
 private void showEditModeToggleDialog() {
 
     View view = LayoutInflater.from(context).inflate(R.layout.dialog_edit_mode, null);
-    Switch switchEdit = view.findViewById(R.id.switchEditMode);
-
+    SwitchCompat switchEdit = view.findViewById(R.id.switchEditMode);
     switchEdit.setChecked(isEditModeEnabled);
 
     switchEdit.setOnCheckedChangeListener((buttonView, isChecked) -> {
