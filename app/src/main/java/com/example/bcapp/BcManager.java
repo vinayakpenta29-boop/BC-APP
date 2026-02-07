@@ -117,6 +117,15 @@ private final BcDao bcDao;
 // 🔒 Global Edit Mode (true = can edit, false = view only)
 private boolean isEditModeEnabled = true;
 
+// 🔒 Checks whether editing is allowed
+private boolean checkEditMode() {
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "View Only Mode Enabled", Toast.LENGTH_SHORT).show();
+        return false;
+    }
+    return true;
+}
+
 public BcManager(AppCompatActivity activity,  
                  TextView menuButton,  
                  Spinner spinnerBc,  
