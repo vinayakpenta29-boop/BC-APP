@@ -293,7 +293,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 6, 5, "Delete A Member");
         popup.getMenu().add(0, 7, 6, "Add Member");
         popup.getMenu().add(0, 8, 7, "Edit");
-        popup.getMenu().add(0, 9, 8, "View Only Mode");
+        popup.getMenu().add(0, 9, 8, "Edit Mode");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -356,13 +356,7 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     return true;
     }
     else if (item.getItemId() == 9) {
-
-    isEditModeEnabled = !isEditModeEnabled;
-
-    Toast.makeText(context,
-            isEditModeEnabled ? "Edit Mode Enabled" : "View Only Mode Enabled",
-            Toast.LENGTH_SHORT).show();
-
+    showEditModeToggleDialog();
     return true;
     }
     return false;  
@@ -2368,6 +2362,29 @@ private void restoreMapsAfterRename(Bc bc, String oldName, String newName,
 
     // Just reverse rename logic
     moveMapsAfterRename(bc, newName, oldName);
+}
+
+private void showEditModeToggleDialog() {
+
+    View view = LayoutInflater.from(context).inflate(R.layout.dialog_edit_mode, null);
+    Switch switchEdit = view.findViewById(R.id.switchEditMode);
+
+    switchEdit.setChecked(isEditModeEnabled);
+
+    switchEdit.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        isEditModeEnabled = isChecked;
+    });
+
+    new AlertDialog.Builder(context)
+            .setTitle("Edit Mode Settings")
+            .setView(view)
+            .setPositiveButton("OK", (d, w) -> {
+                Toast.makeText(context,
+                        isEditModeEnabled ? "Edit Mode Enabled" : "View Only Mode Enabled",
+                        Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
 }
 
 private void pushToHistory(Runnable undo, Runnable redo) {
