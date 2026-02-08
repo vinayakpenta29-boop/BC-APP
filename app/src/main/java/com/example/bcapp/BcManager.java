@@ -299,11 +299,10 @@ private void setupMenu() {
         popup.getMenu().add(0, 2, 1, "Show BC List");  
         popup.getMenu().add(0, 3, 2, "Paid BC");
         popup.getMenu().add(0, 4, 3, "Summary");
-        popup.getMenu().add(0, 5, 4, "Delete BC");
-        popup.getMenu().add(0, 6, 5, "Delete A Member");
-        popup.getMenu().add(0, 7, 6, "Add Member");
-        popup.getMenu().add(0, 8, 7, "Edit");
-        popup.getMenu().add(0, 9, 8, "Edit Mode");
+        popup.getMenu().add(0, 5, 4, "Delete");
+        popup.getMenu().add(0, 6, 5, "Add Member");
+        popup.getMenu().add(0, 7, 6, "Edit");
+        popup.getMenu().add(0, 8, 7, "Edit Mode");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -350,22 +349,18 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     return true;
     }
     else if (item.getItemId() == 5) {
-    showDeleteBcDialog();
+    showDeleteOptionsDialog(); // NEW
     return true;
     }
     else if (item.getItemId() == 6) {
-    showDeleteMemberDialog();
-    return true;
-    }
-    else if (item.getItemId() == 7) {
     showAddMemberDialog();
     return true;
     }
-    else if (item.getItemId() == 8) {
+    else if (item.getItemId() == 7) {
     showEditOptionsDialog();
     return true;
     }
-    else if (item.getItemId() == 9) {
+    else if (item.getItemId() == 8) {
     showEditModeToggleDialog();
     return true;
     }
@@ -1295,6 +1290,27 @@ private boolean isOverDue(Bc bc, String member, int monthIndex) {
                     && Boolean.TRUE.equals(bc.paid.get(key));
 
     return !isPaid && today.after(due);
+}
+
+private void showDeleteOptionsDialog() {
+
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    String[] options = {"Delete BC", "Delete A Member"};
+
+    new AlertDialog.Builder(context)
+            .setTitle("Delete Options")
+            .setItems(options, (dialog, which) -> {
+                if (which == 0) {
+                    showDeleteBcDialog();      // existing method
+                } else {
+                    showDeleteMemberDialog();  // existing method
+                }
+            })
+            .show();
 }
 
 private void showAddMemberDialog() {
