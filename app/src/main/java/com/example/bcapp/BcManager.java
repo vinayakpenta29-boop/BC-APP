@@ -1250,6 +1250,39 @@ private void rebuildPaymentEntries(Bc bc) {
     }
 }
 
+private void removeEntriesFromBc(Bc bc, List<PaymentEntry> entriesToRemove) {
+
+    if (bc.payments == null) return;
+
+    Iterator<PaymentEntry> iterator = bc.payments.iterator();
+    while (iterator.hasNext()) {
+        PaymentEntry pe = iterator.next();
+        if (entriesToRemove.contains(pe)) {
+            iterator.remove();
+        }
+    }
+
+    // 🔄 Rebuild payment maps safely
+    rebuildPaymentEntries(bc);
+
+    // 🔄 Recalculate installment totals and tick status
+    bc.paidAmount.clear();
+    bc.paid.clear();
+
+    for (PaymentEntry pe : bc.payments) {
+        String key = bc.getPaidKey(pe.member, pe.monthIndex);
+        double total = bc.paidAmount.getOrDefault(key, 0.0) + pe.amount;
+        bc.paidAmount.put(key, total);
+
+        double expected =
+                bc.amounts.size() > pe.monthIndex
+                        ? bc.amounts.get(pe.monthIndex)
+                        : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+
+        bc.paid.put(key, total >= expected);
+    }
+}
+
 // 🔴 Highlight unpaid member name until due date
 private boolean shouldHighlightUnpaid(Bc bc, String member, int monthIndex) {
 
