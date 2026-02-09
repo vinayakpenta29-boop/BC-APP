@@ -1299,16 +1299,26 @@ private void showDeleteOptionsDialog() {
         return;
     }
 
-    String[] options = {"Delete BC", "Delete A Member"};
+    String[] options = {"Delete BC", "Delete A Member", "Delete Entry"};
 
     new AlertDialog.Builder(context)
             .setTitle("Delete Options")
             .setItems(options, (dialog, which) -> {
-                if (which == 0) {
-                    showDeleteBcDialog();      // existing method
-                } else {
-                    showDeleteMemberDialog();  // existing method
+
+                switch (which) {
+                    case 0:
+                        showDeleteBcDialog();        // existing
+                        break;
+
+                    case 1:
+                        showDeleteMemberDialog();    // existing
+                        break;
+
+                    case 2:
+                        showSelectBcForEntryDelete(); // 🔥 NEW (Entry delete flow)
+                        break;
                 }
+
             })
             .show();
 }
@@ -2325,6 +2335,138 @@ private void showDeleteMemberDialog() {
 
     builder.setNegativeButton("Cancel", null);
     builder.show();
+}
+
+private void showSelectBcForEntryDelete() {
+
+    if (bcData.isEmpty()) {
+        Toast.makeText(context, "No BC available", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    String[] bcNames = new String[bcData.size()];
+    for (int i = 0; i < bcData.size(); i++) {
+        bcNames[i] = bcData.get(i).name;
+    }
+
+    new AlertDialog.Builder(context)
+            .setTitle("Select BC")
+            .setItems(bcNames, (d, which) -> showSelectMemberForEntryDelete(bcData.get(which)))
+            .show();
+}
+
+private void showSelectMemberForEntryDelete(Bc bc) {
+
+    if (bc.members.isEmpty()) {
+        Toast.makeText(context, "No members in this BC", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    String[] members = bc.members.toArray(new String[0]);
+
+    new AlertDialog.Builder(context)
+            .setTitle("Select Member")
+            .setItems(members, (d, which) -> showEntryMultiDeleteDialog(bc, members[which]))
+            .show();
+}
+
+private void showEntryMultiDeleteDialog(Bc bc, String member) {
+
+    List<PaymentEntry> memberEntries = new ArrayList<>();
+
+    for (PaymentEntry pe : bc.payments) {
+        if (pe.member.equals(member)) {
+            memberEntries.add(pe);
+        }
+    }
+
+    if (memberEntries.isEmpty()) {
+        Toast.makeText(context, "No entries found", Toast.LENGTH_SHORT).show();
+        return;
+    }
+
+    String[] entryLabels = new String[memberEntries.size()];
+    boolean[] checked = new boolean[memberEntries.size()];
+
+    for (int i = 0; i < memberEntries.size(); i++) {
+        PaymentEntry pe = memberEntries.get(i);
+        entryLabels[i] = pe.date + "  -  ₹" + pe.amount;
+    }
+
+    new AlertDialog.Builder(context)
+            .setTitle("Select Entries to Delete")
+            .setMultiChoiceItems(entryLabels, checked, (d, which, isChecked) -> checked[which] = isChecked)
+            .setPositiveButton("Delete", (d, w) -> {
+
+                List<PaymentEntry> toRemove = new ArrayList<>();
+                for (int i = 0; i < checked.length; i++) {
+                    if (checked[i]) toRemove.add(memberEntries.get(i));
+                }
+
+                if (toRemove.isEmpty()) {
+                    Toast.makeText(context, "Nothing selected", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                deleteSelectedEntries(bc, member, toRemove);
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+}
+
+private void deleteSelectedEntries(Bc bc, String member, List<PaymentEntry> entriesToRemove) {
+
+    // Backup for UNDO
+    List<PaymentEntry> backup = new ArrayList<>(entriesToRemove);
+
+    pushToUndoStack(
+            () -> { // UNDO
+                bc.payments.addAll(backup);
+                recalculateAfterEntryChange(bc, member);
+            },
+            () -> { // REDO
+                bc.payments.removeAll(backup);
+                recalculateAfterEntryChange(bc, member);
+            }
+    );
+
+    // Apply delete
+    bc.payments.removeAll(entriesToRemove);
+    recalculateAfterEntryChange(bc, member);
+
+    Toast.makeText(context, "Entries deleted", Toast.LENGTH_SHORT).show();
+}
+
+private void recalculateAfterEntryChange(Bc bc, String member) {
+
+    double totalPaid = 0;
+    int paidMonths = 0;
+
+    Map<Integer, Double> monthTotals = new HashMap<>();
+
+    for (PaymentEntry pe : bc.payments) {
+        if (pe.member.equals(member)) {
+            totalPaid += pe.amount;
+            monthTotals.put(pe.monthIndex,
+                    monthTotals.getOrDefault(pe.monthIndex, 0.0) + pe.amount);
+        }
+    }
+
+    for (int m = 0; m < bc.months; m++) {
+        double needed = bc.amounts.get(m);
+        double paid = monthTotals.getOrDefault(m, 0.0);
+
+        if (paid >= needed) paidMonths++;
+    }
+
+    // Update maps
+    bc.paidAmount.put(member, totalPaid);
+    bc.paid.put(member, paidMonths == bc.months);
+    bc.paidBcAmount.put(member, totalPaid);
+
+    saveAllToRoom();
+    renderMainTable(bc);
+    updateSummaryValues();
 }
 
 private void moveMapsAfterRename(Bc bc, String oldName, String newName) {
