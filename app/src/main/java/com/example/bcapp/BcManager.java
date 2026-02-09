@@ -2466,7 +2466,6 @@ private void recalculateAfterEntryChange(Bc bc, String member) {
 
     saveAllToRoom();
     renderMainTable(bc);
-    updateSummaryValues();
 }
 
 private void moveMapsAfterRename(Bc bc, String oldName, String newName) {
