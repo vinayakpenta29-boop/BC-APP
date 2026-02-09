@@ -2465,7 +2465,6 @@ private void recalculateAfterEntryChange(Bc bc, String member) {
     bc.paidBcAmount.put(member, totalPaid);
 
     saveAllToRoom();
-    renderMainTable(bc);
 }
 
 private void moveMapsAfterRename(Bc bc, String oldName, String newName) {
