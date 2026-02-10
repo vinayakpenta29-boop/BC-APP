@@ -1454,6 +1454,11 @@ private void addMemberToBc(Bc bc, String memberName) {
 }
 
 private void showEditOptionsDialog() {
+        if (!isEditModeEnabled) {
+        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+        return;
+    }
+    
     String[] options = {"Edit Member", "Edit Paid BC"};
 
     new AlertDialog.Builder(context)
@@ -1469,11 +1474,6 @@ private void showEditOptionsDialog() {
 }
 
 private void showSelectBcForMemberEdit() {
-
-    if (!isEditModeEnabled) {
-        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-        return;
-    }
 
     if (bcData.isEmpty()) {
         Toast.makeText(context, "No BC available", Toast.LENGTH_SHORT).show();
@@ -1492,11 +1492,6 @@ private void showSelectBcForMemberEdit() {
 }
 
 private void showSelectMemberToEdit(Bc bc) {
-
-    if (bc.members.isEmpty()) {
-        Toast.makeText(context, "No members in this BC", Toast.LENGTH_SHORT).show();
-        return;
-    }
 
     String[] members = bc.members.toArray(new String[0]);
 
@@ -1581,11 +1576,6 @@ private void showUpdateMemberDialog(Bc bc, String oldName) {
 }
 
 private void showSelectBcForPaidEdit() {
-
-    if (!isEditModeEnabled) {
-        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-        return;
-    }
 
     String[] bcNames = new String[bcData.size()];
     for (int i = 0; i < bcData.size(); i++) {
@@ -1927,6 +1917,10 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 }
 
 private void showPaidBcDialog() {
+    if (!isEditModeEnabled) {
+        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+        return;
+    }
 
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
     LayoutInflater inflater = LayoutInflater.from(context);
