@@ -2439,18 +2439,59 @@ private void deleteSelectedEntries(Bc bc, String member, List<PaymentEntry> entr
 
 private void recalculateAfterEntryChange(Bc bc, String member) {
 
-    double totalPaid = 0;
-    int paidMonths = 0;
+    if (bc.paymentEntries == null) bc.paymentEntries = new HashMap<>();
+    if (bc.paidAmount == null) bc.paidAmount = new HashMap<>();
+    if (bc.paid == null) bc.paid = new HashMap<>();
 
-    Map<Integer, Double> monthTotals = new HashMap<>();
-
-    for (PaymentEntry pe : bc.payments) {
-        if (pe.member.equals(member)) {
-            totalPaid += pe.amount;
-            monthTotals.put(pe.monthIndex,
-                    monthTotals.getOrDefault(pe.monthIndex, 0.0) + pe.amount);
-        }
+    // 1️⃣ Remove old month-wise data for this member
+    for (int m = 0; m < bc.months; m++) {
+        String key = bc.getPaidKey(member, m);
+        bc.paidAmount.remove(key);
+        bc.paid.remove(key);
+        bc.paymentEntries.remove(key);
     }
+
+    double totalPaidAllMonths = 0;
+
+    // 2️⃣ Rebuild from payment history
+    for (PaymentEntry pe : bc.payments) {
+
+        if (!pe.member.equals(member)) continue;
+
+        String key = bc.getPaidKey(member, pe.monthIndex);
+
+        // rebuild paymentEntries map
+        List<PaymentEntry> list = bc.paymentEntries.get(key);
+        if (list == null) list = new ArrayList<>();
+        list.add(pe);
+        bc.paymentEntries.put(key, list);
+
+        // rebuild paidAmount map
+        double newAmt = bc.paidAmount.getOrDefault(key, 0.0) + pe.amount;
+        bc.paidAmount.put(key, newAmt);
+
+        totalPaidAllMonths += pe.amount;
+    }
+
+    // 3️⃣ Recalculate paid tick per month
+    for (int m = 0; m < bc.months; m++) {
+
+        String key = bc.getPaidKey(member, m);
+        double paidAmt = bc.paidAmount.getOrDefault(key, 0.0);
+        double expected = bc.amounts.get(m);
+
+        bc.paid.put(key, paidAmt >= expected);
+    }
+
+    // 4️⃣ BC Paid amount (separate feature — keep this)
+    bc.paidBcAmount.put(member, totalPaidAllMonths);
+
+    saveAllToRoom();
+
+    if (spinnerBc.getSelectedItemPosition() > 0) {
+        renderMainTable(bc);
+    }
+}
 
     for (int m = 0; m < bc.months; m++) {
         double needed = bc.amounts.get(m);
