@@ -116,7 +116,7 @@ private final SimpleDateFormat displayFormat;
 private final AppDatabase db;  
 private final BcDao bcDao;  
 // 🔒 Global Edit Mode (true = can edit, false = view only)
-private boolean isEditModeEnabled = true;
+private boolean isEditModeEnabled = false;
 
 // 🔒 Checks whether editing is allowed
 private boolean checkEditMode() {
