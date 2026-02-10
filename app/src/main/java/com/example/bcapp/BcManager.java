@@ -834,6 +834,11 @@ private void renderMainTable(Bc bc) {
     tableContainer.removeAllViews();
     if (bc == null) return;
 
+    if (bc.paymentEntries == null) bc.paymentEntries = new HashMap<>();
+    if (bc.paidAmount == null) bc.paidAmount = new HashMap<>();
+    if (bc.paid == null) bc.paid = new HashMap<>();
+    if (bc.paidBcAmount == null) bc.paidBcAmount = new HashMap<>();
+
     TextView title = new TextView(context);
     title.setText("Main BC Table");
     title.setTextColor(Color.parseColor("#000000"));
@@ -2471,57 +2476,58 @@ private void deleteSelectedEntries(Bc bc, String member, List<PaymentEntry> entr
 
 private void recalculateAfterEntryChange(Bc bc, String member) {
 
+    if (bc.payments == null) bc.payments = new ArrayList<>();
     if (bc.paymentEntries == null) bc.paymentEntries = new HashMap<>();
     if (bc.paidAmount == null) bc.paidAmount = new HashMap<>();
     if (bc.paid == null) bc.paid = new HashMap<>();
     if (bc.paidBcAmount == null) bc.paidBcAmount = new HashMap<>();
 
-    // 1️⃣ Remove old month-wise data for this member
-    for (int m = 0; m < bc.months; m++) {
-        String key = bc.getPaidKey(member, m);
-        bc.paidAmount.remove(key);
-        bc.paid.remove(key);
-        bc.paymentEntries.remove(key);
-    }
+    // 🔥 CLEAR ALL MAPS (FULL REBUILD)
+    bc.paymentEntries.clear();
+    bc.paidAmount.clear();
+    bc.paid.clear();
+    bc.paidBcAmount.clear();
 
-    double totalPaidAllMonths = 0;
-
-    // 2️⃣ Rebuild from payment history
+    // 🔁 REBUILD FROM PAYMENT HISTORY
     for (PaymentEntry pe : bc.payments) {
 
-        if (!pe.member.equals(member)) continue;
+        String key = bc.getPaidKey(pe.member, pe.monthIndex);
 
-        String key = bc.getPaidKey(member, pe.monthIndex);
-
-        // rebuild paymentEntries map
+        // rebuild paymentEntries
         List<PaymentEntry> list = bc.paymentEntries.get(key);
         if (list == null) list = new ArrayList<>();
         list.add(pe);
         bc.paymentEntries.put(key, list);
 
-        // rebuild paidAmount map
-        double newAmt = bc.paidAmount.getOrDefault(key, 0.0) + pe.amount;
-        bc.paidAmount.put(key, newAmt);
+        // rebuild paidAmount
+        double total = bc.paidAmount.getOrDefault(key, 0.0) + pe.amount;
+        bc.paidAmount.put(key, total);
 
-        totalPaidAllMonths += pe.amount;
+        // rebuild paidBcAmount (summary)
+        double totalBc = bc.paidBcAmount.getOrDefault(pe.member, 0.0) + pe.amount;
+        bc.paidBcAmount.put(pe.member, totalBc);
     }
 
-    // 3️⃣ Recalculate paid tick per month
-    for (int m = 0; m < bc.months; m++) {
+    // 🔁 REBUILD PAID TICKS SAFELY
+    for (String memberName : bc.members) {
+        for (int m = 0; m < bc.months; m++) {
 
-        String key = bc.getPaidKey(member, m);
-        double paidAmt = bc.paidAmount.getOrDefault(key, 0.0);
-        double expected = bc.amounts.get(m);
+            String key = bc.getPaidKey(memberName, m);
+            double paidAmt = bc.paidAmount.getOrDefault(key, 0.0);
 
-        bc.paid.put(key, paidAmt >= expected);
+            double expected = 0.0;
+            if (bc.amounts != null && m < bc.amounts.size()) {
+                expected = bc.amounts.get(m);
+            } else if (bc.amounts != null && !bc.amounts.isEmpty()) {
+                expected = bc.amounts.get(0);
+            }
+
+            bc.paid.put(key, paidAmt >= expected);
+        }
     }
-
-    // 4️⃣ BC Paid amount (summary feature)
-    bc.paidBcAmount.put(member, totalPaidAllMonths);
 
     saveAllToRoom();
 
-    // Refresh table if visible
     if (spinnerBc.getSelectedItemPosition() > 0) {
         renderMainTable(bc);
     }
