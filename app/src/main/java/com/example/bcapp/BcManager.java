@@ -87,6 +87,11 @@ private static class HistoryAction {
     }
 }
 
+private void updateLockIcon() {
+    if (imgLock == null) return;
+    imgLock.setVisibility(isEditModeEnabled ? View.GONE : View.VISIBLE);
+}
+
 private final List<HistoryAction> undoStack = new ArrayList<>();
 private final List<HistoryAction> redoStack = new ArrayList<>();
 private static final int MAX_HISTORY = 10;
@@ -98,6 +103,7 @@ private final Context context;
 private final TextView menuButton;  
 private final ImageButton btnUndo;
 private final ImageButton btnRedo;
+private final ImageView imgLock;
 private final Spinner spinnerBc, spinnerMember;  
 private final EditText editPayDate, editPayAmount;  
 private final Button buttonAdd;  
@@ -2590,6 +2596,7 @@ private void showEditModeToggleDialog() {
 
     switchEdit.setOnCheckedChangeListener((buttonView, isChecked) -> {
         isEditModeEnabled = isChecked;
+        updateLockIcon();
     });
 
     new AlertDialog.Builder(context)
