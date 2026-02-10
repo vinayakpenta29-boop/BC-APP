@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 tableContainer,
                 btnUndo,      // NEW
                 btnRedo,      // NEW
+                imgLock,
                 bcData,
                 isoFormat,
                 displayFormat
