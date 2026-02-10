@@ -19,7 +19,17 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- Spacer pushes everything to right -->
+            <!-- 🔒 LOCK ICON (Edit Mode OFF indicator) -->
+            <ImageView
+                android:id="@+id/imgLock"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_lock"
+                android:visibility="gone"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Edit Mode Locked"/>
+
+            <!-- Spacer pushes everything else to right -->
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -36,7 +46,6 @@
                 android:paddingEnd="4dp"
                 android:layout_marginEnd="6dp">
 
-                <!-- UNDO BUTTON -->
                 <ImageButton
                     android:id="@+id/btnUndo"
                     android:layout_width="32dp"
@@ -47,7 +56,6 @@
                     android:contentDescription="Undo"
                     android:padding="6dp" />
 
-                <!-- REDO BUTTON -->
                 <ImageButton
                     android:id="@+id/btnRedo"
                     android:layout_width="32dp"
