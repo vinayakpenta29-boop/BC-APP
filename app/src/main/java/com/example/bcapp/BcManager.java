@@ -1250,6 +1250,38 @@ private void rebuildPaymentEntries(Bc bc) {
     }
 }
 
+private void recalculatePaymentsFromEntries(Bc bc) {
+
+    // Safety
+    if (bc.payments == null) bc.payments = new ArrayList<>();
+    if (bc.paymentEntries == null) bc.paymentEntries = new HashMap<>();
+    if (bc.paidAmount == null) bc.paidAmount = new HashMap<>();
+    if (bc.paid == null) bc.paid = new HashMap<>();
+
+    // 1️⃣ Rebuild grouped entries
+    rebuildPaymentEntries(bc);
+
+    // 2️⃣ Clear totals
+    bc.paidAmount.clear();
+    bc.paid.clear();
+
+    // 3️⃣ Recalculate totals & tick status
+    for (PaymentEntry pe : bc.payments) {
+
+        String key = bc.getPaidKey(pe.member, pe.monthIndex);
+
+        double total = bc.paidAmount.getOrDefault(key, 0.0) + pe.amount;
+        bc.paidAmount.put(key, total);
+
+        double expected =
+                bc.amounts.size() > pe.monthIndex
+                        ? bc.amounts.get(pe.monthIndex)
+                        : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+
+        bc.paid.put(key, total >= expected);
+    }
+}
+
 // 🔴 Highlight unpaid member name until due date
 private boolean shouldHighlightUnpaid(Bc bc, String member, int monthIndex) {
 
