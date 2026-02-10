@@ -834,11 +834,6 @@ private void renderMainTable(Bc bc) {
     tableContainer.removeAllViews();
     if (bc == null) return;
 
-    if (bc.paymentEntries == null) bc.paymentEntries = new HashMap<>();
-    if (bc.paidAmount == null) bc.paidAmount = new HashMap<>();
-    if (bc.paid == null) bc.paid = new HashMap<>();
-    if (bc.paidBcAmount == null) bc.paidBcAmount = new HashMap<>();
-
     TextView title = new TextView(context);
     title.setText("Main BC Table");
     title.setTextColor(Color.parseColor("#000000"));
