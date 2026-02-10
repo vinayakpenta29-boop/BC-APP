@@ -2474,6 +2474,7 @@ private void recalculateAfterEntryChange(Bc bc, String member) {
     if (bc.paymentEntries == null) bc.paymentEntries = new HashMap<>();
     if (bc.paidAmount == null) bc.paidAmount = new HashMap<>();
     if (bc.paid == null) bc.paid = new HashMap<>();
+    if (bc.paidBcAmount == null) bc.paidBcAmount = new HashMap<>();
 
     // 1️⃣ Remove old month-wise data for this member
     for (int m = 0; m < bc.months; m++) {
@@ -2515,29 +2516,15 @@ private void recalculateAfterEntryChange(Bc bc, String member) {
         bc.paid.put(key, paidAmt >= expected);
     }
 
-    // 4️⃣ BC Paid amount (separate feature — keep this)
+    // 4️⃣ BC Paid amount (summary feature)
     bc.paidBcAmount.put(member, totalPaidAllMonths);
 
     saveAllToRoom();
 
+    // Refresh table if visible
     if (spinnerBc.getSelectedItemPosition() > 0) {
         renderMainTable(bc);
     }
-}
-
-    for (int m = 0; m < bc.months; m++) {
-        double needed = bc.amounts.get(m);
-        double paid = monthTotals.getOrDefault(m, 0.0);
-
-        if (paid >= needed) paidMonths++;
-    }
-
-    // Update maps
-    bc.paidAmount.put(member, totalPaid);
-    bc.paid.put(member, paidMonths == bc.months);
-    bc.paidBcAmount.put(member, totalPaid);
-
-    saveAllToRoom();
 }
 
 private void moveMapsAfterRename(Bc bc, String oldName, String newName) {
