@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;   // ✅ IMPORT ADDED
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -24,8 +25,11 @@ public class MainActivity extends AppCompatActivity {
     Button buttonAdd;
     LinearLayout tableContainer;
 
-    // 🔹 NEW Undo / Redo Buttons
+    // 🔹 Undo / Redo Buttons
     ImageButton btnUndo, btnRedo;
+
+    // 🔒 Lock icon
+    ImageView imgLock;   // ✅ NEW
 
     // Data + helpers
     List<Bc> bcData = new ArrayList<>();
@@ -44,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Bind views
         menuButton = findViewById(R.id.menuButton);
-        spinnerBc = findViewById(R.id.spinnerBc);
+        spinnerBc = findViewByById(R.id.spinnerBc);
         spinnerMember = findViewById(R.id.spinnerMember);
         editPayDate = findViewById(R.id.editPayDate);
         editPayAmount = findViewById(R.id.editPayAmount);
@@ -54,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
         // 🔹 Bind Undo / Redo
         btnUndo = findViewById(R.id.btnUndo);
         btnRedo = findViewById(R.id.btnRedo);
+
+        // 🔒 Bind Lock Icon
+        imgLock = findViewById(R.id.imgLock);   // ✅ NEW
 
         // Create manager that handles all BC logic + UI
         bcManager = new BcManager(
@@ -65,9 +72,9 @@ public class MainActivity extends AppCompatActivity {
                 editPayAmount,
                 buttonAdd,
                 tableContainer,
-                btnUndo,      // NEW
-                btnRedo,      // NEW
-                imgLock,
+                btnUndo,
+                btnRedo,
+                imgLock,     // ✅ PASS LOCK ICON
                 bcData,
                 isoFormat,
                 displayFormat
