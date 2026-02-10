@@ -143,6 +143,7 @@ public BcManager(AppCompatActivity activity,
                  LinearLayout tableContainer,  
                  ImageButton btnUndo,
                  ImageButton btnRedo,
+                 ImageView imgLock,
                  List<Bc> bcData,  
                  SimpleDateFormat isoFormat,  
                  SimpleDateFormat displayFormat) {  
@@ -158,12 +159,14 @@ public BcManager(AppCompatActivity activity,
     this.tableContainer = tableContainer;  
     this.btnUndo = btnUndo;
     this.btnRedo = btnRedo;
+    this.imgLock = imgLock;   // ✅ ASSIGN HERE
     this.bcData = bcData;  
     this.isoFormat = isoFormat;  
     this.displayFormat = displayFormat;  
 
     this.db = AppDatabase.getDatabase(context);  
     this.bcDao = db.bcDao();  
+    updateLockIcon();   // ✅ Show lock on app start
 }  
 
 public void init() {  
