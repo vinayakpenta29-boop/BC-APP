@@ -2469,41 +2469,36 @@ private void deleteSelectedEntries(Bc bc, String member, List<PaymentEntry> entr
     Toast.makeText(context, "Entries deleted", Toast.LENGTH_SHORT).show();
 }
 
-private void recalculateAfterEntryChange(Bc bc, String member) {
+private void recalculateAfterEntryChange(Bc bc, String changedMember) {
 
     if (bc.payments == null) bc.payments = new ArrayList<>();
     if (bc.paymentEntries == null) bc.paymentEntries = new HashMap<>();
     if (bc.paidAmount == null) bc.paidAmount = new HashMap<>();
     if (bc.paid == null) bc.paid = new HashMap<>();
-    if (bc.paidBcAmount == null) bc.paidBcAmount = new HashMap<>();
+    if (bc.paidBcAmount == null) bc.paidBcAmount = new HashMap<>(); // DO NOT CLEAR
 
-    // 🔥 CLEAR ALL MAPS (FULL REBUILD)
+    // 🔥 CLEAR ONLY INSTALLMENT MAPS
     bc.paymentEntries.clear();
     bc.paidAmount.clear();
     bc.paid.clear();
-    bc.paidBcAmount.clear();
 
-    // 🔁 REBUILD FROM PAYMENT HISTORY
+    // 🔁 REBUILD INSTALLMENT DATA ONLY
     for (PaymentEntry pe : bc.payments) {
 
         String key = bc.getPaidKey(pe.member, pe.monthIndex);
 
-        // rebuild paymentEntries
+        // paymentEntries
         List<PaymentEntry> list = bc.paymentEntries.get(key);
         if (list == null) list = new ArrayList<>();
         list.add(pe);
         bc.paymentEntries.put(key, list);
 
-        // rebuild paidAmount
+        // paidAmount per month
         double total = bc.paidAmount.getOrDefault(key, 0.0) + pe.amount;
         bc.paidAmount.put(key, total);
-
-        // rebuild paidBcAmount (summary)
-        double totalBc = bc.paidBcAmount.getOrDefault(pe.member, 0.0) + pe.amount;
-        bc.paidBcAmount.put(pe.member, totalBc);
     }
 
-    // 🔁 REBUILD PAID TICKS SAFELY
+    // 🔁 REBUILD TICK STATUS
     for (String memberName : bc.members) {
         for (int m = 0; m < bc.months; m++) {
 
@@ -2520,6 +2515,8 @@ private void recalculateAfterEntryChange(Bc bc, String member) {
             bc.paid.put(key, paidAmt >= expected);
         }
     }
+
+    // 🚫 DO NOT TOUCH bc.paidBcAmount HERE
 
     saveAllToRoom();
 
