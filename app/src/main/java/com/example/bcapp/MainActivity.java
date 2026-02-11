@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Bind views
         menuButton = findViewById(R.id.menuButton);
-        spinnerBc = findViewByById(R.id.spinnerBc);
+        spinnerBc = findViewById(R.id.spinnerBc);
         spinnerMember = findViewById(R.id.spinnerMember);
         editPayDate = findViewById(R.id.editPayDate);
         editPayAmount = findViewById(R.id.editPayAmount);
