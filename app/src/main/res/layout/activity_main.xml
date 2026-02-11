@@ -25,6 +25,7 @@
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:src="@drawable/ic_lock"
+                android:tint="#444444"
                 android:visibility="gone"
                 android:layout_marginEnd="8dp"
                 android:contentDescription="Edit Mode Locked"/>
