@@ -1182,9 +1182,13 @@ private void renderMainTable(Bc bc) {
 
 private void markInstallment() {
 
-    if (!isEditModeEnabled) {
-        Toast.makeText(context, "View Only Mode Enabled", Toast.LENGTH_SHORT).show();
-        return;
+    if (!checkEditMode()) {
+    // 🔴 Shake + red lock warning
+    if (imgLock != null) {
+        imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+        imgLock.startAnimation(shakeAnimation);
+    }
+    return;
     }
     int bcIndex = spinnerBc.getSelectedItemPosition();
     int memberIndex = spinnerMember.getSelectedItemPosition();
