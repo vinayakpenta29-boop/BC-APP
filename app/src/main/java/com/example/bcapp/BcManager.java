@@ -98,6 +98,12 @@ private final Context context;
 private final TextView menuButton;  
 private final ImageButton btnUndo;
 private final ImageButton btnRedo;
+private final ImageView imgLock;
+
+private Animation shakeAnimation;
+private int lockNormalColor;
+private int lockWarningColor;
+    
 private final Spinner spinnerBc, spinnerMember;  
 private final EditText editPayDate, editPayAmount;  
 private final Button buttonAdd;  
@@ -137,6 +143,7 @@ public BcManager(AppCompatActivity activity,
                  LinearLayout tableContainer,  
                  ImageButton btnUndo,
                  ImageButton btnRedo,
+                 ImageView imgLock,   // ✅ ADD THIS
                  List<Bc> bcData,  
                  SimpleDateFormat isoFormat,  
                  SimpleDateFormat displayFormat) {  
@@ -152,12 +159,21 @@ public BcManager(AppCompatActivity activity,
     this.tableContainer = tableContainer;  
     this.btnUndo = btnUndo;
     this.btnRedo = btnRedo;
+    this.imgLock = imgLock;
     this.bcData = bcData;  
     this.isoFormat = isoFormat;  
     this.displayFormat = displayFormat;  
 
     this.db = AppDatabase.getDatabase(context);  
     this.bcDao = db.bcDao();  
+
+    // 🔒 Lock system setup
+    shakeAnimation = AnimationUtils.loadAnimation(context, R.anim.shake);
+    lockNormalColor = ContextCompat.getColor(context, R.color.lock_normal);
+    lockWarningColor = ContextCompat.getColor(context, R.color.lock_warning);
+
+    // Show correct lock state at startup
+    updateLockIcon();
 }  
 
 public void init() {  
