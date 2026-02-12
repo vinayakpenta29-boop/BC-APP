@@ -2,7 +2,6 @@ package com.example.bcapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -26,14 +25,11 @@ import androidx.cardview.widget.CardView;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.LayoutInflater;
 import android.widget.ImageButton;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -91,78 +87,6 @@ private static class HistoryAction {
     }
 }
 
-private void updateLockIcon() {
-    if (imgLock == null) return;
-
-    if (isEditModeEnabled) {
-        // Edit mode ON → hide lock
-        imgLock.clearAnimation();
-        imgLock.setVisibility(View.GONE);
-    } else {
-        // Edit mode OFF → show lock
-        imgLock.setVisibility(View.VISIBLE);
-
-        // Reset to normal color
-        imgLock.setImageTintList(
-                ColorStateList.valueOf(lockNormalColor)
-        );
-
-        // Make sure no animation is running
-        imgLock.clearAnimation();
-    }
-}
-
-private void showLockedFeedback() {
-    Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-
-    if (imgLock == null) return;
-
-    // 🔴 Turn lock RED
-    imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
-
-    // 🔁 Shake animation
-    imgLock.startAnimation(shakeAnimation);
-
-    // 🎯 When shake ends → restore normal color
-    shakeAnimation.setAnimationListener(new Animation.AnimationListener() {
-        @Override public void onAnimationStart(Animation animation) { }
-
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            imgLock.setImageTintList(ColorStateList.valueOf(lockNormalColor));
-        }
-
-        @Override public void onAnimationRepeat(Animation animation) { }
-    });
-}
-
-private void showEditModeToggleDialog() {
-
-    SwitchCompat toggle = new SwitchCompat(context);
-    toggle.setText("Enable Edit Mode");
-    toggle.setChecked(isEditModeEnabled);
-
-    new AlertDialog.Builder(context)
-            .setTitle("Edit Mode")
-            .setView(toggle)
-            .setPositiveButton("OK", (dialog, which) -> {
-
-                isEditModeEnabled = toggle.isChecked();
-
-                updateLockIcon();  // 🔒 Update icon visibility
-
-                if (isEditModeEnabled) {
-                    Toast.makeText(context,
-                            "Edit Mode Enabled",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    showLockedFeedback(); // 🔴 Shake when turned OFF
-                }
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
-}
-
 private final List<HistoryAction> undoStack = new ArrayList<>();
 private final List<HistoryAction> redoStack = new ArrayList<>();
 private static final int MAX_HISTORY = 10;
@@ -174,14 +98,10 @@ private final Context context;
 private final TextView menuButton;  
 private final ImageButton btnUndo;
 private final ImageButton btnRedo;
-private final ImageView imgLock;
 private final Spinner spinnerBc, spinnerMember;  
 private final EditText editPayDate, editPayAmount;  
 private final Button buttonAdd;  
 private final LinearLayout tableContainer;  
-private final Animation shakeAnimation;
-private final int lockNormalColor;
-private final int lockWarningColor;
 
 // Data  
 private final List<Bc> bcData;  
@@ -201,7 +121,7 @@ private boolean isEditModeEnabled = false;
 // 🔒 Checks whether editing is allowed
 private boolean checkEditMode() {
     if (!isEditModeEnabled) {
-        showLockedFeedback();   // 👈 CALL HELPER METHOD
+        Toast.makeText(context, "View Only Mode Enabled", Toast.LENGTH_SHORT).show();
         return false;
     }
     return true;
@@ -217,7 +137,6 @@ public BcManager(AppCompatActivity activity,
                  LinearLayout tableContainer,  
                  ImageButton btnUndo,
                  ImageButton btnRedo,
-                 ImageView imgLock,
                  List<Bc> bcData,  
                  SimpleDateFormat isoFormat,  
                  SimpleDateFormat displayFormat) {  
@@ -233,18 +152,12 @@ public BcManager(AppCompatActivity activity,
     this.tableContainer = tableContainer;  
     this.btnUndo = btnUndo;
     this.btnRedo = btnRedo;
-    this.imgLock = imgLock;   // ✅ ASSIGN HERE
     this.bcData = bcData;  
     this.isoFormat = isoFormat;  
     this.displayFormat = displayFormat;  
 
     this.db = AppDatabase.getDatabase(context);  
     this.bcDao = db.bcDao();  
-
-    shakeAnimation = AnimationUtils.loadAnimation(context, R.anim.shake);
-
-    lockNormalColor = context.getColor(R.color.lock_normal);
-    lockWarningColor = context.getColor(R.color.lock_warning);
 }  
 
 public void init() {  
@@ -273,10 +186,6 @@ public void init() {
 
     // Load saved data from Room  
     loadFromRoomAndRefreshUi();  
-
-    isEditModeEnabled = false;
-
-    updateLockIcon();  // ✅ Show lock on app start
 }  
 
 private void updateUndoRedoButtons() {
@@ -2671,6 +2580,28 @@ private void restoreMapsAfterRename(Bc bc, String oldName, String newName,
 
     // Just reverse rename logic
     moveMapsAfterRename(bc, newName, oldName);
+}
+
+private void showEditModeToggleDialog() {
+
+    View view = LayoutInflater.from(context).inflate(R.layout.dialog_edit_mode, null);
+    SwitchCompat switchEdit = view.findViewById(R.id.switchEditMode);
+    switchEdit.setChecked(isEditModeEnabled);
+
+    switchEdit.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        isEditModeEnabled = isChecked;
+    });
+
+    new AlertDialog.Builder(context)
+            .setTitle("Edit Mode Settings")
+            .setView(view)
+            .setPositiveButton("OK", (d, w) -> {
+                Toast.makeText(context,
+                        isEditModeEnabled ? "Edit Mode Enabled" : "View Only Mode Enabled",
+                        Toast.LENGTH_SHORT).show();
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
 }
 
 private void pushToHistory(Runnable undo, Runnable redo) {
