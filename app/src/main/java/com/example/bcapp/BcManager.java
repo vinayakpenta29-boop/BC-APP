@@ -131,7 +131,22 @@ private boolean isEditModeEnabled = false;
 // 🔒 Checks whether editing is allowed
 private boolean checkEditMode() {
     if (!isEditModeEnabled) {
+
         Toast.makeText(context, "View Only Mode Enabled", Toast.LENGTH_SHORT).show();
+
+        // 🔒 Shake lock icon with red warning
+        if (imgLock != null) {
+            imgLock.setVisibility(View.VISIBLE);
+            imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+            imgLock.startAnimation(shakeAnimation);
+
+            // Reset color after shake
+            imgLock.postDelayed(() -> {
+                imgLock.setImageTintList(ColorStateList.valueOf(lockNormalColor));
+                imgLock.clearAnimation();
+            }, 500);
+        }
+
         return false;
     }
     return true;
