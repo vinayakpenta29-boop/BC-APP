@@ -144,7 +144,7 @@ private boolean checkEditMode() {
             imgLock.postDelayed(() -> {
                 imgLock.setImageTintList(ColorStateList.valueOf(lockNormalColor));
                 imgLock.clearAnimation();
-            }, 500);
+            }, 400);
         }
 
         return false;
@@ -484,9 +484,13 @@ private interface AfterTakenCallback {
 
 private void openCreateBcDialog() {
 
-    if (!isEditModeEnabled) {
-        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-        return;
+    if (!checkEditMode()) {
+    // 🔴 Shake + red lock warning
+    if (imgLock != null) {
+        imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+        imgLock.startAnimation(shakeAnimation);
+    }
+    return;
     }
 
     View dialogView = activity.getLayoutInflater()
@@ -1377,9 +1381,13 @@ private boolean isOverDue(Bc bc, String member, int monthIndex) {
 
 private void showDeleteOptionsDialog() {
 
-    if (!isEditModeEnabled) {
-        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-        return;
+    if (!checkEditMode()) {
+    // 🔴 Shake + red lock warning
+    if (imgLock != null) {
+        imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+        imgLock.startAnimation(shakeAnimation);
+    }
+    return;
     }
 
     String[] options = {"Delete BC", "Delete A Member", "Delete Entry"};
@@ -1408,9 +1416,13 @@ private void showDeleteOptionsDialog() {
 
 private void showAddMemberDialog() {
 
-    if (!isEditModeEnabled) {
-        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-        return;
+    if (!checkEditMode()) {
+    // 🔴 Shake + red lock warning
+    if (imgLock != null) {
+        imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+        imgLock.startAnimation(shakeAnimation);
+    }
+    return;
     }
 
     if (bcData.isEmpty()) {
@@ -1505,9 +1517,13 @@ private void addMemberToBc(Bc bc, String memberName) {
 }
 
 private void showEditOptionsDialog() {
-        if (!isEditModeEnabled) {
-        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-        return;
+    if (!checkEditMode()) {
+    // 🔴 Shake + red lock warning
+    if (imgLock != null) {
+        imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+        imgLock.startAnimation(shakeAnimation);
+    }
+    return;
     }
     
     String[] options = {"Edit Member", "Edit Paid BC"};
@@ -1968,9 +1984,13 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 }
 
 private void showPaidBcDialog() {
-    if (!isEditModeEnabled) {
-        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-        return;
+    if (!checkEditMode()) {
+    // 🔴 Shake + red lock warning
+    if (imgLock != null) {
+        imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+        imgLock.startAnimation(shakeAnimation);
+    }
+    return;
     }
 
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -2161,9 +2181,13 @@ private View createSummaryBox(String label, double amount, String color) {
 
 private void showDeleteBcDialog() {
 
-    if (!isEditModeEnabled) {
-        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-        return;
+    if (!checkEditMode()) {
+    // 🔴 Shake + red lock warning
+    if (imgLock != null) {
+        imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+        imgLock.startAnimation(shakeAnimation);
+    }
+    return;
     }
     if (bcData.isEmpty()) {
         Toast.makeText(context, "No BC available to delete", Toast.LENGTH_SHORT).show();
@@ -2261,9 +2285,13 @@ private void showDeleteBcDialog() {
 
 private void showDeleteMemberDialog() {
 
-    if (!isEditModeEnabled) {
-        Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
-        return;
+    if (!checkEditMode()) {
+    // 🔴 Shake + red lock warning
+    if (imgLock != null) {
+        imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+        imgLock.startAnimation(shakeAnimation);
+    }
+    return;
     }
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
     builder.setTitle("Delete Members");
@@ -2416,9 +2444,13 @@ private void showDeleteMemberDialog() {
 
 private void showSelectBcForEntryDelete() {
 
-    if (bcData.isEmpty()) {
-        Toast.makeText(context, "No BC available", Toast.LENGTH_SHORT).show();
-        return;
+    if (!checkEditMode()) {
+    // 🔴 Shake + red lock warning
+    if (imgLock != null) {
+        imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+        imgLock.startAnimation(shakeAnimation);
+    }
+    return;
     }
 
     String[] bcNames = new String[bcData.size()];
