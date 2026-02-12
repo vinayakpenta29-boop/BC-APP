@@ -2,6 +2,7 @@ package com.example.bcapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -25,6 +26,8 @@ import androidx.cardview.widget.CardView;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.LayoutInflater;
 import android.widget.ImageButton;
 import android.widget.AdapterView;
@@ -90,7 +93,47 @@ private static class HistoryAction {
 
 private void updateLockIcon() {
     if (imgLock == null) return;
-    imgLock.setVisibility(isEditModeEnabled ? View.GONE : View.VISIBLE);
+
+    if (isEditModeEnabled) {
+        // Edit mode ON → hide lock
+        imgLock.clearAnimation();
+        imgLock.setVisibility(View.GONE);
+    } else {
+        // Edit mode OFF → show lock
+        imgLock.setVisibility(View.VISIBLE);
+
+        // Reset to normal color
+        imgLock.setImageTintList(
+                ColorStateList.valueOf(lockNormalColor)
+        );
+
+        // Make sure no animation is running
+        imgLock.clearAnimation();
+    }
+}
+
+private void showLockedFeedback() {
+    Toast.makeText(context, "Edit Mode is OFF", Toast.LENGTH_SHORT).show();
+
+    if (imgLock == null) return;
+
+    // 🔴 Turn lock RED
+    imgLock.setImageTintList(ColorStateList.valueOf(lockWarningColor));
+
+    // 🔁 Shake animation
+    imgLock.startAnimation(shakeAnimation);
+
+    // 🎯 When shake ends → restore normal color
+    shakeAnimation.setAnimationListener(new Animation.AnimationListener() {
+        @Override public void onAnimationStart(Animation animation) { }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            imgLock.setImageTintList(ColorStateList.valueOf(lockNormalColor));
+        }
+
+        @Override public void onAnimationRepeat(Animation animation) { }
+    });
 }
 
 private final List<HistoryAction> undoStack = new ArrayList<>();
@@ -109,6 +152,9 @@ private final Spinner spinnerBc, spinnerMember;
 private final EditText editPayDate, editPayAmount;  
 private final Button buttonAdd;  
 private final LinearLayout tableContainer;  
+private final Animation shakeAnimation;
+private final int lockNormalColor;
+private final int lockWarningColor;
 
 // Data  
 private final List<Bc> bcData;  
@@ -128,7 +174,7 @@ private boolean isEditModeEnabled = false;
 // 🔒 Checks whether editing is allowed
 private boolean checkEditMode() {
     if (!isEditModeEnabled) {
-        Toast.makeText(context, "View Only Mode Enabled", Toast.LENGTH_SHORT).show();
+        showLockedFeedback();   // 👈 CALL HELPER METHOD
         return false;
     }
     return true;
@@ -167,7 +213,12 @@ public BcManager(AppCompatActivity activity,
 
     this.db = AppDatabase.getDatabase(context);  
     this.bcDao = db.bcDao();  
-    updateLockIcon();   // ✅ Show lock on app start
+    updateLockIcon();  // ✅ Show lock on app start
+
+    shakeAnimation = AnimationUtils.loadAnimation(context, R.anim.shake);
+
+    lockNormalColor = context.getColor(R.color.lock_normal);
+    lockWarningColor = context.getColor(R.color.lock_warning);
 }  
 
 public void init() {  
