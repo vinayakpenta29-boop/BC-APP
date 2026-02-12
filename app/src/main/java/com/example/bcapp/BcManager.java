@@ -425,9 +425,16 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     return true;
     }
     else if (item.getItemId() == 8) {
-    showEditModeToggleDialog();
+
+    isEditModeEnabled = !isEditModeEnabled;  // 🔁 Toggle
+    updateLockIcon();                       // 🔒 Refresh icon
+
+    Toast.makeText(context,
+            isEditModeEnabled ? "Edit Mode ON" : "View Mode (Locked)",
+            Toast.LENGTH_SHORT).show();
+
     return true;
-    }
+}
     return false;  
 }  
 
