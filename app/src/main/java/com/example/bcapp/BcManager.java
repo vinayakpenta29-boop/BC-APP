@@ -213,7 +213,6 @@ public BcManager(AppCompatActivity activity,
 
     this.db = AppDatabase.getDatabase(context);  
     this.bcDao = db.bcDao();  
-    updateLockIcon();  // ✅ Show lock on app start
 
     shakeAnimation = AnimationUtils.loadAnimation(context, R.anim.shake);
 
@@ -247,6 +246,10 @@ public void init() {
 
     // Load saved data from Room  
     loadFromRoomAndRefreshUi();  
+
+    isEditModeEnabled = false;
+
+    updateLockIcon();  // ✅ Show lock on app start
 }  
 
 private void updateUndoRedoButtons() {
