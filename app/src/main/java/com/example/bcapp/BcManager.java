@@ -136,6 +136,33 @@ private void showLockedFeedback() {
     });
 }
 
+private void showEditModeToggleDialog() {
+
+    SwitchCompat toggle = new SwitchCompat(context);
+    toggle.setText("Enable Edit Mode");
+    toggle.setChecked(isEditModeEnabled);
+
+    new AlertDialog.Builder(context)
+            .setTitle("Edit Mode")
+            .setView(toggle)
+            .setPositiveButton("OK", (dialog, which) -> {
+
+                isEditModeEnabled = toggle.isChecked();
+
+                updateLockIcon();  // 🔒 Update icon visibility
+
+                if (isEditModeEnabled) {
+                    Toast.makeText(context,
+                            "Edit Mode Enabled",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    showLockedFeedback(); // 🔴 Shake when turned OFF
+                }
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+}
+
 private final List<HistoryAction> undoStack = new ArrayList<>();
 private final List<HistoryAction> redoStack = new ArrayList<>();
 private static final int MAX_HISTORY = 10;
