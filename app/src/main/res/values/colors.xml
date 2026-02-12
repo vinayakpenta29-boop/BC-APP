@@ -22,6 +22,9 @@
 
     <color name="table_cell_border">#8E9492</color>  <!-- Light gray -->
     <color name="table_header_bg">#F5F5F5</color>    <!-- Header bg -->
+
+    <color name="lock_normal">#444444</color> <!-- or your toolbar color -->
+    <color name="lock_warning">#FF3B30</color> <!-- red -->
     
     
     
