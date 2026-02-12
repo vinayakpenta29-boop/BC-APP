@@ -2,6 +2,7 @@ package com.example.bcapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -26,7 +27,10 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -175,6 +179,18 @@ public BcManager(AppCompatActivity activity,
     // Show correct lock state at startup
     updateLockIcon();
 }  
+
+private void updateLockIcon() {
+    if (imgLock == null) return;
+
+    if (isEditModeEnabled) {
+        imgLock.setVisibility(View.GONE);
+    } else {
+        imgLock.setVisibility(View.VISIBLE);
+        imgLock.setImageTintList(ColorStateList.valueOf(lockNormalColor));
+        imgLock.clearAnimation();
+    }
+}
 
 public void init() {  
     // Adapters  
