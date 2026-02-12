@@ -2673,29 +2673,6 @@ private void restoreMapsAfterRename(Bc bc, String oldName, String newName,
     moveMapsAfterRename(bc, newName, oldName);
 }
 
-private void showEditModeToggleDialog() {
-
-    View view = LayoutInflater.from(context).inflate(R.layout.dialog_edit_mode, null);
-    SwitchCompat switchEdit = view.findViewById(R.id.switchEditMode);
-    switchEdit.setChecked(isEditModeEnabled);
-
-    switchEdit.setOnCheckedChangeListener((buttonView, isChecked) -> {
-        isEditModeEnabled = isChecked;
-        updateLockIcon();
-    });
-
-    new AlertDialog.Builder(context)
-            .setTitle("Edit Mode Settings")
-            .setView(view)
-            .setPositiveButton("OK", (d, w) -> {
-                Toast.makeText(context,
-                        isEditModeEnabled ? "Edit Mode Enabled" : "View Only Mode Enabled",
-                        Toast.LENGTH_SHORT).show();
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
-}
-
 private void pushToHistory(Runnable undo, Runnable redo) {
     if (undoStack.size() == MAX_HISTORY) {
         undoStack.remove(0);
