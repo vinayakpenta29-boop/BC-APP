@@ -22,13 +22,13 @@
             <!-- 🔒 LOCK ICON (Edit Mode OFF indicator) -->
             <ImageView
                 android:id="@+id/imgLock"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_lock"
-                android:tint="#444444"
-                android:visibility="gone"
-                android:layout_marginEnd="8dp"
-                android:contentDescription="Edit Mode Locked"/>
+                android:layout_marginEnd="10dp"
+                android:contentDescription="Edit Mode Locked"
+                android:visibility="visible"
+                android:padding="2dp" />
 
             <!-- Spacer pushes everything else to right -->
             <Space
