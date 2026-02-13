@@ -37,6 +37,37 @@
             android:inputType="number"
             android:background="@drawable/bg_input_field"
             android:padding="14dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+
+        <!-- ✅ SELF CHECKBOX -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Self BC"
+                android:textStyle="bold"
+                android:textColor="#444"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <CheckBox
+                android:id="@+id/checkSelf"
+                android:layout_marginStart="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- ✅ SELF TYPE SPINNER (Hidden by default) -->
+        <Spinner
+            android:id="@+id/spinnerSelfType"
+            android:visibility="gone"
+            android:background="@drawable/bg_input_field"
             android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="50dp" />
