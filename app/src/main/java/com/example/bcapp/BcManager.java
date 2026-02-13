@@ -2682,6 +2682,7 @@ private void showEditModeToggleDialog() {
                 Toast.makeText(context,
                         isEditModeEnabled ? "Edit Mode Enabled" : "View Only Mode Enabled",
                         Toast.LENGTH_SHORT).show();
+                updateLockIcon();
             })
             .setNegativeButton("Cancel", null)
             .show();
