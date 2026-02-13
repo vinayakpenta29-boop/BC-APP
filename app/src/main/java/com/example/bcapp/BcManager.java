@@ -580,9 +580,6 @@ private void openCreateBcDialog() {
     selfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     spinnerSelfType.setAdapter(selfAdapter);
 
-    // ✅ SELF CHECK LOGIC
-    spinnerSelfType.setAdapter(selfAdapter);
-
     // ✅ ADD SELF CHECK LOGIC HERE
     checkSelf.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
