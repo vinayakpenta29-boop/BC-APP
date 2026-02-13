@@ -10,15 +10,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Title -->
-        <TextView
-            android:text="Create New BC"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#212121"
-            android:layout_marginBottom="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <!-- ✅ TITLE ROW WITH SELF CHECKBOX -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:text="Create New BC"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Self BC"
+                android:textStyle="bold"
+                android:textColor="#444"
+                android:layout_marginEnd="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <CheckBox
+                android:id="@+id/checkSelf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
 
         <!-- 1. BC Name -->
         <EditText
@@ -37,33 +59,11 @@
             android:inputType="number"
             android:background="@drawable/bg_input_field"
             android:padding="14dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="50dp" />
 
-        <!-- ✅ SELF CHECKBOX -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:text="Self BC"
-                android:textStyle="bold"
-                android:textColor="#444"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <CheckBox
-                android:id="@+id/checkSelf"
-                android:layout_marginStart="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <!-- ✅ SELF TYPE SPINNER (Hidden by default) -->
+        <!-- Self Type Spinner (Hidden by default) -->
         <Spinner
             android:id="@+id/spinnerSelfType"
             android:visibility="gone"
@@ -71,6 +71,7 @@
             android:layout_marginBottom="16dp"
             android:layout_width="match_parent"
             android:layout_height="50dp" />
+
 
         <!-- 3. Members Names -->
         <TextView
@@ -128,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp" />
 
-        <!-- Amount Type -->
+        <!-- Installment Amount Type -->
         <TextView
             android:text="Installment Amount Type"
             android:textStyle="bold"
