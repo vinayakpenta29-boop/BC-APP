@@ -581,6 +581,9 @@ private void openCreateBcDialog() {
     spinnerSelfType.setAdapter(selfAdapter);
 
     // ✅ SELF CHECK LOGIC
+    spinnerSelfType.setAdapter(selfAdapter);
+
+    // ✅ ADD SELF CHECK LOGIC HERE
     checkSelf.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
         if (isChecked) {
@@ -588,8 +591,27 @@ private void openCreateBcDialog() {
             spinnerSelfType.setVisibility(View.VISIBLE);
             layoutMembers.setVisibility(View.GONE);
 
-     // Auto set member count = 1
-            editMonths.setText("1");
+            EditText input = new EditText(context);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            input.setHint("Enter number of months/weeks");
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Duration")
+                    .setView(input)
+                    .setPositiveButton("OK", (dialog, which) -> {
+
+                        int value = safeParseInt(input.getText().toString());
+
+                        if (value > 0) {
+                            editMonths.setText(String.valueOf(value));
+                        } else {
+                            editMonths.setText("1");
+                        }
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> {
+                        checkSelf.setChecked(false);
+                    })
+                    .show();
 
         } else {
 
@@ -603,10 +625,14 @@ private void openCreateBcDialog() {
         @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
         @Override
         public void afterTextChanged(Editable s) {
-            createMemberInputs(editMonths, layoutMembers);
+
+            if (!checkSelf.isChecked()) {
+                createMemberInputs(editMonths, layoutMembers);
+            }
+
             amountTypeChange(editMonths, spinnerAmountType, layoutAmounts);
         }
-    });
+            });
 
     spinnerAmountType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
         @Override
