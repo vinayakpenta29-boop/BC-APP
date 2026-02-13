@@ -508,6 +508,9 @@ private void openCreateBcDialog() {
     CheckBox checkAfterTaken = dialogView.findViewById(R.id.checkAfterTaken);
     TextView buttonSaveBc = dialogView.findViewById(R.id.buttonSaveBc);
     TextView buttonCancelBc = dialogView.findViewById(R.id.buttonCancelBc);
+    // ✅ SELF MODE VIEWS
+    CheckBox checkSelf = dialogView.findViewById(R.id.checkSelf);
+    Spinner spinnerSelfType = dialogView.findViewById(R.id.spinnerSelfType);
 
     
     /* ---------- AFTER TAKEN ---------- */
@@ -567,6 +570,33 @@ private void openCreateBcDialog() {
     );
     receiveTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     spinnerReceiveType.setAdapter(receiveTypeAdapter);
+
+    // ✅ Self Type Spinner
+    ArrayAdapter<String> selfAdapter = new ArrayAdapter<>(
+            context,
+            android.R.layout.simple_spinner_item,
+            Arrays.asList("Select Type", "Monthly", "Weekly")
+    );
+    selfAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    spinnerSelfType.setAdapter(selfAdapter);
+
+    // ✅ SELF CHECK LOGIC
+    checkSelf.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+        if (isChecked) {
+
+            spinnerSelfType.setVisibility(View.VISIBLE);
+            layoutMembers.setVisibility(View.GONE);
+
+     // Auto set member count = 1
+            editMonths.setText("1");
+
+        } else {
+
+            spinnerSelfType.setVisibility(View.GONE);
+            layoutMembers.setVisibility(View.VISIBLE);
+        }
+    });
 
     editMonths.addTextChangedListener(new TextWatcher() {
         @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
@@ -636,11 +666,19 @@ private void openCreateBcDialog() {
         Bc bc = new Bc(name, months, startDate);
 
         // Members
-        for (int i = 0; i < layoutMembers.getChildCount(); i++) {
-            View v1 = layoutMembers.getChildAt(i);
-            if (v1 instanceof EditText) {
-                String m = ((EditText) v1).getText().toString().trim();
-                if (!m.isEmpty()) bc.members.add(m);
+        // ✅ Members
+        if (checkSelf.isChecked()) {
+
+            bc.members.add("Self");
+
+        } else {
+
+            for (int i = 0; i < layoutMembers.getChildCount(); i++) {
+                View v1 = layoutMembers.getChildAt(i);
+                if (v1 instanceof EditText) {
+                    String m = ((EditText) v1).getText().toString().trim();
+                    if (!m.isEmpty()) bc.members.add(m);
+                }
             }
         }
 
