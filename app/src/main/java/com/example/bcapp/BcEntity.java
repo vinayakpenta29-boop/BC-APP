@@ -22,6 +22,11 @@ public class BcEntity {
     public int months;
     public String startDateIso;
 
+    // ✅ NEW FIELD (Weekly or Monthly)
+    // false = Monthly (default)
+    // true = Weekly
+    public boolean isWeekly;
+
     // ================= AFTER TAKEN =================
 
     public boolean afterTaken;
@@ -31,7 +36,7 @@ public class BcEntity {
 
     // ================= CONTRIBUTION AMOUNT =================
 
-    // Monthly contribution amount
+    // Monthly / Weekly contribution amount
     public List<Double> amounts;
 
     // ================= 🔹 RECEIVE AMOUNT =================
@@ -65,6 +70,7 @@ public class BcEntity {
 
     // ✅ Required empty constructor for Room
     public BcEntity() {
+
         this.members = new ArrayList<>();
         this.amounts = new ArrayList<>();
         this.receiveAmounts = new ArrayList<>();
@@ -77,13 +83,23 @@ public class BcEntity {
 
         this.isReceiveAmountFixed = true;
         this.afterTakenAmount = 0.0;
+
+        // ✅ Default Monthly
+        this.isWeekly = false;
     }
 
-    public BcEntity(String name, int months, String startDateIso, boolean afterTaken) {
+    // ✅ Custom constructor
+    public BcEntity(String name,
+                    int months,
+                    String startDateIso,
+                    boolean afterTaken,
+                    boolean isWeekly) {
+
         this.name = name;
         this.months = months;
         this.startDateIso = startDateIso;
         this.afterTaken = afterTaken;
+        this.isWeekly = isWeekly;
 
         this.afterTakenAmount = 0.0;
         this.isReceiveAmountFixed = true;
