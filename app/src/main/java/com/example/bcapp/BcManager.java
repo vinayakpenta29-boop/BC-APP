@@ -950,7 +950,15 @@ private void showBcListTable() {
             addCompactCell(row, String.valueOf(i + 1));
 
             Calendar cal = parseIsoDate(bc.startDateIso);
-            if (cal != null) cal.add(Calendar.MONTH, i);
+
+            if (cal != null) {
+                if (bc.isWeekly) {
+                    cal.add(Calendar.DATE, i * 7);
+                } else {
+                    cal.add(Calendar.MONTH, i);
+                }
+            }
+
             String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
             addCompactCell(row, dateStr);
 
@@ -1034,13 +1042,20 @@ private void renderMainTable(Bc bc) {
     addCell(header, "Member", true);
 
     Calendar headerCal = parseIsoDate(bc.startDateIso);
+
     for (int i = 0; i < bc.months; i++) {
-        String monthName = "M" + (i + 1); // fallback
+
+        String monthName = "M" + (i + 1);
 
         if (headerCal != null) {
-            monthName = new SimpleDateFormat("MMM-yy", Locale.getDefault())
-                    .format(headerCal.getTime());
-            headerCal.add(Calendar.MONTH, 1);
+
+            monthName = displayFormat.format(headerCal.getTime());
+
+            if (bc.isWeekly) {
+                headerCal.add(Calendar.DATE, 7);
+            } else {
+                headerCal.add(Calendar.MONTH, 1);
+            }
         }
 
         addCell(header, monthName, true);
@@ -1061,7 +1076,15 @@ private void renderMainTable(Bc bc) {
         addCell(row, String.valueOf(r + 1), false);
 
         Calendar cal = parseIsoDate(bc.startDateIso);
-        if (cal != null) cal.add(Calendar.MONTH, r);
+
+        if (cal != null) {
+            if (bc.isWeekly) {
+                cal.add(Calendar.DATE, r * 7);
+            } else {
+                cal.add(Calendar.MONTH, r);
+            }
+        }
+
         String dateStr = cal != null ? displayFormat.format(cal.getTime()) : "-";
         addCell(row, dateStr, false);
 
