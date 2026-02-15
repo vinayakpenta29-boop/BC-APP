@@ -63,7 +63,6 @@ public class Bc {
         this.name = "";
         this.months = 0;
         this.startDateIso = "";
-
         this.isWeekly = false;
 
         this.members = new ArrayList<>();
@@ -85,7 +84,7 @@ public class Bc {
     }
 
     // =====================================================
-    // ✅ MAIN CONSTRUCTOR
+    // ✅ MAIN CONSTRUCTOR (New)
     // =====================================================
 
     public Bc(String name,
@@ -117,18 +116,23 @@ public class Bc {
     }
 
     // =====================================================
+    // 🔥 BACKWARD COMPATIBILITY CONSTRUCTOR (IMPORTANT)
+    // =====================================================
+
+    public Bc(String name, int months, String startDateIso) {
+        this(name, months, startDateIso, false); // default Monthly
+    }
+
+    // =====================================================
     // 🔹 HELPER METHODS
     // =====================================================
 
-    // Build payment key
     public String getPaidKey(String member, int monthIndex) {
         return member + "_" + monthIndex;
     }
 
-    // Get all payments for a member in a month
     public List<PaymentEntry> getPaymentsFor(String member, int monthIndex) {
         List<PaymentEntry> list = new ArrayList<>();
-
         if (payments == null) return list;
 
         for (PaymentEntry p : payments) {
@@ -139,10 +143,8 @@ public class Bc {
         return list;
     }
 
-    // Total paid by member (all months)
     public double getTotalPaidForMember(String member) {
         double total = 0.0;
-
         if (payments == null) return total;
 
         for (PaymentEntry p : payments) {
@@ -153,10 +155,8 @@ public class Bc {
         return total;
     }
 
-    // Expected total contribution for BC
     public double getExpectedTotal() {
         double total = 0.0;
-
         if (amounts == null) return total;
 
         for (double amt : amounts) {
@@ -165,7 +165,6 @@ public class Bc {
         return total;
     }
 
-    // Get receive amount for a month safely
     public double getReceiveAmountForMonth(int monthIndex) {
 
         if (receiveAmounts == null || receiveAmounts.isEmpty()) {
