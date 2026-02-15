@@ -23,6 +23,8 @@ public class Bc {
     // true = Fixed, false = Random
     public boolean isReceiveAmountFixed = true;
 
+    public boolean isWeekly = false;  // 🔹 NEW: Weekly
+
     // If fixed → index 0 used
     // If random → size == months
     public List<Double> receiveAmounts = new ArrayList<>();
