@@ -7,48 +7,65 @@ import java.util.Map;
 
 public class Bc {
 
+    // ================= BASIC INFO =================
+
     public String name;
     public int months;
     public String startDateIso; // "yyyy-MM-dd"
-    public List<String> members = new ArrayList<>();
+
+    // false = Monthly (default)
+    // true = Weekly
+    public boolean isWeekly = false;
+
+    public List<String> members;
+
+    // ================= AFTER TAKEN =================
+
     public boolean afterTaken;
+    public double afterTakenAmount;
 
-    // NEW: amount entered when After Taken BC is checked
-    public double afterTakenAmount = 0.0;
+    // ================= CONTRIBUTION =================
 
-    // Monthly contribution amount
-    public List<Double> amounts = new ArrayList<>();
+    public List<Double> amounts;
 
-    // 🔹 NEW: Receive Amount
+    // ================= RECEIVE AMOUNT =================
+
     // true = Fixed, false = Random
-    public boolean isReceiveAmountFixed = true;
-
-    public boolean isWeekly = false;  // 🔹 NEW: Weekly
+    public boolean isReceiveAmountFixed;
 
     // If fixed → index 0 used
     // If random → size == months
-    public List<Double> receiveAmounts = new ArrayList<>();
+    public List<Double> receiveAmounts;
 
-    // key: member_monthIndex (paid or not)
-    public Map<String, Boolean> paid = new HashMap<>();
+    // ================= PAYMENT TRACKING =================
 
-    // key: member_monthIndex → paid amount
-    public HashMap<String, Double> paidAmount = new HashMap<>();
+    // key: member_monthIndex → paid or not
+    public Map<String, Boolean> paid;
 
-    // 🔹 STEP 2: Store all payment entries (multiple + partial)
-    public List<PaymentEntry> payments = new ArrayList<>();
+    // key: member_monthIndex → total paid amount
+    public HashMap<String, Double> paidAmount;
+
+    // All payment entries (multiple + partial)
+    public List<PaymentEntry> payments;
 
     // key: member_monthIndex → list of payments
-    public HashMap<String, List<PaymentEntry>> paymentEntries = new HashMap<>();
+    public HashMap<String, List<PaymentEntry>> paymentEntries;
 
-    // 🔹 Paid BC per member
-    public HashMap<String, Double> paidBcAmount = new HashMap<>();
+    // Paid BC per member
+    public HashMap<String, Double> paidBcAmount;
 
-    // ✅ REQUIRED: no-argument constructor (Room / Gson)
+    // =====================================================
+    // ✅ REQUIRED NO-ARG CONSTRUCTOR (Room / Gson Safe)
+    // =====================================================
+
     public Bc() {
+
         this.name = "";
         this.months = 0;
         this.startDateIso = "";
+
+        this.isWeekly = false;
+
         this.members = new ArrayList<>();
 
         this.afterTaken = false;
@@ -67,11 +84,19 @@ public class Bc {
         this.paidBcAmount = new HashMap<>();
     }
 
-    // ✅ Original constructor
-    public Bc(String name, int months, String startDateIso) {
+    // =====================================================
+    // ✅ MAIN CONSTRUCTOR
+    // =====================================================
+
+    public Bc(String name,
+              int months,
+              String startDateIso,
+              boolean isWeekly) {
+
         this.name = name;
         this.months = months;
         this.startDateIso = startDateIso;
+        this.isWeekly = isWeekly;
 
         this.members = new ArrayList<>();
 
@@ -91,14 +116,21 @@ public class Bc {
         this.paidBcAmount = new HashMap<>();
     }
 
-    // 🔹 Helper to build payment key
+    // =====================================================
+    // 🔹 HELPER METHODS
+    // =====================================================
+
+    // Build payment key
     public String getPaidKey(String member, int monthIndex) {
         return member + "_" + monthIndex;
     }
 
-    // ✅ STEP 2: Get all payments for a member in a month
+    // Get all payments for a member in a month
     public List<PaymentEntry> getPaymentsFor(String member, int monthIndex) {
         List<PaymentEntry> list = new ArrayList<>();
+
+        if (payments == null) return list;
+
         for (PaymentEntry p : payments) {
             if (p.member.equals(member) && p.monthIndex == monthIndex) {
                 list.add(p);
@@ -107,9 +139,12 @@ public class Bc {
         return list;
     }
 
-    // ✅ STEP 2: Total paid by member (all months)
+    // Total paid by member (all months)
     public double getTotalPaidForMember(String member) {
         double total = 0.0;
+
+        if (payments == null) return total;
+
         for (PaymentEntry p : payments) {
             if (p.member.equals(member)) {
                 total += p.amount;
@@ -118,19 +153,27 @@ public class Bc {
         return total;
     }
 
-    // ✅ Expected total contribution for BC
+    // Expected total contribution for BC
     public double getExpectedTotal() {
         double total = 0.0;
+
+        if (amounts == null) return total;
+
         for (double amt : amounts) {
             total += amt;
         }
         return total;
     }
 
-    // ✅ NEW: Get receive amount for a month safely
+    // Get receive amount for a month safely
     public double getReceiveAmountForMonth(int monthIndex) {
+
+        if (receiveAmounts == null || receiveAmounts.isEmpty()) {
+            return 0.0;
+        }
+
         if (isReceiveAmountFixed) {
-            return receiveAmounts.isEmpty() ? 0.0 : receiveAmounts.get(0);
+            return receiveAmounts.get(0);
         } else {
             return (monthIndex < receiveAmounts.size())
                     ? receiveAmounts.get(monthIndex)
