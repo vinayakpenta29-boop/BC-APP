@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(
         entities = {BcEntity.class},
-        version = 6,
+        version = 7,   // 🔥 UPDATED VERSION (6 → 7)
         exportSchema = false
 )
 @TypeConverters({Converters.class})
@@ -80,6 +80,17 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    // 🔥 NEW MIGRATION 6 → 7 : Weekly Support
+    private static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL(
+                    "ALTER TABLE bc_table " +
+                    "ADD COLUMN isWeekly INTEGER NOT NULL DEFAULT 0"
+            );
+        }
+    };
+
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -94,7 +105,8 @@ public abstract class AppDatabase extends RoomDatabase {
                                     MIGRATION_2_3,
                                     MIGRATION_3_4,
                                     MIGRATION_4_5,
-                                    MIGRATION_5_6
+                                    MIGRATION_5_6,
+                                    MIGRATION_6_7   // 🔥 ADDED
                             )
                             .build();
                 }
