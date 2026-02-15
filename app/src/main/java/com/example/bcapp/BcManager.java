@@ -592,6 +592,32 @@ private void openCreateBcDialog() {
             editMonths.setText("");
         }
     });
+
+    spinnerSelfType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+        boolean firstLoad = true;
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+            if (!checkSelf.isChecked()) return;
+
+            if (firstLoad) {
+                firstLoad = false;
+                return;
+            }
+
+            if (position == 0) return; // "Select Type"
+
+            String type = parent.getItemAtPosition(position).toString();
+
+            showDurationDialog(type, editMonths);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {}
+    });
+    
             EditText input = new EditText(context);
             input.setInputType(InputType.TYPE_CLASS_NUMBER);
             input.setHint("Enter number of months/weeks");
