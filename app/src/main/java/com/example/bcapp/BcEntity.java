@@ -72,7 +72,7 @@ public class BcEntity {
 
         this.isReceiveAmountFixed = true;
         this.afterTakenAmount = 0.0;
-        this.isWeekly = false; // default Monthly
+        this.isWeekly = true; // default Monthly
     }
 
     // =====================================================
