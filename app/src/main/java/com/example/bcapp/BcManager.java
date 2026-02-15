@@ -640,13 +640,6 @@ private void openCreateBcDialog() {
                     })
                     .show();
 
-        } else {
-
-            spinnerSelfType.setVisibility(View.GONE);
-            layoutMembers.setVisibility(View.VISIBLE);
-        }
-    });
-
     editMonths.addTextChangedListener(new TextWatcher() {
         @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
         @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
