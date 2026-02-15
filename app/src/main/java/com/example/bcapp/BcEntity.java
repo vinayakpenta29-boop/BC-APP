@@ -22,7 +22,6 @@ public class BcEntity {
     public int months;
     public String startDateIso;
 
-    // ✅ NEW FIELD (Weekly or Monthly)
     // false = Monthly (default)
     // true = Weekly
     public boolean isWeekly;
@@ -30,45 +29,35 @@ public class BcEntity {
     // ================= AFTER TAKEN =================
 
     public boolean afterTaken;
-
-    // Amount when "After Taken BC" is enabled
     public double afterTakenAmount;
 
     // ================= CONTRIBUTION AMOUNT =================
 
-    // Monthly / Weekly contribution amount
     public List<Double> amounts;
 
-    // ================= 🔹 RECEIVE AMOUNT =================
+    // ================= RECEIVE AMOUNT =================
 
     // true = Fixed, false = Random
     public boolean isReceiveAmountFixed;
 
-    // If fixed → index 0 used
-    // If random → size == months
     public List<Double> receiveAmounts;
 
     // ================= MEMBERS =================
 
     public List<String> members;
 
-    // key: member_monthIndex → paid or not
     public Map<String, Boolean> paid;
-
-    // key: member_monthIndex → total paid amount
     public HashMap<String, Double> paidAmount;
-
-    // Paid BC per member
     public HashMap<String, Double> paidBcAmount;
 
     // ================= PAYMENT HISTORY =================
 
-    // Full payment history (multiple + partial)
     public List<PaymentEntry> payments;
 
-    // ================= CONSTRUCTORS =================
+    // =====================================================
+    // ✅ REQUIRED EMPTY CONSTRUCTOR (Room)
+    // =====================================================
 
-    // ✅ Required empty constructor for Room
     public BcEntity() {
 
         this.members = new ArrayList<>();
@@ -83,12 +72,13 @@ public class BcEntity {
 
         this.isReceiveAmountFixed = true;
         this.afterTakenAmount = 0.0;
-
-        // ✅ Default Monthly
-        this.isWeekly = false;
+        this.isWeekly = false; // default Monthly
     }
 
-    // ✅ Custom constructor
+    // =====================================================
+    // ✅ MAIN CONSTRUCTOR (New)
+    // =====================================================
+
     public BcEntity(String name,
                     int months,
                     String startDateIso,
@@ -113,5 +103,17 @@ public class BcEntity {
         this.paidBcAmount = new HashMap<>();
 
         this.payments = new ArrayList<>();
+    }
+
+    // =====================================================
+    // 🔥 BACKWARD COMPATIBILITY CONSTRUCTOR (IMPORTANT)
+    // =====================================================
+
+    public BcEntity(String name,
+                    int months,
+                    String startDateIso,
+                    boolean afterTaken) {
+
+        this(name, months, startDateIso, afterTaken, false); // default Monthly
     }
 }
