@@ -584,10 +584,14 @@ private void openCreateBcDialog() {
     checkSelf.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
         if (isChecked) {
-
             spinnerSelfType.setVisibility(View.VISIBLE);
             layoutMembers.setVisibility(View.GONE);
-
+        } else {
+            spinnerSelfType.setVisibility(View.GONE);
+            layoutMembers.setVisibility(View.VISIBLE);
+            editMonths.setText("");
+        }
+    });
             EditText input = new EditText(context);
             input.setInputType(InputType.TYPE_CLASS_NUMBER);
             input.setHint("Enter number of months/weeks");
@@ -687,6 +691,17 @@ private void openCreateBcDialog() {
         }
 
         Bc bc = new Bc(name, months, startDate);
+
+        if (checkSelf.isChecked()) {
+
+            String type = spinnerSelfType.getSelectedItem().toString();
+
+            if (type.equalsIgnoreCase("Weekly")) {
+                bc.isWeekly = true;   // Make sure this field exists in Bc class
+            } else {
+                bc.isWeekly = false;
+            }
+        }
 
         // Members
         // ✅ Members
@@ -792,6 +807,32 @@ private void updateMembersDropdown() {
     spinnerMember.setSelection(0);  
     renderMainTable(bc);  
 }  
+
+private void showDurationDialog(String type, EditText editMonths) {
+
+    EditText input = new EditText(context);
+    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+    if (type.equalsIgnoreCase("Weekly")) {
+        input.setHint("Enter number of Weeks");
+    } else {
+        input.setHint("Enter number of Months");
+    }
+
+    new AlertDialog.Builder(context)
+            .setTitle("Duration")
+            .setView(input)
+            .setPositiveButton("OK", (dialog, which) -> {
+
+                int value = safeParseInt(input.getText().toString());
+                if (value <= 0) value = 1;
+
+                editMonths.setText(String.valueOf(value));
+
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+}
 
 private void showBcListTable() {
     tableContainer.removeAllViews();
