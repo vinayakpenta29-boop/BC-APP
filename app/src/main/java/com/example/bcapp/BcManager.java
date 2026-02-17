@@ -1390,7 +1390,6 @@ private void markInstallment() {
         return;
     }
 
-    String member = bc.members.get(memberIndex - 1);
     String key = bc.getPaidKey(member, monthIndex);
 
     if (bc.payments == null) bc.payments = new ArrayList<>();
