@@ -1367,9 +1367,23 @@ private void markInstallment() {
         return;
     }
 
-    int monthIndex =
-            (paid.get(Calendar.YEAR) - start.get(Calendar.YEAR)) * 12 +
-            (paid.get(Calendar.MONTH) - start.get(Calendar.MONTH));
+    String member = bc.members.get(memberIndex - 1);
+
+    int monthIndex;
+
+    if (bc.isWeekly && member.equalsIgnoreCase("Self")) {
+
+        long diffMillis = paid.getTimeInMillis() - start.getTimeInMillis();
+        long diffDays = diffMillis / (1000 * 60 * 60 * 24);
+
+        monthIndex = (int) (diffDays / 7);
+
+    } else {
+
+        monthIndex =
+                (paid.get(Calendar.YEAR) - start.get(Calendar.YEAR)) * 12 +
+                (paid.get(Calendar.MONTH) - start.get(Calendar.MONTH));
+    }
 
     if (monthIndex < 0 || monthIndex >= bc.months) {
         Toast.makeText(context, "Selected date is outside BC duration", Toast.LENGTH_SHORT).show();
