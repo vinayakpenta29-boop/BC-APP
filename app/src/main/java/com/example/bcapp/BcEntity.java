@@ -3,6 +3,7 @@ package com.example.bcapp;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
+import androidx.room.Ignore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,7 +79,8 @@ public class BcEntity {
     // =====================================================
     // ✅ MAIN CONSTRUCTOR (New)
     // =====================================================
-
+    
+    @Ignore
     public BcEntity(String name,
                     int months,
                     String startDateIso,
@@ -108,7 +110,7 @@ public class BcEntity {
     // =====================================================
     // 🔥 BACKWARD COMPATIBILITY CONSTRUCTOR (IMPORTANT)
     // =====================================================
-
+    @Ignore
     public BcEntity(String name,
                     int months,
                     String startDateIso,
