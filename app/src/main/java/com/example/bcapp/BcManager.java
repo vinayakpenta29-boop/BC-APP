@@ -264,7 +264,9 @@ private void loadFromRoomAndRefreshUi() {
             bc.paid = (e.paid != null) ? e.paid : new HashMap<>();
             bc.paidAmount = (e.paidAmount != null) ? e.paidAmount : new HashMap<>();
             bc.paidBcAmount = (e.paidBcAmount != null) ? e.paidBcAmount : new HashMap<>();
-            if (e.receiveAmounts != null) bc.receiveAmounts = e.receiveAmounts;
+            if (e.receiveAmounts != null) {
+                bc.receiveAmounts = e.receiveAmounts;
+            }
                 bc.isReceiveAmountFixed = e.isReceiveAmountFixed;
 
             // ---------- 🔹 STEP 2 FIX (IMPORTANT) ----------
