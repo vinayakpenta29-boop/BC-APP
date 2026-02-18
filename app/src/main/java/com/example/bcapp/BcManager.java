@@ -250,6 +250,7 @@ private void loadFromRoomAndRefreshUi() {
         for (BcEntity e : entities) {
 
             Bc bc = new Bc(e.name, e.months, e.startDateIso);
+            bc.isWeekly = e.isWeekly;   // ✅ ADD THIS
 
             // ---------- BASIC FIELDS ----------
             bc.afterTaken = e.afterTaken;
@@ -318,6 +319,7 @@ private void saveAllToRoom() {
 
             // Existing fields
             e.afterTakenAmount = bc.afterTakenAmount;
+            e.isWeekly = bc.isWeekly;   // ✅ ADD THIS
             e.members = new ArrayList<>(bc.members);
             e.amounts = new ArrayList<>(bc.amounts);
             e.paid = new HashMap<>(bc.paid);
