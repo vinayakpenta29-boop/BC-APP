@@ -2169,9 +2169,28 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     addDivider(root);
 
-    // Expected total
+    // Expected total (Past unpaid + current installment only)
     double expectedTotal = 0.0;
-    for (double a : bc.amounts) expectedTotal += a;
+
+    int currentIndex = bc.getCurrentInstallmentIndex(); 
+    // 🔴 Make sure this method already exists in your BC class
+
+    int checkUpto = Math.min(currentIndex + 1, bc.months);
+
+    for (int i = 0; i < checkUpto; i++) {
+
+        String key = bc.getPaidKey(member, i);
+        double paidAmt = bc.paidAmount.getOrDefault(key, 0.0);
+
+        double installmentAmt = bc.amounts.size() > i
+                ? bc.amounts.get(i)
+                : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+
+        // Add only remaining amount (handles partial payment too)
+        if (paidAmt < installmentAmt) {
+            expectedTotal += (installmentAmt - paidAmt);
+        }
+    }
 
     TextView tvExpected = new TextView(context);
     tvExpected.setText("Expected Total: ₹" + String.format("%.0f", expectedTotal));
