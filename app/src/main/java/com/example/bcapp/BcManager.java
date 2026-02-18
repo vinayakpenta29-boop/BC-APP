@@ -1182,7 +1182,7 @@ private void renderMainTable(Bc bc) {
             }
 
             if (hasPastUnpaid) {
-                memberCell.setTextColor(Color.parseColor("#FFFFFF"));
+                memberCell.setTextColor(Color.parseColor("#D32F2F"));
                 memberCell.setTypeface(null, Typeface.BOLD);
                 memberCell.setBackgroundResource(R.drawable.table_cell_border_overdue);
             }
