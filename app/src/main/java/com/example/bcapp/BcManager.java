@@ -1154,6 +1154,36 @@ private void renderMainTable(Bc bc) {
                 memberCell.setBackgroundResource(R.drawable.table_cell_border_overdue);
             }
         }
+
+        // 🔴 WEEKLY SELF: highlight if ANY past week unpaid till current week
+        if (bc.isWeekly && member.equalsIgnoreCase("Self") && currentIndex >= 0) {
+
+            boolean hasPastUnpaid = false;
+
+            int checkUpto = Math.min(currentIndex + 1, bc.months);
+
+            for (int w = 0; w < checkUpto; w++) {
+
+                String key = bc.getPaidKey(member, w);
+                double paidAmt = bc.paidAmount.getOrDefault(key, 0.0);
+
+                double expectedAmt = bc.amounts.size() > w
+                        ? bc.amounts.get(w)
+                        : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+
+                if (paidAmt < expectedAmt) {
+                    hasPastUnpaid = true;
+                    break;
+                }
+            }
+
+            if (hasPastUnpaid) {
+                memberCell.setTextColor(Color.parseColor("#FFFFFF"));
+                memberCell.setTypeface(null, Typeface.BOLD);
+                memberCell.setBackgroundResource(R.drawable.table_cell_border_overdue);
+            }
+        }
+        
         TableRow.LayoutParams memberLp =
                 new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
