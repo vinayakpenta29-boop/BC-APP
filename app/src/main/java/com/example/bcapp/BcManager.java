@@ -1100,11 +1100,24 @@ private void renderMainTable(Bc bc) {
         Calendar startCal = parseIsoDate(bc.startDateIso);
         Calendar todayCal = Calendar.getInstance();
 
-        int currentMonthIndex = -1;
+        int currentIndex = -1;
+
         if (startCal != null) {
-            currentMonthIndex =
-                    (todayCal.get(Calendar.YEAR) - startCal.get(Calendar.YEAR)) * 12 +
-                    (todayCal.get(Calendar.MONTH) - startCal.get(Calendar.MONTH));
+
+            if (bc.isWeekly) {
+
+                long diffMillis =
+                        todayCal.getTimeInMillis() - startCal.getTimeInMillis();
+                long diffDays = diffMillis / (1000 * 60 * 60 * 24);
+
+                currentIndex = (int) (diffDays / 7);
+
+            } else {
+
+                currentIndex =
+                        (todayCal.get(Calendar.YEAR) - startCal.get(Calendar.YEAR)) * 12 +
+                        (todayCal.get(Calendar.MONTH) - startCal.get(Calendar.MONTH));
+            }
         }
 
         // Apply highlight only for valid month
@@ -1114,11 +1127,11 @@ private void renderMainTable(Bc bc) {
         memberCell.setBackgroundResource(R.drawable.table_cell_border);
 
         // 🔴 MONTHLY: highlight if ANY past month unpaid
-        if (!bc.isWeekly && currentMonthIndex > 0) {
+        if (!bc.isWeekly && currentIndex > 0) {
 
             boolean hasPastUnpaid = false;
 
-            int checkUpto = Math.min(currentMonthIndex, bc.months);
+            int checkUpto = Math.min(currentIndex, bc.months);
 
             for (int m = 0; m < checkUpto; m++) {
 
