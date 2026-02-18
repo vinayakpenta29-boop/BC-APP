@@ -1113,17 +1113,29 @@ private void renderMainTable(Bc bc) {
         memberCell.setTypeface(null, Typeface.BOLD);
         memberCell.setBackgroundResource(R.drawable.table_cell_border);
 
-        // Apply highlight only for valid month
-        if (currentMonthIndex >= 0 && currentMonthIndex < bc.months) {
+        // 🔴 MONTHLY: highlight if ANY past month unpaid
+        if (!bc.isWeekly && currentMonthIndex > 0) {
 
-            // 🔴 UNPAID → bold red text
-            if (shouldHighlightUnpaid(bc, member, currentMonthIndex)) {
-                memberCell.setTextColor(Color.parseColor("#D32F2F"));
-                memberCell.setTypeface(null, Typeface.BOLD);
+            boolean hasPastUnpaid = false;
+
+            int checkUpto = Math.min(currentMonthIndex, bc.months);
+
+            for (int m = 0; m < checkUpto; m++) {
+
+                String key = bc.getPaidKey(member, m);
+                double paidAmt = bc.paidAmount.getOrDefault(key, 0.0);
+
+                double expectedAmt = bc.amounts.size() > m
+                        ? bc.amounts.get(m)
+                        : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+
+                if (paidAmt < expectedAmt) {
+                    hasPastUnpaid = true;
+                    break;
+                }
             }
 
-            // 🔴 OVERDUE → bold red text + light red background
-            if (isOverDue(bc, member, currentMonthIndex)) {
+            if (hasPastUnpaid) {
                 memberCell.setTextColor(Color.parseColor("#D32F2F"));
                 memberCell.setTypeface(null, Typeface.BOLD);
                 memberCell.setBackgroundResource(R.drawable.table_cell_border_overdue);
