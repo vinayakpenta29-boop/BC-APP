@@ -179,4 +179,40 @@ public class Bc {
                     : 0.0;
         }
     }
+
+    public int getCurrentInstallmentIndex() {
+
+        if (startDateIso == null || startDateIso.isEmpty()) return -1;
+
+        Calendar startCal = Calendar.getInstance();
+        Calendar todayCal = Calendar.getInstance();
+
+        try {
+            Date startDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    .parse(startDateIso);
+
+            if (startDate == null) return -1;
+
+            startCal.setTime(startDate);
+
+        } catch (Exception e) {
+            return -1;
+        }
+
+        if (isWeekly) {
+
+            long diffMillis =
+                    todayCal.getTimeInMillis() - startCal.getTimeInMillis();
+
+            long diffDays = diffMillis / (1000 * 60 * 60 * 24);
+
+            return (int) (diffDays / 7);
+
+        } else {
+
+            return
+                    (todayCal.get(Calendar.YEAR) - startCal.get(Calendar.YEAR)) * 12 +
+                    (todayCal.get(Calendar.MONTH) - startCal.get(Calendar.MONTH));
+        }
+    }
 }
