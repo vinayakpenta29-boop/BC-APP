@@ -2172,8 +2172,12 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     // Expected total (Past unpaid + current installment only)
     double expectedTotal = 0.0;
 
-    int currentIndex = bc.getCurrentInstallmentIndex(); 
-    // 🔴 Make sure this method already exists in your BC class
+    int currentIndex = bc.getCurrentInstallmentIndex();
+
+    // Safety check
+    if (currentIndex < 0) {
+        currentIndex = 0;
+    }
 
     int checkUpto = Math.min(currentIndex + 1, bc.months);
 
@@ -2186,9 +2190,10 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
                 ? bc.amounts.get(i)
                 : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
 
-        // Add only remaining amount (handles partial payment too)
-        if (paidAmt < installmentAmt) {
-            expectedTotal += (installmentAmt - paidAmt);
+        double remaining = installmentAmt - paidAmt;
+
+        if (remaining > 0) {
+            expectedTotal += remaining;
         }
     }
 
