@@ -2174,7 +2174,6 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     int currentIndex = bc.getCurrentInstallmentIndex();
 
-    // Safety check
     if (currentIndex < 0) {
         currentIndex = 0;
     }
@@ -2183,18 +2182,12 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     for (int i = 0; i < checkUpto; i++) {
 
-        String key = bc.getPaidKey(member, i);
-        double paidAmt = bc.paidAmount.getOrDefault(key, 0.0);
-
         double installmentAmt = bc.amounts.size() > i
                 ? bc.amounts.get(i)
                 : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
 
-        double remaining = installmentAmt - paidAmt;
-
-        if (remaining > 0) {
-            expectedTotal += remaining;
-        }
+        // 🔥 Add full installment amount (paid or unpaid)
+        expectedTotal += installmentAmt;
     }
 
     TextView tvExpected = new TextView(context);
@@ -2209,7 +2202,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     root.addView(tvPaid);
 
     // Balance
-    double balance = expectedTotal;
+    double balance = expectedTotal - totalPaid;
     TextView tvBalance = new TextView(context);
     tvBalance.setText("Balance: ₹" + String.format("%.0f", balance));
     tvBalance.setTypeface(null, Typeface.BOLD);
