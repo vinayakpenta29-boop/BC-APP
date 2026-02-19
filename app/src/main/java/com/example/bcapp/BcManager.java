@@ -2327,7 +2327,7 @@ private void showSummaryDialog() {
 
     for (Bc bc : bcData) {
 
-        if (bc.isSelf) {
+        if (bc.isWeekly) {
         continue;
         }
 
