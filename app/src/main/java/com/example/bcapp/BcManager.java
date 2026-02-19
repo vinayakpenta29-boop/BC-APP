@@ -45,6 +45,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.HorizontalScrollView;  // ← ADD THIS LINE
 import android.widget.ScrollView;
+import androidx.appcompat.widget.SwitchCompat;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -112,7 +113,7 @@ private final Spinner spinnerBc, spinnerMember;
 private final EditText editPayDate, editPayAmount;  
 private final Button buttonAdd;  
 private final LinearLayout tableContainer;  
-private Switch switchVertical;   // ✅ ADD THIS
+private SwitchCompat switchVertical;   // ✅ ADD THIS
 
 // Data  
 private final List<Bc> bcData;  
