@@ -622,28 +622,6 @@ private void openCreateBcDialog() {
         public void onNothingSelected(AdapterView<?> parent) {}
     });
     
-            EditText input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER);
-            input.setHint("Enter number of months/weeks");
-
-            new AlertDialog.Builder(context)
-                    .setTitle("Duration")
-                    .setView(input)
-                    .setPositiveButton("OK", (dialog, which) -> {
-
-                        int value = safeParseInt(input.getText().toString());
-
-                        if (value > 0) {
-                            editMonths.setText(String.valueOf(value));
-                        } else {
-                            editMonths.setText("1");
-                        }
-                    })
-                    .setNegativeButton("Cancel", (dialog, which) -> {
-                        checkSelf.setChecked(false);
-                    })
-                    .show();
-
     editMonths.addTextChangedListener(new TextWatcher() {
         @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
         @Override public void onTextChanged(CharSequence s, int a, int b, int c) {}
