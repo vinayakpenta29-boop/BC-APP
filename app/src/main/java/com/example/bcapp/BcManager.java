@@ -819,9 +819,9 @@ private void updateMembersDropdown() {
     memberAdapter.clear();  
     memberAdapter.add("Select Member");  
     int index = spinnerBc.getSelectedItemPosition();  
+    tableContainer.removeAllViews();
     if (index <= 0 || index > bcData.size()) {  
         memberAdapter.notifyDataSetChanged();  
-        renderMainTable(null);  
         return;  
     }  
     Bc bc = bcData.get(index -1);  
