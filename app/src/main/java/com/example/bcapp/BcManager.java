@@ -112,6 +112,7 @@ private final Spinner spinnerBc, spinnerMember;
 private final EditText editPayDate, editPayAmount;  
 private final Button buttonAdd;  
 private final LinearLayout tableContainer;  
+private Switch switchVertical;   // ✅ ADD THIS
 
 // Data  
 private final List<Bc> bcData;  
@@ -176,6 +177,7 @@ public BcManager(AppCompatActivity activity,
     this.editPayAmount = editPayAmount;  
     this.buttonAdd = buttonAdd;  
     this.tableContainer = tableContainer;  
+    this.switchVertical = activity.findViewById(R.id.switchVertical);
     this.btnUndo = btnUndo;
     this.btnRedo = btnRedo;
     this.imgLock = imgLock;
@@ -996,13 +998,47 @@ private void renderMainTable(Bc bc) {
     tableContainer.removeAllViews();
     if (bc == null) return;
 
+    // 🔷 Title + Toggle Layout
+    LinearLayout titleLayout = new LinearLayout(context);
+    titleLayout.setOrientation(LinearLayout.HORIZONTAL);
+    titleLayout.setGravity(Gravity.CENTER_VERTICAL);
+    titleLayout.setPadding(16, 8, 16, 8);
+
     TextView title = new TextView(context);
     title.setText("Main BC Table");
-    title.setTextColor(Color.parseColor("#000000"));
     title.setTextSize(16f);
     title.setTypeface(null, Typeface.BOLD);
-    title.setPadding(0, 8, 0, 4);
-    tableContainer.addView(title);
+    title.setLayoutParams(new LinearLayout.LayoutParams(0,
+            LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+
+    titleLayout.addView(title);
+
+    // ✅ Show toggle only for Self Weekly
+    if (bc.members.size() == 1 &&
+            bc.members.get(0).equalsIgnoreCase("Self") &&
+            bc.isWeekly) {
+
+        if (switchVertical != null) {
+
+            switchVertical.setVisibility(View.VISIBLE);
+            switchVertical.setChecked(false);
+
+            switchVertical.setOnCheckedChangeListener((btn, isChecked) -> {
+                if (isChecked) {
+                    renderVerticalSelfWeeklyTable(bc);
+                } else {
+                    renderMainTable(bc);
+                }
+            });
+
+            titleLayout.addView(switchVertical);
+        }
+    } else {
+        if (switchVertical != null)
+            switchVertical.setVisibility(View.GONE);
+    }
+
+    tableContainer.addView(titleLayout);
 
     TableLayout table = new TableLayout(context);
     table.setPadding(8, 8, 8, 8);
@@ -1362,6 +1398,62 @@ private void renderMainTable(Bc bc) {
     card.addView(scrollWrap);
     tableContainer.addView(card);
     }
+
+private void renderVerticalSelfWeeklyTable(Bc bc) {
+
+    tableContainer.removeAllViews();
+
+    TextView title = new TextView(context);
+    title.setText("Main BC Table (Vertical)");
+    title.setTextSize(16f);
+    title.setTypeface(null, Typeface.BOLD);
+    title.setPadding(16, 8, 16, 8);
+    tableContainer.addView(title);
+
+    TableLayout table = new TableLayout(context);
+    table.setPadding(8, 8, 8, 8);
+
+    for (int i = 0; i < bc.months; i++) {
+
+        TableRow row = new TableRow(context);
+
+        Calendar cal = parseIsoDate(bc.startDateIso);
+        if (cal != null) {
+            cal.add(Calendar.DATE, i * 7);
+        }
+
+        String dateStr = cal != null
+                ? displayFormat.format(cal.getTime())
+                : "-";
+
+        TextView dateCell = new TextView(context);
+        dateCell.setText(dateStr);
+        dateCell.setPadding(16, 12, 16, 12);
+        row.addView(dateCell);
+
+        double expected = bc.amounts.size() > i
+                ? bc.amounts.get(i)
+                : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
+
+        TextView amountCell = new TextView(context);
+        amountCell.setText("₹" + String.format("%.0f", expected));
+        amountCell.setPadding(16, 12, 16, 12);
+        row.addView(amountCell);
+
+        String key = bc.getPaidKey("Self", i);
+        double paidAmt = bc.paidAmount.getOrDefault(key, 0.0);
+
+        TextView status = new TextView(context);
+        status.setText(paidAmt >= expected ? "✅ Paid" :
+                (paidAmt > 0 ? "⚠ Partial" : "☐ Unpaid"));
+        status.setPadding(16, 12, 16, 12);
+        row.addView(status);
+
+        table.addView(row);
+    }
+
+    tableContainer.addView(table);
+}
 
 /* ---------- Installments ---------- */  
 
