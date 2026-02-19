@@ -19,7 +19,6 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- 🔒 LOCK ICON (Edit Mode OFF indicator) -->
             <ImageView
                 android:id="@+id/imgLock"
                 android:layout_width="24dp"
@@ -30,13 +29,11 @@
                 android:visibility="visible"
                 android:padding="2dp" />
 
-            <!-- Spacer pushes everything else to right -->
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <!-- SMALL CURVED CONTAINER (Undo + Redo) -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
@@ -69,7 +66,6 @@
                     android:padding="6dp" />
             </LinearLayout>
 
-            <!-- RIGHT SIDE — 3 Dot Menu -->
             <TextView
                 android:id="@+id/menuButton"
                 android:text="⋮"
@@ -156,8 +152,33 @@
             android:elevation="4dp"
             android:layout_marginBottom="12dp" />
 
+        <!-- 🔹 Main BC Table Header Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <TextView
+                android:text="Main BC Table"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+
+            <Switch
+                android:id="@+id/switchVertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vertical"
+                android:visibility="gone"/>
+        </LinearLayout>
+
         <!-- Table -->
         <HorizontalScrollView
+            android:id="@+id/horizontalScroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="horizontal">
