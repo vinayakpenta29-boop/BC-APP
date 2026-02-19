@@ -2327,6 +2327,10 @@ private void showSummaryDialog() {
 
     for (Bc bc : bcData) {
 
+        if (bc.isSelf) {
+        continue;
+        }
+
         double collected = 0;
         double paid = 0;
 
