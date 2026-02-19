@@ -2209,7 +2209,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     root.addView(tvPaid);
 
     // Balance
-    double balance = expectedTotal - totalPaid;
+    double balance = expectedTotal;
     TextView tvBalance = new TextView(context);
     tvBalance.setText("Balance: ₹" + String.format("%.0f", balance));
     tvBalance.setTypeface(null, Typeface.BOLD);
