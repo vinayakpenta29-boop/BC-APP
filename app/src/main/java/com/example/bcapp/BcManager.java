@@ -1590,7 +1590,7 @@ private void markInstallment() {
     );
 
     saveAllToRoom();
-    activity.runOnUiThread(() -> 
+    activity.runOnUiThread(() -> {
     try {
         renderMainTable(bc);
     } catch (Exception e) {
