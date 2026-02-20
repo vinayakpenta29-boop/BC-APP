@@ -63,6 +63,39 @@ public class Bc {
     // =====================================================
 
     public Bc() {
+        initializeDefaults();
+    }
+
+    // =====================================================
+    // ✅ MAIN CONSTRUCTOR
+    // =====================================================
+
+    public Bc(String name,
+              int months,
+              String startDateIso,
+              boolean isWeekly) {
+
+        initializeDefaults();
+
+        this.name = name;
+        this.months = months;
+        this.startDateIso = startDateIso;
+        this.isWeekly = isWeekly;
+    }
+
+    // =====================================================
+    // 🔥 BACKWARD COMPATIBILITY CONSTRUCTOR
+    // =====================================================
+
+    public Bc(String name, int months, String startDateIso) {
+        this(name, months, startDateIso, false); // default Monthly
+    }
+
+    // =====================================================
+    // 🔹 COMMON INITIALIZER (Prevents Null Crashes)
+    // =====================================================
+
+    private void initializeDefaults() {
 
         this.name = "";
         this.months = 0;
@@ -88,46 +121,6 @@ public class Bc {
     }
 
     // =====================================================
-    // ✅ MAIN CONSTRUCTOR (New)
-    // =====================================================
-
-    public Bc(String name,
-              int months,
-              String startDateIso,
-              boolean isWeekly) {
-
-        this.name = name;
-        this.months = months;
-        this.startDateIso = startDateIso;
-        this.isWeekly = isWeekly;
-
-        this.members = new ArrayList<>();
-
-        this.afterTaken = false;
-        this.afterTakenAmount = 0.0;
-
-        this.amounts = new ArrayList<>();
-
-        this.isReceiveAmountFixed = true;
-        this.receiveAmounts = new ArrayList<>();
-
-        this.paid = new HashMap<>();
-        this.paidAmount = new HashMap<>();
-
-        this.payments = new ArrayList<>();
-        this.paymentEntries = new HashMap<>();
-        this.paidBcAmount = new HashMap<>();
-    }
-
-    // =====================================================
-    // 🔥 BACKWARD COMPATIBILITY CONSTRUCTOR (IMPORTANT)
-    // =====================================================
-
-    public Bc(String name, int months, String startDateIso) {
-        this(name, months, startDateIso, false); // default Monthly
-    }
-
-    // =====================================================
     // 🔹 HELPER METHODS
     // =====================================================
 
@@ -136,11 +129,16 @@ public class Bc {
     }
 
     public List<PaymentEntry> getPaymentsFor(String member, int monthIndex) {
+
         List<PaymentEntry> list = new ArrayList<>();
         if (payments == null) return list;
 
         for (PaymentEntry p : payments) {
-            if (p.member.equals(member) && p.monthIndex == monthIndex) {
+            if (p != null &&
+                member != null &&
+                member.equals(p.member) &&
+                p.monthIndex == monthIndex) {
+
                 list.add(p);
             }
         }
@@ -148,11 +146,12 @@ public class Bc {
     }
 
     public double getTotalPaidForMember(String member) {
+
         double total = 0.0;
-        if (payments == null) return total;
+        if (payments == null || member == null) return total;
 
         for (PaymentEntry p : payments) {
-            if (p.member.equals(member)) {
+            if (p != null && member.equals(p.member)) {
                 total += p.amount;
             }
         }
@@ -160,6 +159,7 @@ public class Bc {
     }
 
     public double getExpectedTotal() {
+
         double total = 0.0;
         if (amounts == null) return total;
 
@@ -171,29 +171,31 @@ public class Bc {
 
     public double getReceiveAmountForMonth(int monthIndex) {
 
-        if (receiveAmounts == null || receiveAmounts.isEmpty()) {
+        if (receiveAmounts == null || receiveAmounts.isEmpty())
             return 0.0;
-        }
 
         if (isReceiveAmountFixed) {
             return receiveAmounts.get(0);
-        } else {
-            return (monthIndex < receiveAmounts.size())
-                    ? receiveAmounts.get(monthIndex)
-                    : 0.0;
         }
+
+        return (monthIndex >= 0 && monthIndex < receiveAmounts.size())
+                ? receiveAmounts.get(monthIndex)
+                : 0.0;
     }
 
     public int getCurrentInstallmentIndex() {
 
-        if (startDateIso == null || startDateIso.isEmpty()) return -1;
+        if (startDateIso == null || startDateIso.isEmpty())
+            return -1;
 
         Calendar startCal = Calendar.getInstance();
         Calendar todayCal = Calendar.getInstance();
 
         try {
-            Date startDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                    .parse(startDateIso);
+            Date startDate = new SimpleDateFormat(
+                    "yyyy-MM-dd",
+                    Locale.getDefault()
+            ).parse(startDateIso);
 
             if (startDate == null) return -1;
 
