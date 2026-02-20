@@ -1015,9 +1015,10 @@ private void renderMainTable(Bc bc) {
     titleLayout.addView(title);
 
     // ✅ Show toggle only for Self Weekly
-    if (bc.members.size() == 1 &&
-            bc.members.get(0).equalsIgnoreCase("Self") &&
-            bc.isWeekly) {
+    if (bc.members != null &&
+        bc.members.size() == 1 &&
+        "Self".equalsIgnoreCase(bc.members.get(0)) &&
+        bc.isWeekly)
 
         if (switchVertical != null) {
 
@@ -1075,6 +1076,8 @@ private void renderMainTable(Bc bc) {
     addCell(header, "Total", true);
     addCell(header, "Paid BC", true);
     table.addView(header);
+
+    if (bc.members == null) return;
 
     for (int r = 0; r < bc.members.size(); r++) {
         String member = bc.members.get(r);
