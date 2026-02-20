@@ -809,7 +809,11 @@ private void updateMembersDropdown() {
     memberAdapter.addAll(bc.members);  
     memberAdapter.notifyDataSetChanged();  
     spinnerMember.setSelection(0);  
-    renderMainTable(bc);  
+    try {
+        renderMainTable(bc);
+    } catch (Exception e) {
+        showCrashDialog(e);
+    }  
 }  
 
 private void showDurationDialog(String type, EditText editMonths) {
@@ -1027,9 +1031,17 @@ private void renderMainTable(Bc bc) {
 
             switchVertical.setOnCheckedChangeListener((btn, isChecked) -> {
                 if (isChecked) {
-                    renderVerticalSelfWeeklyTable(bc);
+                    try {
+                        renderVerticalSelfWeeklyTable(bc);
+                    } catch (Exception e) {
+                        showCrashDialog(e);
+                   }
                 } else {
-                    renderMainTable(bc);
+                    try {
+                        renderMainTable(bc);
+                    } catch (Exception e) {
+                        showCrashDialog(e);
+                   }
                 }
             });
 
@@ -1578,7 +1590,13 @@ private void markInstallment() {
     );
 
     saveAllToRoom();
-    activity.runOnUiThread(() -> renderMainTable(bc));
+    activity.runOnUiThread(() -> 
+    try {
+        renderMainTable(bc);
+    } catch (Exception e) {
+        showCrashDialog(e);
+    }
+});
 
     editPayDate.setText("");
     editPayAmount.setText("");
@@ -1799,7 +1817,11 @@ private void addMemberToBc(Bc bc, String memberName) {
     );
 
     saveAllToRoom();
-    renderMainTable(bc);
+    try {
+        renderMainTable(bc);
+    } catch (Exception e) {
+        showCrashDialog(e);
+    }
 
     Toast.makeText(context,
             "Member added (" + (oldSize + 1) + "/" + bc.months + ")",
@@ -1925,7 +1947,11 @@ private void showUpdateMemberDialog(Bc bc, String oldName) {
         moveMapsAfterRename(bc, oldName, newName);
 
         saveAllToRoom();
-        renderMainTable(bc);
+        try {
+            renderMainTable(bc);
+        } catch (Exception e) {
+            showCrashDialog(e);
+        }
 
         Toast.makeText(context, "Member updated successfully", Toast.LENGTH_SHORT).show();
         dialog.dismiss();
@@ -2003,7 +2029,11 @@ private void showUpdatePaidAmountDialog(Bc bc, String memberName) {
                 bc.paidBcAmount.put(memberName, newAmount);
 
                 saveAllToRoom();
-                renderMainTable(bc);
+                try {
+                    renderMainTable(bc);
+               } catch (Exception e) {
+                   showCrashDialog(e);
+               }
 
                 Toast.makeText(context, "Paid BC amount updated", Toast.LENGTH_SHORT).show();
             })
@@ -2367,7 +2397,11 @@ private void showPaidBcDialog() {
 
         bc.paidBcAmount.put(member, amt);
         saveAllToRoom();
-        renderMainTable(bc);
+        try {
+            renderMainTable(bc);
+        } catch (Exception e) {
+            showCrashDialog(e);
+        }
 
         pushToUndoStack(
             () -> { // UNDO
@@ -2909,8 +2943,27 @@ private void recalculateAfterEntryChange(Bc bc, String changedMember) {
     saveAllToRoom();
 
     if (spinnerBc.getSelectedItemPosition() > 0) {
-        renderMainTable(bc);
+        try {
+            renderMainTable(bc);
+        } catch (Exception e) {
+            showCrashDialog(e);
+        }
     }
+}
+
+private void showCrashDialog(Exception e) {
+
+    String error = e.toString() + "\n\n";
+
+    for (StackTraceElement element : e.getStackTrace()) {
+        error += element.toString() + "\n";
+    }
+
+    new AlertDialog.Builder(context)
+            .setTitle("Crash Details")
+            .setMessage(error)
+            .setPositiveButton("OK", null)
+            .show();
 }
 
 private void moveMapsAfterRename(Bc bc, String oldName, String newName) {
