@@ -1045,6 +1045,10 @@ private void renderMainTable(Bc bc) {
                 }
             });
 
+            if (switchVertical.getParent() != null) {
+                ((ViewGroup) switchVertical.getParent()).removeView(switchVertical);
+            }
+
             titleLayout.addView(switchVertical);
     
     } else {
