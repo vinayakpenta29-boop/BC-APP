@@ -1034,7 +1034,7 @@ private void renderMainTable(Bc bc) {
             });
 
             titleLayout.addView(switchVertical);
-        }
+    
     } else {
         if (switchVertical != null)
             switchVertical.setVisibility(View.GONE);
