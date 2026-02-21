@@ -115,6 +115,8 @@ private final EditText editPayDate, editPayAmount;
 private final Button buttonAdd;  
 private final LinearLayout tableContainer;  
 private SwitchCompat switchVertical;   // ✅ ADD THIS
+private View horizontalTableView;
+private View verticalTableView;
 
 // Data  
 private final List<Bc> bcData;  
@@ -1032,18 +1034,18 @@ private void renderMainTable(Bc bc) {
             switchVertical.setChecked(false);
 
             switchVertical.setOnCheckedChangeListener((btn, isChecked) -> {
+
                 if (isChecked) {
-                    try {
-                        renderVerticalSelfWeeklyTable(bc);
-                    } catch (Exception e) {
-                        showCrashDialog(e);
-                   }
+
+                    renderVerticalSelfWeeklyTable(bc);
+
+                    if (verticalTableView != null && horizontalTableView != null)
+                        animateSwitch(verticalTableView, horizontalTableView);
+
                 } else {
-                    try {
-                        renderMainTable(bc);
-                    } catch (Exception e) {
-                        showCrashDialog(e);
-                   }
+
+                    if (verticalTableView != null && horizontalTableView != null)
+                        animateSwitch(horizontalTableView, verticalTableView);
                 }
             });
 
@@ -1418,12 +1420,18 @@ private void renderMainTable(Bc bc) {
     scrollWrap.addView(table);
 
     card.addView(scrollWrap);
-    tableContainer.addView(card);
+
+    horizontalTableView = card;   // ⭐ SAVE VIEW
+    tableContainer.addView(horizontalTableView);
     }
 
 private void renderVerticalSelfWeeklyTable(Bc bc) {
-
-    tableContainer.removeAllViews();
+    
+    if (verticalTableView != null) {
+        verticalTableView.setVisibility(View.VISIBLE);
+        horizontalTableView.setVisibility(View.GONE);
+        return;
+    }
 
     // ===== TITLE =====
     TextView title = new TextView(context);
@@ -1595,7 +1603,9 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
     scrollWrap.addView(table);
 
     card.addView(scrollWrap);
-    tableContainer.addView(card);
+    verticalTableView = table;
+    tableContainer.addView(verticalTableView);
+    horizontalTableView.setVisibility(View.GONE);
 }
 
 /* ---------- Installments ---------- */  
@@ -3177,6 +3187,21 @@ private void showEditModeToggleDialog() {
             })
             .setNegativeButton("Cancel", null)
             .show();
+}
+
+private void animateSwitch(View show, View hide) {
+
+    hide.animate()
+            .alpha(0f)
+            .setDuration(150)
+            .withEndAction(() -> hide.setVisibility(View.GONE));
+
+    show.setAlpha(0f);
+    show.setVisibility(View.VISIBLE);
+    show.animate()
+            .alpha(1f)
+            .setDuration(150)
+            .start();
 }
 
 private void pushToHistory(Runnable undo, Runnable redo) {
