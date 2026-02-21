@@ -1424,56 +1424,176 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
 
     tableContainer.removeAllViews();
 
+    // ===== TITLE =====
     TextView title = new TextView(context);
     title.setText("Main BC Table (Vertical)");
     title.setTextSize(16f);
     title.setTypeface(null, Typeface.BOLD);
-    title.setPadding(16, 8, 16, 8);
+    title.setPadding(16,8,16,8);
     tableContainer.addView(title);
 
+    // ===== TABLE =====
     TableLayout table = new TableLayout(context);
-    table.setPadding(8, 8, 8, 8);
+    table.setPadding(8,8,8,8);
+    table.setBackgroundColor(Color.parseColor("#ECEFF1"));
+    table.setStretchAllColumns(false);
 
-    for (int i = 0; i < bc.months; i++) {
+    // ===== HEADER =====
+    TableRow header = new TableRow(context);
+    header.setElevation(6f);
+
+    addCell(header,"Week",true);
+    addCell(header,"Date",true);
+    addCell(header,"Amount",true);
+    addCell(header,"Status",true);
+
+    table.addView(header);
+
+    Calendar startCal = parseIsoDate(bc.startDateIso);
+    Calendar todayCal = Calendar.getInstance();
+
+    int currentIndex = -1;
+
+    if(startCal!=null){
+        long diffMillis =
+                todayCal.getTimeInMillis()-startCal.getTimeInMillis();
+        long diffDays = diffMillis/(1000*60*60*24);
+        currentIndex=(int)(diffDays/7);
+    }
+
+    // ===== ROWS =====
+    for(int i=0;i<bc.months;i++){
 
         TableRow row = new TableRow(context);
+        row.setBackgroundColor(
+                i%2==0 ?
+                        Color.parseColor("#F7F9FC"):
+                        Color.WHITE
+        );
 
-        Calendar cal = parseIsoDate(bc.startDateIso);
-        if (cal != null) {
-            cal.add(Calendar.DATE, i * 7);
+        addCell(row,String.valueOf(i+1),false);
+
+        Calendar cal=parseIsoDate(bc.startDateIso);
+        if(cal!=null) cal.add(Calendar.DATE,i*7);
+
+        String dateStr =
+                cal!=null ? displayFormat.format(cal.getTime()) : "-";
+
+        addCell(row,dateStr,false);
+
+        double expected =
+                bc.amounts.size()>i ?
+                        bc.amounts.get(i):
+                        (!bc.amounts.isEmpty()?bc.amounts.get(0):0.0);
+
+        addCell(row,"₹"+String.format("%.0f",expected),false);
+
+        // ===== STATUS CELL (SAME STYLE AS MAIN TABLE) =====
+        LinearLayout cellContainer = new LinearLayout(context);
+        cellContainer.setOrientation(LinearLayout.VERTICAL);
+        cellContainer.setGravity(Gravity.CENTER);
+        cellContainer.setPadding(8,10,8,10);
+        cellContainer.setMinimumHeight(84);
+        cellContainer.setElevation(2f);
+        cellContainer.setBackgroundResource(R.drawable.table_cell_border);
+
+        String key = bc.getPaidKey("Self",i);
+        double paidAmt = bc.paidAmount.getOrDefault(key,0.0);
+
+        boolean hasAnyPayment = paidAmt>0;
+
+        if(hasAnyPayment){
+
+            if(paidAmt>=expected){
+                cellContainer.setBackgroundResource(
+                        R.drawable.table_cell_border_paid);
+            }else{
+                cellContainer.setBackgroundResource(
+                        R.drawable.table_cell_border_partialy_paid);
+            }
+
+            // ✅ tick
+            TextView tick=new TextView(context);
+            tick.setText("✅");
+            tick.setTextSize(18f);
+            tick.setTextColor(Color.parseColor("#2E7D32"));
+            tick.setGravity(Gravity.CENTER);
+            cellContainer.addView(tick);
+
+            // amount badge
+            TextView badge=new TextView(context);
+            badge.setText("₹"+String.format("%.0f",paidAmt));
+            badge.setTextSize(8f);
+            badge.setTypeface(null,Typeface.BOLD);
+            badge.setPadding(10,4,10,4);
+
+            if(paidAmt<expected){
+                badge.setBackgroundResource(
+                        R.drawable.amount_badge_red);
+                badge.setTextColor(Color.parseColor("#D32F2F"));
+            }else{
+                badge.setBackgroundResource(
+                        R.drawable.amount_badge_green);
+                badge.setTextColor(Color.WHITE);
+            }
+
+            LinearLayout.LayoutParams badgeLp =
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
+            badgeLp.topMargin=4;
+            badge.setLayoutParams(badgeLp);
+
+            cellContainer.addView(badge);
+
+        }else{
+
+            // ☐ unpaid
+            TextView box=new TextView(context);
+            box.setText("☐");
+            box.setTextSize(18f);
+            box.setGravity(Gravity.CENTER);
+            cellContainer.addView(box);
         }
 
-        String dateStr = cal != null
-                ? displayFormat.format(cal.getTime())
-                : "-";
+        // 🔴 overdue highlight (same logic)
+        if(i<=currentIndex && paidAmt<expected){
+            cellContainer.setBackgroundResource(
+                    R.drawable.table_cell_border_overdue);
+        }
 
-        TextView dateCell = new TextView(context);
-        dateCell.setText(dateStr);
-        dateCell.setPadding(16, 12, 16, 12);
-        row.addView(dateCell);
+        TableRow.LayoutParams lp =
+                new TableRow.LayoutParams(
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.MATCH_PARENT);
+        lp.setMargins(1,1,1,1);
+        cellContainer.setLayoutParams(lp);
 
-        double expected = bc.amounts.size() > i
-                ? bc.amounts.get(i)
-                : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
-
-        TextView amountCell = new TextView(context);
-        amountCell.setText("₹" + String.format("%.0f", expected));
-        amountCell.setPadding(16, 12, 16, 12);
-        row.addView(amountCell);
-
-        String key = bc.getPaidKey("Self", i);
-        double paidAmt = bc.paidAmount.getOrDefault(key, 0.0);
-
-        TextView status = new TextView(context);
-        status.setText(paidAmt >= expected ? "✅ Paid" :
-                (paidAmt > 0 ? "⚠ Partial" : "☐ Unpaid"));
-        status.setPadding(16, 12, 16, 12);
-        row.addView(status);
+        row.addView(cellContainer);
 
         table.addView(row);
     }
 
-    tableContainer.addView(table);
+    // ===== CARD WRAPPER (SAME AS MAIN TABLE) =====
+    CardView card = new CardView(context);
+    card.setRadius(28f);
+    card.setCardElevation(14f);
+    card.setUseCompatPadding(true);
+    card.setCardBackgroundColor(Color.WHITE);
+
+    LinearLayout.LayoutParams cardParams =
+            new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+    cardParams.setMargins(16,12,16,24);
+    card.setLayoutParams(cardParams);
+
+    HorizontalScrollView scrollWrap =
+            new HorizontalScrollView(context);
+    scrollWrap.addView(table);
+
+    card.addView(scrollWrap);
+    tableContainer.addView(card);
 }
 
 /* ---------- Installments ---------- */  
