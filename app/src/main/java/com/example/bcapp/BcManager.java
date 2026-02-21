@@ -1037,7 +1037,11 @@ private void renderMainTable(Bc bc) {
 
                 if (isChecked) {
 
-                    renderVerticalSelfWeeklyTable(bc);
+                    try {
+                        renderVerticalSelfWeeklyTable(bc);
+                    } catch (Exception e) {
+                        showCrashDialog(e);
+                    }  
 
                     if (verticalTableView != null && horizontalTableView != null)
                         animateSwitch(verticalTableView, horizontalTableView);
