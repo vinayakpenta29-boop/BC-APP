@@ -1607,9 +1607,18 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
     scrollWrap.addView(table);
 
     card.addView(scrollWrap);
-    verticalTableView = table;
+    verticalTableView = card;
+
+    // safety (prevents future crash)
+    if (verticalTableView.getParent() != null) {
+        ((ViewGroup) verticalTableView.getParent())
+                .removeView(verticalTableView);
+    }
+
     tableContainer.addView(verticalTableView);
-    horizontalTableView.setVisibility(View.GONE);
+
+    if (horizontalTableView != null)
+        horizontalTableView.setVisibility(View.GONE);
 }
 
 /* ---------- Installments ---------- */  
