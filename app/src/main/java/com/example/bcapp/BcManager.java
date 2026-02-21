@@ -1011,7 +1011,8 @@ private void renderMainTable(Bc bc) {
     titleLayout.setPadding(16, 8, 16, 8);
 
     TextView title = new TextView(context);
-    title.setText("Main BC Table");
+    title.setText(bc.name);
+    title.setTextColor(Color.BLACK);
     title.setTextSize(16f);
     title.setTypeface(null, Typeface.BOLD);
     title.setLayoutParams(new LinearLayout.LayoutParams(0,
@@ -1426,7 +1427,8 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
 
     // ===== TITLE =====
     TextView title = new TextView(context);
-    title.setText("Main BC Table (Vertical)");
+    title.setText(bc.name);
+    title.setTextColor(Color.BLACK);
     title.setTextSize(16f);
     title.setTypeface(null, Typeface.BOLD);
     title.setPadding(16,8,16,8);
