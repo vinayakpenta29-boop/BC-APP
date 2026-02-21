@@ -1437,15 +1437,6 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
         return;
     }
 
-    // ===== TITLE =====
-    TextView title = new TextView(context);
-    title.setText(bc.name);
-    title.setTextColor(Color.BLACK);
-    title.setTextSize(16f);
-    title.setTypeface(null, Typeface.BOLD);
-    title.setPadding(16,8,16,8);
-    tableContainer.addView(title);
-
     // ===== TABLE =====
     TableLayout table = new TableLayout(context);
     table.setPadding(8,8,8,8);
