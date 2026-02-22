@@ -2361,6 +2361,8 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     glassCard.setUseCompatPadding(true);
     glassCard.setBackgroundResource(R.drawable.bg_real_glass);
     glassCard.setCardBackgroundColor(Color.TRANSPARENT);
+    glassCard.setAlpha(0.96f);
+    glassCard.setPreventCornerOverlap(false);
     
     LinearLayout.LayoutParams cardParams =
             new LinearLayout.LayoutParams(
@@ -2448,7 +2450,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     LinearLayout summary = new LinearLayout(context);
     summary.setOrientation(LinearLayout.VERTICAL);
     summary.setPadding(24,20,24,20);
-    summary.setBackgroundResource(R.drawable.bg_glass_dialog);
+    summary.setBackgroundResource(R.drawable.bg_real_glass);
     summary.setElevation(8f);
 
     LinearLayout.LayoutParams summaryParams =
@@ -2506,16 +2508,20 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     glassCard.addView(scrollView);
 
     dialog.setView(glassCard);
-    dialog.show();
-
     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+    dialog.getWindow().addFlags(
+        WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+    
+    dialog.show();
+    dialog.getWindow().setDimAmount(0.15f);
+    
+    if (android.os.Build.VERSION.SDK_INT >= 31) {
+        dialog.getWindow().setBackgroundBlurRadius(90);
+    }
 
     glassCard.startAnimation(
         AnimationUtils.loadAnimation(context, R.anim.dialog_scale_in));
-
-    if (android.os.Build.VERSION.SDK_INT >= 31) {
-        dialog.getWindow().setBackgroundBlurRadius(80);
-    }
+    
 }
 
 private void showPaidBcDialog() {
