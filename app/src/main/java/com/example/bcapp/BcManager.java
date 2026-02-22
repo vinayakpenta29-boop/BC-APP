@@ -2351,7 +2351,9 @@ private void addDivider(LinearLayout root) {
 
 private void showTotalBreakdownDialog(Bc bc, String member) {
 
-    AlertDialog dialog = new AlertDialog.Builder(context).create();
+    AlertDialog dialog =
+        new AlertDialog.Builder(context, R.style.BlurDialogTheme)
+                .create();
 
     CardView glassCard = new CardView(context);
     glassCard.setRadius(32f);
@@ -2375,22 +2377,25 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     double totalPaid = 0.0;
 
+    LinearLayout header = new LinearLayout(context);
+    header.setOrientation(LinearLayout.VERTICAL);
+    header.setPadding(0,0,0,20);
+
     TextView title = new TextView(context);
     title.setText("Payment Breakdown");
-    title.setTextSize(22f);
+    title.setTextSize(24f);
     title.setTypeface(null, Typeface.BOLD);
-    title.setTextColor(Color.parseColor("#111111"));
-    title.setPadding(0,0,0,16);
-    root.addView(title);
+    title.setTextColor(Color.parseColor("#66023C"));
 
-    // Member title
-    TextView tvMember = new TextView(context);
-    tvMember.setText("Member: " + member);
-    tvMember.setTextSize(18f);
-    tvMember.setTypeface(null, Typeface.BOLD);
-    root.addView(tvMember);
+    TextView subtitle = new TextView(context);
+    subtitle.setText(member);
+    subtitle.setTextSize(14f);
+    subtitle.setTextColor(Color.parseColor("#FA003F"));
 
-    addDivider(root);
+    header.addView(title);
+    header.addView(subtitle);
+
+    root.addView(header);
 
     // Month-wise entries
     for (int m = 0; m < bc.months; m++) {
@@ -2441,7 +2446,8 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     LinearLayout summary = new LinearLayout(context);
     summary.setOrientation(LinearLayout.VERTICAL);
     summary.setPadding(24,20,24,20);
-    summary.setBackgroundResource(R.drawable.table_cell_border);
+    summary.setBackgroundResource(R.drawable.bg_glass_dialog);
+    summary.setElevation(8f);
 
     LinearLayout.LayoutParams summaryParams =
             new LinearLayout.LayoutParams(
@@ -2499,6 +2505,13 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     dialog.setView(glassCard);
     dialog.show();
+
+    glassCard.startAnimation(
+        AnimationUtils.loadAnimation(context, R.anim.dialog_scale_in));
+
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        dialog.getWindow().setBackgroundBlurRadius(60);
+    }
 }
 
 private void showPaidBcDialog() {
