@@ -2390,7 +2390,8 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     TextView subtitle = new TextView(context);
     subtitle.setText(member);
-    subtitle.setTextSize(14f);
+    subtitle.setGravity(Gravity.CENTER);
+    subtitle.setTextSize(16f);
     subtitle.setTextColor(Color.parseColor("#FA003F"));
 
     header.addView(title);
