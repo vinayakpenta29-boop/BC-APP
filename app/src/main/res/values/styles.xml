@@ -1,13 +1,16 @@
-<style name="BlurDialogTheme" parent="Theme.AppCompat.Dialog">
-    
-    <!-- Transparent background -->
-    <item name="android:windowBackground">@android:color/transparent</item>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
 
-    <!-- Dim blur effect -->
-    <item name="android:backgroundDimEnabled">true</item>
-    <item name="android:backgroundDimAmount">0.6</item>
+    <!-- Blur Glass Dialog Theme -->
+    <style name="BlurDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
 
-    <!-- No default dialog frame -->
-    <item name="android:windowIsFloating">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
 
-</style>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+
+        <item name="android:windowIsFloating">true</item>
+
+    </style>
+
+</resources>
