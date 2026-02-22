@@ -2390,7 +2390,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     title.setTextSize(24f);
     title.setTypeface(null, Typeface.BOLD);
     title.setTextColor(Color.parseColor("#66023C"));
-    title.setBackgroundResource(R.drawable.bg_real_glass);
+    title.setBackgroundResource(R.drawable.bg_glass_dialog);
 
     TextView subtitle = new TextView(context);
     subtitle.setText(member);
@@ -2456,7 +2456,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     LinearLayout summary = new LinearLayout(context);
     summary.setOrientation(LinearLayout.VERTICAL);
     summary.setPadding(24,20,24,20);
-    summary.setBackgroundResource(R.drawable.bg_real_glass);
+    summary.setBackgroundResource(R.drawable.bg_glass_dialog);
     summary.setElevation(8f);
 
     LinearLayout.LayoutParams summaryParams =
