@@ -2351,8 +2351,21 @@ private void addDivider(LinearLayout root) {
 
 private void showTotalBreakdownDialog(Bc bc, String member) {
 
-    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setTitle("Payment Breakdown");
+    AlertDialog dialog = new AlertDialog.Builder(context).create();
+
+    CardView glassCard = new CardView(context);
+    glassCard.setRadius(32f);
+    glassCard.setCardElevation(18f);
+    glassCard.setUseCompatPadding(true);
+    glassCard.setBackgroundResource(R.drawable.bg_glass_dialog);
+
+    LinearLayout.LayoutParams cardParams =
+            new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+
+    cardParams.setMargins(40,40,40,40);
+    glassCard.setLayoutParams(cardParams);
 
     ScrollView scrollView = new ScrollView(context);
     LinearLayout root = new LinearLayout(context);
@@ -2361,6 +2374,14 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     scrollView.addView(root);
 
     double totalPaid = 0.0;
+
+    TextView title = new TextView(context);
+    title.setText("Payment Breakdown");
+    title.setTextSize(22f);
+    title.setTypeface(null, Typeface.BOLD);
+    title.setTextColor(Color.parseColor("#111111"));
+    title.setPadding(0,0,0,16);
+    root.addView(title);
 
     // Member title
     TextView tvMember = new TextView(context);
