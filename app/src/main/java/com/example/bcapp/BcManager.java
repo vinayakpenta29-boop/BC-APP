@@ -26,6 +26,7 @@ import androidx.cardview.widget.CardView;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.view.animation.Animation;
@@ -2389,9 +2390,11 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     title.setTextSize(24f);
     title.setTypeface(null, Typeface.BOLD);
     title.setTextColor(Color.parseColor("#66023C"));
+    title.setBackgroundResource(R.drawable.bg_real_glass);
 
     TextView subtitle = new TextView(context);
     subtitle.setText(member);
+    subtitle.setTypeface(null, Typeface.BOLD);
     subtitle.setGravity(Gravity.CENTER);
     subtitle.setTextSize(16f);
     subtitle.setTextColor(Color.parseColor("#FA003F"));
@@ -2418,19 +2421,22 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
             TextView tvMonth = new TextView(context);
             tvMonth.setText("M" + (m + 1));
-            tvMonth.setTextColor(Color.DKGRAY);
+            tvMonth.setTypeface(null, Typeface.BOLD);
+            tvMonth.setTextColor(Color.BLACK);
             tvMonth.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
             TextView tvAmt = new TextView(context);
             tvAmt.setText("₹" + String.format("%.0f", e.amount));
             tvAmt.setTypeface(null, Typeface.BOLD);
+            tvAmt.setTextColor(Color.BLACK);
             tvAmt.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
             TextView tvDate = new TextView(context);
             tvDate.setText(e.paidDateIso);
-            tvDate.setTextColor(Color.GRAY);
+            tvDate.setTextColor(Color.BLACK);
+            setTypeface(null, Typeface.BOLD);
             tvDate.setGravity(Gravity.END);
             tvDate.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1));
