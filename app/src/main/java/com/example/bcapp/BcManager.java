@@ -2438,6 +2438,21 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     addDivider(root);
 
+    LinearLayout summary = new LinearLayout(context);
+    summary.setOrientation(LinearLayout.VERTICAL);
+    summary.setPadding(24,20,24,20);
+    summary.setBackgroundResource(R.drawable.table_cell_border);
+
+    LinearLayout.LayoutParams summaryParams =
+            new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+
+    summaryParams.setMargins(0,16,0,0);
+    summary.setLayoutParams(summaryParams);
+
+    root.addView(summary);
+
     // Expected total (Past unpaid + current installment only)
     double expectedTotal = 0.0;
 
@@ -2462,13 +2477,13 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     TextView tvExpected = new TextView(context);
     tvExpected.setText("Expected Total: ₹" + String.format("%.0f", expectedTotal));
     tvExpected.setTypeface(null, Typeface.BOLD);
-    root.addView(tvExpected);
+    summary.addView(tvExpected);
 
     // Total paid
     TextView tvPaid = new TextView(context);
     tvPaid.setText("Total Paid: ₹" + String.format("%.0f", totalPaid));
     tvPaid.setTypeface(null, Typeface.BOLD);
-    root.addView(tvPaid);
+    summary.addView(tvPaid);
 
     // Balance
     double balance = expectedTotal - totalPaid;
@@ -2478,7 +2493,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     tvBalance.setTextColor(balance > 0
             ? Color.parseColor("#D32F2F")
             : Color.parseColor("#1B5E20"));
-    root.addView(tvBalance);
+    summary.addView(tvBalance);
 
     glassCard.addView(scrollView);
 
