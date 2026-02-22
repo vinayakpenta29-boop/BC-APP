@@ -1,0 +1,13 @@
+<style name="BlurDialogTheme" parent="Theme.AppCompat.Dialog">
+    
+    <!-- Transparent background -->
+    <item name="android:windowBackground">@android:color/transparent</item>
+
+    <!-- Dim blur effect -->
+    <item name="android:backgroundDimEnabled">true</item>
+    <item name="android:backgroundDimAmount">0.6</item>
+
+    <!-- No default dialog frame -->
+    <item name="android:windowIsFloating">true</item>
+
+</style>
