@@ -2436,7 +2436,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
             TextView tvDate = new TextView(context);
             tvDate.setText(e.paidDateIso);
             tvDate.setTextColor(Color.BLACK);
-            setTypeface(null, Typeface.BOLD);
+            tvDate.setTypeface(null, Typeface.BOLD);
             tvDate.setGravity(Gravity.END);
             tvDate.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1));
@@ -2491,20 +2491,22 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     }
 
     TextView tvExpected = new TextView(context);
-    tvExpected.setText("Expected Total: ₹" + String.format("%.0f", expectedTotal));
+    tvExpected.setText("Expected Total : ₹" + String.format("%.0f", expectedTotal));
+    tvExpected.setTextColor(Color.BLACK);
     tvExpected.setTypeface(null, Typeface.BOLD);
     summary.addView(tvExpected);
 
     // Total paid
     TextView tvPaid = new TextView(context);
-    tvPaid.setText("Total Paid: ₹" + String.format("%.0f", totalPaid));
+    tvPaid.setText("Total Paid : ₹" + String.format("%.0f", totalPaid));
+    tvPaid.setTextColor(Color.parseColor("#66023C"));
     tvPaid.setTypeface(null, Typeface.BOLD);
     summary.addView(tvPaid);
 
     // Balance
     double balance = expectedTotal - totalPaid;
     TextView tvBalance = new TextView(context);
-    tvBalance.setText("Balance: ₹" + String.format("%.0f", balance));
+    tvBalance.setText("Balance : ₹" + String.format("%.0f", balance));
     tvBalance.setTypeface(null, Typeface.BOLD);
     tvBalance.setTextColor(balance > 0
             ? Color.parseColor("#D32F2F")
