@@ -2356,11 +2356,12 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
                 .create();
 
     CardView glassCard = new CardView(context);
-    glassCard.setRadius(32f);
-    glassCard.setCardElevation(18f);
+    glassCard.setRadius(40f);
+    glassCard.setCardElevation(25f);
     glassCard.setUseCompatPadding(true);
-    glassCard.setBackgroundResource(R.drawable.bg_glass_dialog);
-
+    glassCard.setBackgroundResource(R.drawable.bg_real_glass);
+    glassCard.setCardBackgroundColor(Color.TRANSPARENT);
+    
     LinearLayout.LayoutParams cardParams =
             new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -2506,11 +2507,13 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     dialog.setView(glassCard);
     dialog.show();
 
+    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
     glassCard.startAnimation(
         AnimationUtils.loadAnimation(context, R.anim.dialog_scale_in));
 
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-        dialog.getWindow().setBackgroundBlurRadius(60);
+    if (android.os.Build.VERSION.SDK_INT >= 31) {
+        dialog.getWindow().setBackgroundBlurRadius(80);
     }
 }
 
