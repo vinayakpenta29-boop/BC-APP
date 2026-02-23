@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.provider.MediaStore;
 import android.content.ContentValues;
 import android.net.Uri;
@@ -49,6 +50,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.HorizontalScrollView;  // ← ADD THIS LINE
 import android.widget.ScrollView;
+import android.widget.FrameLayout;
 import androidx.appcompat.widget.SwitchCompat;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.widget.SwitchCompat;
