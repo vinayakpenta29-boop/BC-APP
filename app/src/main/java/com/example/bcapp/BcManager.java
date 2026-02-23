@@ -2355,239 +2355,219 @@ private void addDivider(LinearLayout root) {
 }
 
 private void showTotalBreakdownDialog(Bc bc, String member) {
-    try {
+try {
 
-    AlertDialog dialog =
-        new AlertDialog.Builder(context, R.style.BlurDialogTheme)
-                .create();
+AlertDialog dialog =  
+    new AlertDialog.Builder(context, R.style.BlurDialogTheme)  
+            .create();  
 
-    CardView glassCard = new CardView(context);
-    glassCard.setRadius(40f);
-    glassCard.setCardElevation(25f);
-    glassCard.setUseCompatPadding(true);
-    glassCard.setBackgroundResource(R.drawable.bg_real_glass);
-    glassCard.setCardBackgroundColor(Color.parseColor("#E6FFFFFF")); // frosted white
-    glassCard.setAlpha(0.96f);
-    glassCard.setPreventCornerOverlap(false);
-    
-    LinearLayout.LayoutParams cardParams =
-            new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-
-    cardParams.setMargins(40,40,40,40);
-    glassCard.setLayoutParams(cardParams);
-
-    ScrollView scrollView = new ScrollView(context);
-    LinearLayout root = new LinearLayout(context);
-    root.setOrientation(LinearLayout.VERTICAL);
-    root.setPadding(32, 24, 32, 24);
-    scrollView.addView(root);
-
-    double totalPaid = 0.0;
-
-    LinearLayout header = new LinearLayout(context);
-    header.setOrientation(LinearLayout.VERTICAL);
-    header.setPadding(0,0,0,20);
-
-    TextView title = new TextView(context);
-    title.setText("Payment Breakdown");
-    title.setTextSize(24f);
-    title.setTypeface(null, Typeface.BOLD);
-    title.setTextColor(Color.parseColor("#66023C"));
-    title.setBackgroundResource(R.drawable.bg_glass_dialog);
-
-    TextView subtitle = new TextView(context);
-    subtitle.setText(member);
-    subtitle.setTypeface(null, Typeface.BOLD);
-    subtitle.setGravity(Gravity.CENTER);
-    subtitle.setTextSize(16f);
-    subtitle.setTextColor(Color.parseColor("#FA003F"));
-
-    header.addView(title);
-    header.addView(subtitle);
-
-    root.addView(header);
-
-    // Month-wise entries
-    for (int m = 0; m < bc.months; m++) {
-
-        String key = bc.getPaidKey(member, m);
-        List<PaymentEntry> list =
-        bc.paymentEntries != null ? bc.paymentEntries.get(key) : null;
-
-        if (list == null || list.isEmpty()) continue;
-
-        for (PaymentEntry e : list) {
-
-            LinearLayout row = new LinearLayout(context);
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setPadding(0, 8, 0, 8);
-
-            // ===== GLASS STROKE TEXT =====
-            FrameLayout textHolder = new FrameLayout(context);
-            textHolder.setLayoutParams(new LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1));
-
-            // ---- Stroke Text (BACK) ----
-            TextView stroke = new TextView(context);
-            stroke.setText("M" + (m + 1));
-            stroke.setTypeface(null, Typeface.BOLD);
-            stroke.setTextColor(Color.parseColor("#40FFFFFF"));
-
-            stroke.getPaint().setStyle(Paint.Style.STROKE);
-            stroke.getPaint().setStrokeWidth(6f);
-
-            // ---- Glass Text (FRONT) ----
-            TextView glassText = new TextView(context);
-            glassText.setText("M" + (m + 1));
-            glassText.setTypeface(null, Typeface.BOLD);
-            glassText.setTextColor(Color.parseColor("#595959"));
-
-            glassText.setShadowLayer(
-                    12f,
-                    0f,
-                    0f,
-                    Color.parseColor("#AAFFFFFF"));
-
-                // Combine
-            textHolder.addView(stroke);
-            textHolder.addView(glassText);
-
-            TextView tvAmt = new TextView(context);
-            tvAmt.setText("₹" + String.format("%.0f", e.amount));
-            tvAmt.setTypeface(null, Typeface.BOLD);
-            tvAmt.setTextColor(Color.WHITE);
-            tvAmt.setShadowLayer(
-                    8f,     // blur radius
-                    0f,     // dx
-                    0f,     // dy
-                    Color.parseColor("#80FFFFFF"));
-            tvAmt.setLayoutParams(new LinearLayout.LayoutParams(0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-
-            TextView tvDate = new TextView(context);
-            tvDate.setText(e.paidDateIso);
-            tvDate.setTextColor(Color.WHITE);
-            tvDate.setShadowLayer(
-                    8f,     // blur radius
-                    0f,     // dx
-                    0f,     // dy
-                    Color.parseColor("#80FFFFFF"));
-            tvDate.setTypeface(null, Typeface.BOLD);
-            tvDate.setGravity(Gravity.END);
-            tvDate.setLayoutParams(new LinearLayout.LayoutParams(0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-
-            row.addView(textHolder);
-            row.addView(tvAmt);
-            row.addView(tvDate);
-
-            root.addView(row);
-
-            totalPaid += e.amount;
-        }
-    }
-
-    addDivider(root);
-
-    LinearLayout summary = new LinearLayout(context);
-    summary.setOrientation(LinearLayout.VERTICAL);
-    summary.setPadding(24,20,24,20);
-    summary.setBackgroundResource(R.drawable.bg_glass_dialog);
-    summary.setElevation(8f);
-
-    LinearLayout.LayoutParams summaryParams =
-            new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-
-    summaryParams.setMargins(0,16,0,0);
-    summary.setLayoutParams(summaryParams);
-
-    root.addView(summary);
-
-    // Expected total (Past unpaid + current installment only)
-    double expectedTotal = 0.0;
-
-    int currentIndex = bc.getCurrentInstallmentIndex();
-
-    if (currentIndex < 0) {
-        currentIndex = 0;
-    }
-
-    int checkUpto = Math.min(currentIndex + 1, bc.months);
-
-    for (int i = 0; i < checkUpto; i++) {
-
-        double installmentAmt = bc.amounts.size() > i
-                ? bc.amounts.get(i)
-                : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);
-
-        // 🔥 Add full installment amount (paid or unpaid)
-        expectedTotal += installmentAmt;
-    }
-
-    TextView tvExpected = new TextView(context);
-    tvExpected.setText("Expected Total : ₹" + String.format("%.0f", expectedTotal));
-    tvExpected.setTextColor(Color.BLACK);
-    tvExpected.setTypeface(null, Typeface.BOLD);
-    summary.addView(tvExpected);
-
-    // Total paid
-    TextView tvPaid = new TextView(context);
-    tvPaid.setText("Total Paid : ₹" + String.format("%.0f", totalPaid));
-    tvPaid.setTextColor(Color.parseColor("#66023C"));
-    tvPaid.setTypeface(null, Typeface.BOLD);
-    summary.addView(tvPaid);
-
-    // Balance
-    double balance = expectedTotal - totalPaid;
-    TextView tvBalance = new TextView(context);
-    tvBalance.setText("Balance : ₹" + String.format("%.0f", balance));
-    tvBalance.setTypeface(null, Typeface.BOLD);
-    tvBalance.setTextColor(balance > 0
-            ? Color.parseColor("#D32F2F")
-            : Color.parseColor("#1B5E20"));
-    summary.addView(tvBalance);
-
-    glassCard.addView(scrollView);  
-    dialog.setView(glassCard);  
-    dialog.show();  
-    dialog.getWindow().setDimAmount(0.45f);  
-
-    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);  
-    Window window = dialog.getWindow();  
-
-    if (window != null) {  
-
-        // Transparent dialog background  
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));  
+CardView glassCard = new CardView(context);  
+glassCard.setRadius(40f);  
+glassCard.setCardElevation(25f);  
+glassCard.setUseCompatPadding(true);  
+glassCard.setBackgroundResource(R.drawable.bg_real_glass);  
+glassCard.setCardBackgroundColor(Color.parseColor("#E6FFFFFF")); // frosted white  
+glassCard.setAlpha(0.96f);  
+glassCard.setPreventCornerOverlap(false);  
   
-        // Darken background (important for readability)  
-        window.setDimAmount(0.45f);  
+LinearLayout.LayoutParams cardParams =  
+        new LinearLayout.LayoutParams(  
+                LinearLayout.LayoutParams.MATCH_PARENT,  
+                LinearLayout.LayoutParams.WRAP_CONTENT);  
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {  
+cardParams.setMargins(40,40,40,40);  
+glassCard.setLayoutParams(cardParams);  
 
-            // REAL BACKGROUND BLUR (Android 12+)  
-            window.setBackgroundBlurRadius(180);  
+ScrollView scrollView = new ScrollView(context);  
+LinearLayout root = new LinearLayout(context);  
+root.setOrientation(LinearLayout.VERTICAL);  
+root.setPadding(32, 24, 32, 24);  
+scrollView.addView(root);  
 
-            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);  
-        }  
+double totalPaid = 0.0;  
+
+LinearLayout header = new LinearLayout(context);  
+header.setOrientation(LinearLayout.VERTICAL);  
+header.setPadding(0,0,0,20);  
+
+TextView title = new TextView(context);  
+title.setText("Payment Breakdown");  
+title.setTextSize(24f);  
+title.setTypeface(null, Typeface.BOLD);  
+title.setTextColor(Color.parseColor("#66023C"));  
+title.setBackgroundResource(R.drawable.bg_glass_dialog);  
+
+TextView subtitle = new TextView(context);  
+subtitle.setText(member);  
+subtitle.setTypeface(null, Typeface.BOLD);  
+subtitle.setGravity(Gravity.CENTER);  
+subtitle.setTextSize(16f);  
+subtitle.setTextColor(Color.parseColor("#FA003F"));  
+
+header.addView(title);  
+header.addView(subtitle);  
+
+root.addView(header);  
+
+// Month-wise entries  
+for (int m = 0; m < bc.months; m++) {  
+
+    String key = bc.getPaidKey(member, m);  
+    List<PaymentEntry> list =  
+    bc.paymentEntries != null ? bc.paymentEntries.get(key) : null;  
+
+    if (list == null || list.isEmpty()) continue;  
+
+    for (PaymentEntry e : list) {  
+
+        LinearLayout row = new LinearLayout(context);  
+        row.setOrientation(LinearLayout.HORIZONTAL);  
+        row.setPadding(0, 8, 0, 8);  
+
+        TextView tvMonth = new TextView(context);  
+        tvMonth.setText("M" + (m + 1));  
+        tvMonth.setTypeface(null, Typeface.BOLD);  
+        tvMonth.setTextColor(Color.WHITE);  
+        tvMonth.setShadowLayer(  
+                8f,     // blur radius  
+                0f,     // dx  
+                0f,     // dy  
+                Color.parseColor("#80FFFFFF"));  
+        tvMonth.setLayoutParams(new LinearLayout.LayoutParams(0,  
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1));  
+
+        TextView tvAmt = new TextView(context);  
+        tvAmt.setText("₹" + String.format("%.0f", e.amount));  
+        tvAmt.setTypeface(null, Typeface.BOLD);  
+        tvAmt.setTextColor(Color.WHITE);  
+        tvAmt.setShadowLayer(  
+                8f,     // blur radius  
+                0f,     // dx  
+                0f,     // dy  
+                Color.parseColor("#80FFFFFF"));  
+        tvAmt.setLayoutParams(new LinearLayout.LayoutParams(0,  
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1));  
+
+        TextView tvDate = new TextView(context);  
+        tvDate.setText(e.paidDateIso);  
+        tvDate.setTextColor(Color.WHITE);  
+        tvDate.setShadowLayer(  
+                8f,     // blur radius  
+                0f,     // dx  
+                0f,     // dy  
+                Color.parseColor("#80FFFFFF"));  
+        tvDate.setTypeface(null, Typeface.BOLD);  
+        tvDate.setGravity(Gravity.END);  
+        tvDate.setLayoutParams(new LinearLayout.LayoutParams(0,  
+                LinearLayout.LayoutParams.WRAP_CONTENT, 1));  
+
+        row.addView(tvMonth);  
+        row.addView(tvAmt);  
+        row.addView(tvDate);  
+
+        root.addView(row);  
+
+        totalPaid += e.amount;  
     }  
-  
-    if (android.os.Build.VERSION.SDK_INT >= 31) {  
-        dialog.getWindow().setBackgroundBlurRadius(90);  
-    }  
+}  
 
-    glassCard.startAnimation(  
-        AnimationUtils.loadAnimation(context, R.anim.dialog_scale_in));  
-    } catch (Exception e) {  
-        showCrashDialog(e);  
-    }
-    
+addDivider(root);  
+
+LinearLayout summary = new LinearLayout(context);  
+summary.setOrientation(LinearLayout.VERTICAL);  
+summary.setPadding(24,20,24,20);  
+summary.setBackgroundResource(R.drawable.bg_glass_dialog);  
+summary.setElevation(8f);  
+
+LinearLayout.LayoutParams summaryParams =  
+        new LinearLayout.LayoutParams(  
+                LinearLayout.LayoutParams.MATCH_PARENT,  
+                LinearLayout.LayoutParams.WRAP_CONTENT);  
+
+summaryParams.setMargins(0,16,0,0);  
+summary.setLayoutParams(summaryParams);  
+
+root.addView(summary);  
+
+// Expected total (Past unpaid + current installment only)  
+double expectedTotal = 0.0;  
+
+int currentIndex = bc.getCurrentInstallmentIndex();  
+
+if (currentIndex < 0) {  
+    currentIndex = 0;  
+}  
+
+int checkUpto = Math.min(currentIndex + 1, bc.months);  
+
+for (int i = 0; i < checkUpto; i++) {  
+
+    double installmentAmt = bc.amounts.size() > i  
+            ? bc.amounts.get(i)  
+            : (!bc.amounts.isEmpty() ? bc.amounts.get(0) : 0.0);  
+
+    // 🔥 Add full installment amount (paid or unpaid)  
+    expectedTotal += installmentAmt;  
+}  
+
+TextView tvExpected = new TextView(context);  
+tvExpected.setText("Expected Total : ₹" + String.format("%.0f", expectedTotal));  
+tvExpected.setTextColor(Color.BLACK);  
+tvExpected.setTypeface(null, Typeface.BOLD);  
+summary.addView(tvExpected);  
+
+// Total paid  
+TextView tvPaid = new TextView(context);  
+tvPaid.setText("Total Paid : ₹" + String.format("%.0f", totalPaid));  
+tvPaid.setTextColor(Color.parseColor("#66023C"));  
+tvPaid.setTypeface(null, Typeface.BOLD);  
+summary.addView(tvPaid);  
+
+// Balance  
+double balance = expectedTotal - totalPaid;  
+TextView tvBalance = new TextView(context);  
+tvBalance.setText("Balance : ₹" + String.format("%.0f", balance));  
+tvBalance.setTypeface(null, Typeface.BOLD);  
+tvBalance.setTextColor(balance > 0  
+        ? Color.parseColor("#D32F2F")  
+        : Color.parseColor("#1B5E20"));  
+summary.addView(tvBalance);  
+
+glassCard.addView(scrollView);    
+dialog.setView(glassCard);    
+dialog.show();    
+dialog.getWindow().setDimAmount(0.45f);    
+
+dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);    
+Window window = dialog.getWindow();    
+
+if (window != null) {    
+
+    // Transparent dialog background    
+    window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));    
+
+    // Darken background (important for readability)    
+    window.setDimAmount(0.45f);    
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {    
+
+        // REAL BACKGROUND BLUR (Android 12+)    
+        window.setBackgroundBlurRadius(180);    
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);    
+    }    
+}    
+
+if (android.os.Build.VERSION.SDK_INT >= 31) {    
+    dialog.getWindow().setBackgroundBlurRadius(90);    
+}    
+
+glassCard.startAnimation(    
+    AnimationUtils.loadAnimation(context, R.anim.dialog_scale_in));    
+} catch (Exception e) {    
+    showCrashDialog(e);    
+}
+
 }
 
 private void showPaidBcDialog() {
