@@ -2425,20 +2425,35 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
             TextView tvMonth = new TextView(context);
             tvMonth.setText("M" + (m + 1));
             tvMonth.setTypeface(null, Typeface.BOLD);
-            tvMonth.setTextColor(Color.parseColor("#222222"));
+            tvMonth.setTextColor(Color.WHITE);
+            tvMonth.setShadowLayer(
+                    8f,     // blur radius
+                    0f,     // dx
+                    0f,     // dy
+                    Color.parseColor("#80FFFFFF"));
             tvMonth.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
             TextView tvAmt = new TextView(context);
             tvAmt.setText("₹" + String.format("%.0f", e.amount));
             tvAmt.setTypeface(null, Typeface.BOLD);
-            tvAmt.setTextColor(Color.parseColor("#222222"));
+            tvAmt.setTextColor(Color.WHITE);
+            tvAmt.setShadowLayer(
+                    8f,     // blur radius
+                    0f,     // dx
+                    0f,     // dy
+                    Color.parseColor("#80FFFFFF"));
             tvAmt.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
             TextView tvDate = new TextView(context);
             tvDate.setText(e.paidDateIso);
-            tvDate.setTextColor(Color.parseColor("#222222"));
+            tvDate.setTextColor(Color.WHITE);
+            tvDate.setShadowLayer(
+                    8f,     // blur radius
+                    0f,     // dx
+                    0f,     // dy
+                    Color.parseColor("#80FFFFFF"));
             tvDate.setTypeface(null, Typeface.BOLD);
             tvDate.setGravity(Gravity.END);
             tvDate.setLayoutParams(new LinearLayout.LayoutParams(0,
@@ -2519,7 +2534,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     glassCard.addView(scrollView);  
     dialog.setView(glassCard);  
     dialog.show();  
-    dialog.getWindow().setDimAmount(0.75f);  
+    dialog.getWindow().setDimAmount(0.45f);  
 
     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);  
     Window window = dialog.getWindow();  
@@ -2530,12 +2545,12 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));  
   
         // Darken background (important for readability)  
-        window.setDimAmount(0.75f);  
+        window.setDimAmount(0.45f);  
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {  
 
             // REAL BACKGROUND BLUR (Android 12+)  
-            window.setBackgroundBlurRadius(220);  
+            window.setBackgroundBlurRadius(180);  
 
             window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);  
         }  
