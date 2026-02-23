@@ -2364,7 +2364,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     glassCard.setCardElevation(25f);
     glassCard.setUseCompatPadding(true);
     glassCard.setBackgroundResource(R.drawable.bg_real_glass);
-    glassCard.setCardBackgroundColor(Color.parseColor("#CCFFFFFF")); // frosted white
+    glassCard.setCardBackgroundColor(Color.parseColor("#E6FFFFFF")); // frosted white
     glassCard.setAlpha(0.96f);
     glassCard.setPreventCornerOverlap(false);
     
@@ -2519,7 +2519,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     glassCard.addView(scrollView);  
     dialog.setView(glassCard);  
     dialog.show();  
-    dialog.getWindow().setDimAmount(0.15f);  
+    dialog.getWindow().setDimAmount(0.75f);  
 
     dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);  
     Window window = dialog.getWindow();  
@@ -2530,15 +2530,14 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));  
   
         // Darken background (important for readability)  
-        window.setDimAmount(0.55f);  
+        window.setDimAmount(0.75f);  
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {  
 
             // REAL BACKGROUND BLUR (Android 12+)  
-            window.setBackgroundBlurRadius(120);  
+            window.setBackgroundBlurRadius(220);  
 
-            window.addFlags(  
-                    WindowManager.LayoutParams.FLAG_DIM_BEHIND);  
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);  
         }  
     }  
   
