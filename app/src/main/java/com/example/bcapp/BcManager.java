@@ -2444,7 +2444,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
             TextView glassText = new TextView(context);
             glassText.setText("M" + (m + 1));
             glassText.setTypeface(null, Typeface.BOLD);
-            glassText.parseColor("#595959"));
+            glassText.setTextColor(Color.parseColor("#595959"));
 
             glassText.setShadowLayer(
                     12f,
