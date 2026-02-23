@@ -2516,34 +2516,40 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
             : Color.parseColor("#1B5E20"));
     summary.addView(tvBalance);
 
-    glassCard.addView(scrollView);
-    dialog.setView(glassCard);
+    glassCard.addView(scrollView);  
+    dialog.setView(glassCard);  
+    dialog.show();  
+    dialog.getWindow().setDimAmount(0.15f);  
 
-    dialog.show();   // ✅ show first
+    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);  
+    Window window = dialog.getWindow();  
 
-    Window window = dialog.getWindow();
+    if (window != null) {  
 
-    if (window != null) {
+        // Transparent dialog background  
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));  
+  
+        // Darken background (important for readability)  
+        window.setDimAmount(0.55f);  
 
-        window.setBackgroundDrawable(
-                new ColorDrawable(Color.TRANSPARENT));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {  
 
-        // Proper background dim
-        window.setDimAmount(0.55f);
+            // REAL BACKGROUND BLUR (Android 12+)  
+            window.setBackgroundBlurRadius(120);  
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            window.addFlags(  
+                    WindowManager.LayoutParams.FLAG_DIM_BEHIND);  
+        }  
+    }  
+  
+    if (android.os.Build.VERSION.SDK_INT >= 31) {  
+        dialog.getWindow().setBackgroundBlurRadius(90);  
+    }  
 
-            // SAFE BLUR (no crash)
-            window.getDecorView().post(() ->
-                    window.setBackgroundBlurRadius(120));
-        }
-    }
-
-    glassCard.startAnimation(
-            AnimationUtils.loadAnimation(context,
-                    R.anim.dialog_scale_in));
-    } catch (Exception e) {
-        showCrashDialog(e);
+    glassCard.startAnimation(  
+        AnimationUtils.loadAnimation(context, R.anim.dialog_scale_in));  
+    } catch (Exception e) {  
+        showCrashDialog(e);  
     }
     
 }
