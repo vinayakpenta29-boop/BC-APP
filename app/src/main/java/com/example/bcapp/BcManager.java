@@ -2422,17 +2422,37 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setPadding(0, 8, 0, 8);
 
-            TextView tvMonth = new TextView(context);
-            tvMonth.setText("M" + (m + 1));
-            tvMonth.setTypeface(null, Typeface.BOLD);
-            tvMonth.setTextColor(Color.WHITE);
-            tvMonth.setShadowLayer(
-                    8f,     // blur radius
-                    0f,     // dx
-                    0f,     // dy
-                    Color.parseColor("#80FFFFFF"));
-            tvMonth.setLayoutParams(new LinearLayout.LayoutParams(0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+            // ===== GLASS STROKE TEXT =====
+            FrameLayout textHolder = new FrameLayout(context);
+            textHolder.setLayoutParams(new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1));
+
+            // ---- Stroke Text (BACK) ----
+            TextView stroke = new TextView(context);
+            stroke.setText("M" + (m + 1));
+            stroke.setTypeface(null, Typeface.BOLD);
+            stroke.setTextColor(Color.parseColor("#40FFFFFF"));
+
+            stroke.getPaint().setStyle(Paint.Style.STROKE);
+            stroke.getPaint().setStrokeWidth(6f);
+
+            // ---- Glass Text (FRONT) ----
+            TextView glassText = new TextView(context);
+            glassText.setText("M" + (m + 1));
+            glassText.setTypeface(null, Typeface.BOLD);
+            glassText.setTextColor(Color.WHITE);
+
+            glassText.setShadowLayer(
+                    12f,
+                    0f,
+                    0f,
+                    Color.parseColor("#AAFFFFFF"));
+
+                // Combine
+            textHolder.addView(stroke);
+            textHolder.addView(glassText);
 
             TextView tvAmt = new TextView(context);
             tvAmt.setText("₹" + String.format("%.0f", e.amount));
@@ -2459,7 +2479,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
             tvDate.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1));
 
-            row.addView(tvMonth);
+            row.addView(textHolder);
             row.addView(tvAmt);
             row.addView(tvDate);
 
