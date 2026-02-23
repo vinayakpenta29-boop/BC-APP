@@ -2353,6 +2353,7 @@ private void addDivider(LinearLayout root) {
 }
 
 private void showTotalBreakdownDialog(Bc bc, String member) {
+    try {
 
     AlertDialog dialog =
         new AlertDialog.Builder(context, R.style.BlurDialogTheme)
@@ -2548,6 +2549,9 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     glassCard.startAnimation(
         AnimationUtils.loadAnimation(context, R.anim.dialog_scale_in));
+    } catch (Exception e) {
+        showCrashDialog(e);
+    }
     
 }
 
