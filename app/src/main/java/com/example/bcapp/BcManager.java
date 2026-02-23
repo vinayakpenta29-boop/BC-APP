@@ -2517,38 +2517,31 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     summary.addView(tvBalance);
 
     glassCard.addView(scrollView);
-
     dialog.setView(glassCard);
-    dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+    dialog.show();   // ✅ show first
+
     Window window = dialog.getWindow();
 
     if (window != null) {
 
-        // Transparent dialog background
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-    
-        // Darken background (important for readability)
+        window.setBackgroundDrawable(
+                new ColorDrawable(Color.TRANSPARENT));
+
+        // Proper background dim
         window.setDimAmount(0.55f);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 
-            // REAL BACKGROUND BLUR (Android 12+)
-            window.setBackgroundBlurRadius(120);
-
-            window.addFlags(
-                    WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            // SAFE BLUR (no crash)
+            window.getDecorView().post(() ->
+                    window.setBackgroundBlurRadius(120));
         }
-    }
-    
-    dialog.show();
-    dialog.getWindow().setDimAmount(0.15f);
-    
-    if (android.os.Build.VERSION.SDK_INT >= 31) {
-        dialog.getWindow().setBackgroundBlurRadius(90);
     }
 
     glassCard.startAnimation(
-        AnimationUtils.loadAnimation(context, R.anim.dialog_scale_in));
+            AnimationUtils.loadAnimation(context,
+                    R.anim.dialog_scale_in));
     } catch (Exception e) {
         showCrashDialog(e);
     }
