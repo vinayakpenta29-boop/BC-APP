@@ -2358,7 +2358,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     try {
 
-        AlertDialog dialog = new AlertDialog.Builder(context.create();
+        AlertDialog dialog = new AlertDialog.Builder(context).create();
 
         // ================= MAIN CARD =================
         CardView card = new CardView(context);
