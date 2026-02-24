@@ -2400,8 +2400,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
         memberTxt.setTypeface(null, Typeface.BOLD);
         memberTxt.setTextColor(Color.parseColor("#DC143C"));
         memberTxt.setGravity(Gravity.CENTER);
-        memberTxt.setTextColor(Color.GRAY);
-
+        
         root.addView(title);
         root.addView(memberTxt);
 
@@ -2512,8 +2511,13 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
         root.addView(summary);
 
-        summary.addView(createRow("Expected Total",
-                "₹" + String.format("%.0f", expectedTotal)));
+        TextView expectedRow =
+                createRow("Expected Total",
+                        "₹" + String.format("%.0f", expectedTotal));
+
+        expectedRow.setTextColor(Color.parseColor("#990F4B"));
+
+        summary.addView(expectedRow);
 
         summary.addView(createRow("Total Paid",
                 "₹" + String.format("%.0f", totalPaid)));
