@@ -2367,8 +2367,9 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
         card.setRadius(28f);
         card.setCardElevation(12f);
         card.setUseCompatPadding(true);
-        card.setCardBackgroundColor(Color.parseColor("#FEF6DD"));
-
+        card.setCardBackgroundColor(Color.TRANSPARENT);
+        card.setBackgroundResource(R.drawable.bg_popup_card);
+        
         LinearLayout.LayoutParams cardParams =
                 new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
