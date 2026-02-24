@@ -2366,7 +2366,7 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
         card.setRadius(28f);
         card.setCardElevation(12f);
         card.setUseCompatPadding(true);
-        card.setCardBackgroundColor(Color.WHITE);
+        card.setCardBackgroundColor(Color.parseColor("#FEF6DD"));
 
         LinearLayout.LayoutParams cardParams =
                 new LinearLayout.LayoutParams(
@@ -2391,12 +2391,14 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
         title.setText("Payment Breakdown");
         title.setTextSize(18f);
         title.setTypeface(null, Typeface.BOLD);
-        title.setTextColor(Color.BLACK);
+        title.setTextColor(Color.parseColor("#66023C"));
         title.setGravity(Gravity.CENTER);
 
         TextView memberTxt = new TextView(context);
         memberTxt.setText(member);
         memberTxt.setTextSize(14f);
+        memberTxt.setTypeface(null, Typeface.BOLD);
+        memberTxt.setTextColor(Color.parseColor("#DC143C"));
         memberTxt.setGravity(Gravity.CENTER);
         memberTxt.setTextColor(Color.GRAY);
 
