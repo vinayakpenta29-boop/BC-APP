@@ -2361,12 +2361,12 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
         AlertDialog dialog =
                 new AlertDialog.Builder(context).create();
 
-        // ---------- MAIN CARD ----------
+        // ================= MAIN CARD =================
         CardView card = new CardView(context);
-        card.setRadius(20f);
-        card.setCardElevation(8f);
+        card.setRadius(28f);
+        card.setCardElevation(12f);
         card.setUseCompatPadding(true);
-        card.setBackgroundResource(R.drawable.bg_glass_dialog);
+        card.setCardBackgroundColor(Color.WHITE);
 
         LinearLayout.LayoutParams cardParams =
                 new LinearLayout.LayoutParams(
@@ -2376,40 +2376,40 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
         cardParams.setMargins(40,40,40,40);
         card.setLayoutParams(cardParams);
 
-        // ---------- ROOT ----------
         ScrollView scrollView = new ScrollView(context);
 
         LinearLayout root = new LinearLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(32,24,32,24);
+        root.setPadding(40,32,40,32);
 
         scrollView.addView(root);
 
-        double totalPaid = 0.0;
+        double totalPaid = 0;
 
-        // ---------- HEADER ----------
-        LinearLayout header = new LinearLayout(context);
-        header.setOrientation(LinearLayout.VERTICAL);
-        header.setPadding(0,0,0,20);
-
+        // ================= HEADER =================
         TextView title = new TextView(context);
         title.setText("Payment Breakdown");
-        title.setTextSize(20f);
+        title.setTextSize(18f);
         title.setTypeface(null, Typeface.BOLD);
         title.setTextColor(Color.BLACK);
+        title.setGravity(Gravity.CENTER);
 
-        TextView subtitle = new TextView(context);
-        subtitle.setText("Member : " + member);
-        subtitle.setTextSize(16f);
-        subtitle.setTypeface(null, Typeface.BOLD);
-        subtitle.setTextColor(Color.DKGRAY);
+        TextView memberTxt = new TextView(context);
+        memberTxt.setText(member);
+        memberTxt.setTextSize(14f);
+        memberTxt.setGravity(Gravity.CENTER);
+        memberTxt.setTextColor(Color.GRAY);
 
-        header.addView(title);
-        header.addView(subtitle);
+        root.addView(title);
+        root.addView(memberTxt);
 
-        root.addView(header);
+        addDivider(root);
 
-        // ---------- PAYMENT LIST ----------
+        // ================= PAYMENT LIST =================
+        LinearLayout listContainer = new LinearLayout(context);
+        listContainer.setOrientation(LinearLayout.VERTICAL);
+        root.addView(listContainer);
+
         for (int m = 0; m < bc.months; m++) {
 
             String key = bc.getPaidKey(member, m);
@@ -2425,37 +2425,37 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
                 LinearLayout row = new LinearLayout(context);
                 row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setPadding(0,10,0,10);
+                row.setPadding(0,16,0,16);
 
-                TextView tvMonth = new TextView(context);
-                tvMonth.setText("M" + (m + 1));
-                tvMonth.setTypeface(null, Typeface.BOLD);
-                tvMonth.setTextColor(Color.BLACK);
-                tvMonth.setLayoutParams(
+                TextView month = new TextView(context);
+                month.setText("Month " + (m + 1));
+                month.setTextColor(Color.BLACK);
+                month.setTypeface(null, Typeface.BOLD);
+                month.setLayoutParams(
                         new LinearLayout.LayoutParams(0,
                                 LinearLayout.LayoutParams.WRAP_CONTENT,1));
 
-                TextView tvAmt = new TextView(context);
-                tvAmt.setText("₹" + String.format("%.0f", e.amount));
-                tvAmt.setTypeface(null, Typeface.BOLD);
-                tvAmt.setTextColor(Color.BLACK);
-                tvAmt.setLayoutParams(
+                TextView amount = new TextView(context);
+                amount.setText("₹" + String.format("%.0f", e.amount));
+                amount.setTextColor(Color.BLACK);
+                amount.setTypeface(null, Typeface.BOLD);
+                amount.setLayoutParams(
                         new LinearLayout.LayoutParams(0,
                                 LinearLayout.LayoutParams.WRAP_CONTENT,1));
 
-                TextView tvDate = new TextView(context);
-                tvDate.setText(e.paidDateIso);
-                tvDate.setTextColor(Color.GRAY);
-                tvDate.setGravity(Gravity.END);
-                tvDate.setLayoutParams(
+                TextView date = new TextView(context);
+                date.setText(e.paidDateIso);
+                date.setTextColor(Color.GRAY);
+                date.setGravity(Gravity.END);
+                date.setLayoutParams(
                         new LinearLayout.LayoutParams(0,
                                 LinearLayout.LayoutParams.WRAP_CONTENT,1));
 
-                row.addView(tvMonth);
-                row.addView(tvAmt);
-                row.addView(tvDate);
+                row.addView(month);
+                row.addView(amount);
+                row.addView(date);
 
-                root.addView(row);
+                listContainer.addView(row);
 
                 totalPaid += e.amount;
             }
@@ -2463,24 +2463,8 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
         addDivider(root);
 
-        // ---------- SUMMARY BOX ----------
-        LinearLayout summary = new LinearLayout(context);
-        summary.setOrientation(LinearLayout.VERTICAL);
-        summary.setPadding(24,20,24,20);
-        summary.setBackgroundResource(R.drawable.bg_glass_dialog);
-
-        LinearLayout.LayoutParams summaryParams =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-
-        summaryParams.setMargins(0,16,0,0);
-        summary.setLayoutParams(summaryParams);
-
-        root.addView(summary);
-
-        // ---------- EXPECTED TOTAL ----------
-        double expectedTotal = 0.0;
+        // ================= CALCULATE EXPECTED =================
+        double expectedTotal = 0;
 
         int currentIndex = bc.getCurrentInstallmentIndex();
         if (currentIndex < 0) currentIndex = 0;
@@ -2494,46 +2478,63 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
                             ? bc.amounts.get(i)
                             : (!bc.amounts.isEmpty()
                             ? bc.amounts.get(0)
-                            : 0.0);
+                            : 0);
 
             expectedTotal += installmentAmt;
         }
 
-        TextView tvExpected = new TextView(context);
-        tvExpected.setText("Expected Total : ₹" +
-                String.format("%.0f", expectedTotal));
-        tvExpected.setTypeface(null, Typeface.BOLD);
-        tvExpected.setTextColor(Color.BLACK);
-
-        TextView tvPaid = new TextView(context);
-        tvPaid.setText("Total Paid : ₹" +
-                String.format("%.0f", totalPaid));
-        tvPaid.setTypeface(null, Typeface.BOLD);
-        tvPaid.setTextColor(Color.BLACK);
-
         double balance = expectedTotal - totalPaid;
 
-        TextView tvBalance = new TextView(context);
-        tvBalance.setText("Balance : ₹" +
-                String.format("%.0f", balance));
-        tvBalance.setTypeface(null, Typeface.BOLD);
-        tvBalance.setTextColor(
+        // ================= BIG TOTAL (GPay STYLE) =================
+        TextView bigAmount = new TextView(context);
+        bigAmount.setText("₹" + String.format("%.0f", totalPaid));
+        bigAmount.setTextSize(34f);
+        bigAmount.setTypeface(null, Typeface.BOLD);
+        bigAmount.setGravity(Gravity.CENTER);
+        bigAmount.setTextColor(Color.parseColor("#1B5E20"));
+
+        TextView paidLabel = new TextView(context);
+        paidLabel.setText("Total Paid");
+        paidLabel.setGravity(Gravity.CENTER);
+        paidLabel.setTextColor(Color.GRAY);
+
+        root.addView(bigAmount);
+        root.addView(paidLabel);
+
+        addDivider(root);
+
+        // ================= SUMMARY =================
+        LinearLayout summary = new LinearLayout(context);
+        summary.setOrientation(LinearLayout.VERTICAL);
+        summary.setPadding(0,12,0,0);
+
+        root.addView(summary);
+
+        summary.addView(createRow("Expected Total",
+                "₹" + String.format("%.0f", expectedTotal)));
+
+        summary.addView(createRow("Total Paid",
+                "₹" + String.format("%.0f", totalPaid)));
+
+        TextView balanceRow =
+                createRow("Balance",
+                        "₹" + String.format("%.0f", balance));
+
+        balanceRow.setTextColor(
                 balance > 0
                         ? Color.parseColor("#D32F2F")
                         : Color.parseColor("#1B5E20"));
 
-        summary.addView(tvExpected);
-        summary.addView(tvPaid);
-        summary.addView(tvBalance);
+        summary.addView(balanceRow);
 
-        // ---------- SHOW DIALOG ----------
+        // ================= SHOW =================
         card.addView(scrollView);
         dialog.setView(card);
         dialog.show();
 
         Window window = dialog.getWindow();
         if (window != null) {
-            window.setDimAmount(0.45f);
+            window.setDimAmount(0.5f);
         }
 
         card.startAnimation(
@@ -2544,6 +2545,18 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
     } catch (Exception e) {
         showCrashDialog(e);
     }
+}
+
+private TextView createRow(String title, String value) {
+
+    TextView tv = new TextView(context);
+    tv.setText(title + "   :   " + value);
+    tv.setTextSize(16f);
+    tv.setTypeface(null, Typeface.BOLD);
+    tv.setTextColor(Color.BLACK);
+    tv.setPadding(0,8,0,8);
+
+    return tv;
 }
 
 private void showPaidBcDialog() {
