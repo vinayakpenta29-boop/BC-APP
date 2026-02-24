@@ -2358,8 +2358,9 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
     try {
 
-        AlertDialog dialog =
-                new AlertDialog.Builder(context).create();
+        AlertDialog dialog = new AlertDialog.Builder(context,
+                android.R.style.Theme_Translucent_NoTitleBar)
+                .create();
 
         // ================= MAIN CARD =================
         CardView card = new CardView(context);
@@ -2540,7 +2541,8 @@ private void showTotalBreakdownDialog(Bc bc, String member) {
 
         Window window = dialog.getWindow();
         if (window != null) {
-            window.setDimAmount(0.5f);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.setDimAmount(0.45f);
         }
 
         card.startAnimation(
