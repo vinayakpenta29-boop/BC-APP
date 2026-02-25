@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("FIREBASE", "❌ Failed: " + e.getMessage()));
 
         // ✅ STEP 3 — Bind Views
+        swipeRefresh = findViewById(R.id.swipeRefresh);
         menuButton = findViewById(R.id.menuButton);
         spinnerBc = findViewById(R.id.spinnerBc);
         spinnerMember = findViewById(R.id.spinnerMember);
@@ -103,5 +104,14 @@ public class MainActivity extends AppCompatActivity {
         );
 
         bcManager.init();
+        swipeRefresh.setOnRefreshListener(() -> {
+
+        // Refresh from Firebase
+        bcManager.restoreFromFirebase();
+
+        // Stop spinner after 2 sec
+        swipeRefresh.postDelayed(() ->
+                swipeRefresh.setRefreshing(false), 2000);
+    });
     }
 }
