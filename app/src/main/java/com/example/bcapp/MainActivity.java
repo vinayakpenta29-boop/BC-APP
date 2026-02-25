@@ -4,12 +4,15 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;   // ✅ IMPORT ADDED
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,19 +28,23 @@ public class MainActivity extends AppCompatActivity {
     Button buttonAdd;
     LinearLayout tableContainer;
 
-    // 🔹 Undo / Redo Buttons
+    // Undo / Redo Buttons
     ImageButton btnUndo, btnRedo;
 
-    // 🔒 Lock icon
-    ImageView imgLock;   // ✅ NEW
+    // Lock icon
+    ImageView imgLock;
 
-    // Data + helpers
+    // Data
     List<Bc> bcData = new ArrayList<>();
     BcManager bcManager;
 
-    // Date formats used everywhere
+    // Firebase Database
+    FirebaseDatabase database;
+
+    // Date formats
     final SimpleDateFormat isoFormat =
             new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
     final SimpleDateFormat displayFormat =
             new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
@@ -45,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // ✅ Initialize Firebase
+        FirebaseApp.initializeApp(this);
+        database = FirebaseDatabase.getInstance();
 
         // Bind views
         menuButton = findViewById(R.id.menuButton);
@@ -55,14 +66,12 @@ public class MainActivity extends AppCompatActivity {
         buttonAdd = findViewById(R.id.buttonAdd);
         tableContainer = findViewById(R.id.tableContainer);
 
-        // 🔹 Bind Undo / Redo
         btnUndo = findViewById(R.id.btnUndo);
         btnRedo = findViewById(R.id.btnRedo);
 
-        // 🔒 Bind Lock Icon
-        imgLock = findViewById(R.id.imgLock);   // ✅ NEW
+        imgLock = findViewById(R.id.imgLock);
 
-        // Create manager that handles all BC logic + UI
+        // Create BC Manager
         bcManager = new BcManager(
                 this,
                 menuButton,
@@ -74,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
                 tableContainer,
                 btnUndo,
                 btnRedo,
-                imgLock,     // ✅ PASS LOCK ICON
+                imgLock,
                 bcData,
                 isoFormat,
                 displayFormat
         );
 
-        bcManager.init();   // set adapters, menu, listeners, etc.
+        bcManager.init();
     }
 }
