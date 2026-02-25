@@ -5,6 +5,11 @@
     android:background="#f0f6fb"
     android:fillViewport="true">
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/rootLayout"
         android:orientation="vertical"
@@ -192,4 +197,7 @@
         </HorizontalScrollView>
 
     </LinearLayout>
+
+  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    
 </ScrollView>
