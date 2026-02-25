@@ -1,5 +1,8 @@
 package com.example.bcapp;
 
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DatabaseReference;
+
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -97,6 +100,8 @@ private static class HistoryAction {
         this.redoAction = redoAction;
     }
 }
+
+private DatabaseReference firebaseRef;
 
 private final List<HistoryAction> undoStack = new ArrayList<>();
 private final List<HistoryAction> redoStack = new ArrayList<>();
@@ -204,6 +209,10 @@ public BcManager(AppCompatActivity activity,
 
     // Show correct lock state at startup
     updateLockIcon();
+
+    firebaseRef =
+        FirebaseDatabase.getInstance()
+                .getReference("bc_data");
 }  
 
 private void updateLockIcon() {
@@ -346,6 +355,13 @@ private void saveAllToRoom() {
 
             bcDao.insert(e);
         }
+
+        firebaseRef.setValue(bcData)
+                .addOnSuccessListener(unused ->
+                        Log.d("FIREBASE", "BC data synced"))
+                .addOnFailureListener(e ->
+                        Log.e("FIREBASE", "Sync failed: " + e.getMessage()));
+
     }).start();
 }
 
