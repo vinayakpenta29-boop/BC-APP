@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DatabaseReference;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
         // ✅ Initialize Firebase
         FirebaseApp.initializeApp(this);
         database = FirebaseDatabase.getInstance();
+
+        DatabaseReference ref =
+                FirebaseDatabase.getInstance()
+                        .getReference("test");
+
+        ref.setValue("BC App Connected");
 
         // Bind views
         menuButton = findViewById(R.id.menuButton);
