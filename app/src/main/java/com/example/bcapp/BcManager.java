@@ -2,6 +2,7 @@ package com.example.bcapp;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.DataSnapshot;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -215,6 +216,71 @@ public BcManager(AppCompatActivity activity,
                 .getReference("bc_data");
 }  
 
+// ⭐ FIREBASE AUTO RESTORE
+private void restoreFromFirebase() {
+
+    firebaseRef.get().addOnSuccessListener(snapshot -> {
+
+        if (!snapshot.exists()) {
+            Log.d("FIREBASE", "No cloud data found");
+            return;
+        }
+
+        List<Bc> cloudData = new ArrayList<>();
+
+        for (DataSnapshot bcSnap : snapshot.getChildren()) {
+
+            Bc bc = bcSnap.getValue(Bc.class);
+
+            if (bc != null) {
+                cloudData.add(bc);
+            }
+        }
+
+        if (cloudData.isEmpty()) return;
+
+        Log.d("FIREBASE", "Cloud data downloaded");
+
+        // ⭐ Save to Room DB
+        new Thread(() -> {
+
+            bcDao.deleteAll();
+
+            for (Bc bc : cloudData) {
+
+                BcEntity e = new BcEntity(
+                        bc.name,
+                        bc.months,
+                        bc.startDateIso,
+                        bc.afterTaken
+                );
+
+                e.afterTakenAmount = bc.afterTakenAmount;
+                e.isWeekly = bc.isWeekly;
+                e.members = bc.members;
+                e.amounts = bc.amounts;
+                e.paid = bc.paid;
+                e.paidAmount = bc.paidAmount;
+                e.payments = bc.payments;
+                e.paidBcAmount = bc.paidBcAmount;
+                e.isReceiveAmountFixed = bc.isReceiveAmountFixed;
+                e.receiveAmounts = bc.receiveAmounts;
+
+                bcDao.insert(e);
+            }
+
+            // ⭐ Refresh UI
+            activity.runOnUiThread(() -> {
+                loadFromRoomAndRefreshUi();
+                Log.d("FIREBASE", "Auto restore complete");
+            });
+
+        }).start();
+
+    }).addOnFailureListener(e ->
+            Log.e("FIREBASE", "Restore failed: " + e.getMessage()));
+}
+
 private void updateLockIcon() {
     if (imgLock == null) return;
 
@@ -252,7 +318,10 @@ public void init() {
     setupListeners();  
 
     // Load saved data from Room  
-    loadFromRoomAndRefreshUi();  
+    loadFromRoomAndRefreshUi();
+
+    // ⭐ AUTO RESTORE FROM CLOUD
+    restoreFromFirebase();
 }  
 
 private void updateUndoRedoButtons() {
