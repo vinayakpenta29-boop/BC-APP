@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "966935185024",
+    "project_id": "chit-fund-bc-mamanger",
+    "storage_bucket": "chit-fund-bc-mamanger.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966935185024:android:01e11cea7bea8995bd8865",
+        "android_client_info": {
+          "package_name": "com.example.bcapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRg6kdH0kF4DlG-UdMXnztX0lIQHPw-oU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
