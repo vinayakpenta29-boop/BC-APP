@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    SwipeRefreshLayout swipeRefresh;
     // UI references
     TextView menuButton;
     Spinner spinnerBc, spinnerMember;
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     // Undo / Redo Buttons
     ImageButton btnUndo, btnRedo;
 
-    // Lock icon
+    // ck icon
     ImageView imgLock;
 
     // Data
