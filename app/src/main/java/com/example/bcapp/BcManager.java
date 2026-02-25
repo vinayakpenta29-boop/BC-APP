@@ -217,7 +217,7 @@ public BcManager(AppCompatActivity activity,
 }  
 
 // ⭐ FIREBASE AUTO RESTORE
-private void restoreFromFirebase() {
+public void restoreFromFirebase() {
 
     firebaseRef.get().addOnSuccessListener(snapshot -> {
 
