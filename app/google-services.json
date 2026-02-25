@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "966935185024",
+    "firebase_url": "https://chit-fund-bc-mamanger-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "chit-fund-bc-mamanger",
     "storage_bucket": "chit-fund-bc-mamanger.firebasestorage.app"
   },
