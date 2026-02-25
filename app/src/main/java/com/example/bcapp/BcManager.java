@@ -328,8 +328,12 @@ private void loadFromRoomAndRefreshUi() {
 
 
 private void saveAllToRoom() {
+
     new Thread(() -> {
+
+        // ✅ Save locally
         bcDao.deleteAll();
+
         for (Bc bc : bcData) {
 
             BcEntity e = new BcEntity(
@@ -339,9 +343,8 @@ private void saveAllToRoom() {
                     bc.afterTaken
             );
 
-            // Existing fields
             e.afterTakenAmount = bc.afterTakenAmount;
-            e.isWeekly = bc.isWeekly;   // ✅ ADD THIS
+            e.isWeekly = bc.isWeekly;
             e.members = new ArrayList<>(bc.members);
             e.amounts = new ArrayList<>(bc.amounts);
             e.paid = new HashMap<>(bc.paid);
@@ -349,18 +352,22 @@ private void saveAllToRoom() {
             e.payments = new ArrayList<>(bc.payments);
             e.paidBcAmount = new HashMap<>(bc.paidBcAmount);
 
-            // 🔴 🔴 🔴 MISSING RECEIVE AMOUNT (ROOT CAUSE FIX)
             e.isReceiveAmountFixed = bc.isReceiveAmountFixed;
             e.receiveAmounts = new ArrayList<>(bc.receiveAmounts);
 
             bcDao.insert(e);
         }
 
-        firebaseRef.setValue(bcData)
-                .addOnSuccessListener(unused ->
-                        Log.d("FIREBASE", "BC data synced"))
-                .addOnFailureListener(e ->
-                        Log.e("FIREBASE", "Sync failed: " + e.getMessage()));
+        // ⭐ Upload to Firebase on UI thread
+        activity.runOnUiThread(() -> {
+
+            firebaseRef.setValue(bcData)
+                    .addOnSuccessListener(unused ->
+                            Log.d("FIREBASE", "✅ BC data synced"))
+                    .addOnFailureListener(e ->
+                            Log.e("FIREBASE", "❌ Sync failed: " + e.getMessage()));
+
+        });
 
     }).start();
 }
