@@ -73,6 +73,11 @@ public class MainActivity extends AppCompatActivity {
 
         // ✅ STEP 3 — Bind Views
         swipeRefresh = findViewById(R.id.swipeRefresh);
+        swipeRefresh.setColorSchemeResources(
+                android.R.color.holo_blue_dark,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_red_dark
+        );
         menuButton = findViewById(R.id.menuButton);
         spinnerBc = findViewById(R.id.spinnerBc);
         spinnerMember = findViewById(R.id.spinnerMember);
