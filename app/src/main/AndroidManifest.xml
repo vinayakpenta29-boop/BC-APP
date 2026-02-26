@@ -15,9 +15,9 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <!-- ⭐ LOGIN SCREEN (FIRST OPEN) -->
+        <!-- ⭐ SPLASH SCREEN (APP STARTS HERE) -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".SplashActivity"
             android:exported="true">
 
             <intent-filter>
@@ -26,6 +26,16 @@
             </intent-filter>
 
         </activity>
+
+        <!-- ⭐ ADMIN / MEMBER SELECT SCREEN -->
+        <activity
+            android:name=".LoginTypeActivity"
+            android:exported="false"/>
+
+        <!-- ⭐ LOGIN SCREEN -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"/>
 
         <!-- ⭐ MAIN APP SCREEN -->
         <activity
