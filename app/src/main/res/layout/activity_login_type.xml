@@ -1,0 +1,20 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/btnAdmin"
+        android:text="Admin Login"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnMember"
+        android:text="Member Login"
+        android:layout_marginTop="20dp"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
