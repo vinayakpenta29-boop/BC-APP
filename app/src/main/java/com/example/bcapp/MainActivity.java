@@ -1,5 +1,7 @@
 package com.example.bcapp;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -59,18 +61,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ⭐ STEP 0 — Get Login Role
+        /* ⭐ STEP 0 — GET LOGIN EMAIL */
         String email =
                 getIntent().getStringExtra("USER_EMAIL");
 
         boolean isAdmin =
                 "admin@gmail.com".equals(email);
 
-        // ✅ STEP 1 — Initialize Firebase
+        /* ✅ STEP 1 — FIREBASE INIT */
         FirebaseApp.initializeApp(this);
         database = FirebaseDatabase.getInstance();
 
-        // ✅ STEP 2 — Test Firebase Connection
+        /* ✅ STEP 2 — FIREBASE TEST */
         testRef = database.getReference("test");
 
         testRef.setValue("BC App Connected")
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Log.e("FIREBASE", "❌ Failed: " + e.getMessage()));
 
-        // ✅ STEP 3 — Bind Views
+        /* ✅ STEP 3 — BIND VIEWS */
         swipeRefresh = findViewById(R.id.swipeRefresh);
 
         swipeRefresh.setColorSchemeResources(
@@ -100,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         btnRedo = findViewById(R.id.btnRedo);
         imgLock = findViewById(R.id.imgLock);
 
-        // ✅ STEP 4 — Initialize BC Manager
+        /* ✅ STEP 4 — INIT BC MANAGER */
         bcManager = new BcManager(
                 this,
                 menuButton,
@@ -120,10 +122,10 @@ public class MainActivity extends AppCompatActivity {
 
         bcManager.init();
 
-        // ⭐ STEP 5 — Apply Admin / Member Mode
+        /* ⭐ STEP 5 — ADMIN / MEMBER MODE */
         bcManager.setAdminMode(isAdmin);
 
-        // ✅ STEP 6 — Pull To Refresh (Firebase Restore)
+        /* ✅ STEP 6 — PULL TO REFRESH */
         swipeRefresh.setOnRefreshListener(() -> {
 
             bcManager.restoreFromFirebase();
@@ -131,5 +133,28 @@ public class MainActivity extends AppCompatActivity {
             swipeRefresh.postDelayed(() ->
                     swipeRefresh.setRefreshing(false), 2000);
         });
+
+        /* ⭐ STEP 7 — LOGOUT CLICK (LONG PRESS MENU BUTTON) */
+        menuButton.setOnLongClickListener(v -> {
+
+            logoutUser();
+            return true;
+        });
+    }
+
+    /* ⭐ LOGOUT FUNCTION */
+    private void logoutUser() {
+
+        SharedPreferences pref =
+                getSharedPreferences("BC_LOGIN", MODE_PRIVATE);
+
+        // Clear saved login
+        pref.edit().clear().apply();
+
+        // Go back to login type screen
+        startActivity(new Intent(this,
+                LoginTypeActivity.class));
+
+        finish();
     }
 }
