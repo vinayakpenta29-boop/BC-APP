@@ -11,11 +11,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     SwipeRefreshLayout swipeRefresh;
+
     // UI references
     TextView menuButton;
     Spinner spinnerBc, spinnerMember;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     // Undo / Redo Buttons
     ImageButton btnUndo, btnRedo;
 
-    // ck icon
+    // Lock icon
     ImageView imgLock;
 
     // Data
@@ -58,6 +59,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // ⭐ STEP 0 — Get Login Role
+        String email =
+                getIntent().getStringExtra("USER_EMAIL");
+
+        boolean isAdmin =
+                "admin@gmail.com".equals(email);
+
         // ✅ STEP 1 — Initialize Firebase
         FirebaseApp.initializeApp(this);
         database = FirebaseDatabase.getInstance();
@@ -73,11 +81,13 @@ public class MainActivity extends AppCompatActivity {
 
         // ✅ STEP 3 — Bind Views
         swipeRefresh = findViewById(R.id.swipeRefresh);
+
         swipeRefresh.setColorSchemeResources(
                 android.R.color.holo_blue_dark,
                 android.R.color.holo_green_dark,
                 android.R.color.holo_red_dark
         );
+
         menuButton = findViewById(R.id.menuButton);
         spinnerBc = findViewById(R.id.spinnerBc);
         spinnerMember = findViewById(R.id.spinnerMember);
@@ -109,14 +119,17 @@ public class MainActivity extends AppCompatActivity {
         );
 
         bcManager.init();
+
+        // ⭐ STEP 5 — Apply Admin / Member Mode
+        bcManager.setAdminMode(isAdmin);
+
+        // ✅ STEP 6 — Pull To Refresh (Firebase Restore)
         swipeRefresh.setOnRefreshListener(() -> {
 
-        // Refresh from Firebase
-        bcManager.restoreFromFirebase();
+            bcManager.restoreFromFirebase();
 
-        // Stop spinner after 2 sec
-        swipeRefresh.postDelayed(() ->
-                swipeRefresh.setRefreshing(false), 2000);
-    });
+            swipeRefresh.postDelayed(() ->
+                    swipeRefresh.setRefreshing(false), 2000);
+        });
     }
 }
