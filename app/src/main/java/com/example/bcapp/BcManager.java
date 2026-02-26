@@ -80,6 +80,23 @@ import java.util.Map;
 
 public class BcManager {
 
+public void setAdminMode(boolean isAdmin) {
+
+    isEditModeEnabled = isAdmin;
+
+    updateLockIcon();
+
+    if (isAdmin) {
+        Toast.makeText(context,
+                "Admin Mode Enabled",
+                Toast.LENGTH_SHORT).show();
+    } else {
+        Toast.makeText(context,
+                "Member View Only Mode",
+                Toast.LENGTH_SHORT).show();
+    }
+}
+
 //  Backup for Undo Delete Member
 private static class DeletedMemberBackup {
     Bc bc;
