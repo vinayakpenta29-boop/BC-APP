@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -56,4 +57,13 @@ public class LoginActivity extends AppCompatActivity {
                                 "Login Failed",
                                 Toast.LENGTH_SHORT).show());
     }
+
+    SharedPreferences pref =
+            getSharedPreferences("BC_LOGIN", MODE_PRIVATE);
+
+    pref.edit()
+            .putBoolean("LOGGED_IN", true)
+            .putString("EMAIL", userEmail)
+            .putString("ROLE", role)
+            .apply();
 }
