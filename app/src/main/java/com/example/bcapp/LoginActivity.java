@@ -1,11 +1,11 @@
 package com.example.bcapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +19,8 @@ public class LoginActivity extends AppCompatActivity {
 
     FirebaseAuth auth;
 
+    String role;   // ⭐ Admin or Member
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,40 +32,42 @@ public class LoginActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
+        // ⭐ Get role from LoginTypeActivity
+        role = getIntent().getStringExtra("ROLE");
+
         btnLogin.setOnClickListener(v -> loginUser());
     }
 
     private void loginUser() {
 
-        String e = email.getText().toString().trim();
-        String p = password.getText().toString().trim();
+        String userEmail = email.getText().toString().trim();
+        String userPassword = password.getText().toString().trim();
 
-        auth.signInWithEmailAndPassword(e, p)
+        auth.signInWithEmailAndPassword(userEmail, userPassword)
                 .addOnSuccessListener(result -> {
 
                     FirebaseUser user = auth.getCurrentUser();
 
-                    Intent i =
-                            new Intent(this, MainActivity.class);
+                    // ⭐ SAVE LOGIN SESSION (REMEMBER LOGIN)
+                    SharedPreferences pref =
+                            getSharedPreferences("BC_LOGIN", MODE_PRIVATE);
 
-                    i.putExtra("USER_EMAIL",
-                            user.getEmail());
+                    pref.edit()
+                            .putBoolean("LOGGED_IN", true)
+                            .putString("EMAIL", user.getEmail())
+                            .putString("ROLE", role)
+                            .apply();
+
+                    // ⭐ OPEN MAIN ACTIVITY
+                    Intent i = new Intent(this, MainActivity.class);
+                    i.putExtra("USER_EMAIL", user.getEmail());
 
                     startActivity(i);
                     finish();
                 })
-                .addOnFailureListener(e1 ->
+                .addOnFailureListener(e ->
                         Toast.makeText(this,
                                 "Login Failed",
                                 Toast.LENGTH_SHORT).show());
     }
-
-    SharedPreferences pref =
-            getSharedPreferences("BC_LOGIN", MODE_PRIVATE);
-
-    pref.edit()
-            .putBoolean("LOGGED_IN", true)
-            .putString("EMAIL", userEmail)
-            .putString("ROLE", role)
-            .apply();
 }
