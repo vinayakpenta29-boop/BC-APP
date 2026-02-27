@@ -1,46 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>  <manifest xmlns:android="http://schemas.android.com/apk/res/android"  
-package="com.example.bcapp">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.bcapp">
 
-<!-- 🌐 Internet Required For Firebase -->  
-<uses-permission android:name="android.permission.INTERNET"/>  
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>  
+    <!-- Internet -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-<application  
-    android:allowBackup="true"  
-    android:icon="@mipmap/ic_launcher"  
-    android:roundIcon="@mipmap/ic_launcher"  
-    android:label="@string/app_name"  
-    android:supportsRtl="true"  
-    android:usesCleartextTraffic="true"  
-    android:theme="@style/Theme.AppCompat.Light.NoActionBar">  
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-    <!-- ⭐ SPLASH SCREEN (APP STARTS HERE) -->  
-    <activity  
-        android:name=".SplashActivity"  
-        android:exported="true">  
+        <!-- ⭐ SPLASH SCREEN -->
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true">
 
-        <intent-filter>  
-            <action android:name="android.intent.action.MAIN"/>  
-            <category android:name="android.intent.category.LAUNCHER"/>  
-        </intent-filter>  
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
 
-    </activity>  
+        </activity>
 
-    <!-- ⭐ ADMIN / MEMBER SELECT SCREEN -->  
-    <activity  
-        android:name=".LoginTypeActivity"  
-        android:exported="false"/>  
+        <!-- ⭐ MODE SELECT (IMPORTANT - WAS MISSING) -->
+        <activity
+            android:name=".ModeActivity"
+            android:exported="false"/>
 
-    <!-- ⭐ LOGIN SCREEN -->  
-    <activity  
-        android:name=".LoginActivity"  
-        android:exported="false"/>  
+        <!-- OPTIONAL LOGIN SCREEN -->
+        <activity
+            android:name=".LoginTypeActivity"
+            android:exported="false"/>
 
-    <!-- ⭐ MAIN APP SCREEN -->  
-    <activity  
-        android:name=".MainActivity"  
-        android:exported="false"/>  
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"/>
 
-</application>
+        <!-- MAIN APP -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"/>
+
+    </application>
 
 </manifest>
