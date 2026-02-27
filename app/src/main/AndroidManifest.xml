@@ -44,6 +44,12 @@
             android:exported="false"
             android:screenOrientation="portrait"/>
 
+        <!-- ⚙️ APP LOCK SETTINGS -->
+        <activity
+            android:name=".AppLockSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>
