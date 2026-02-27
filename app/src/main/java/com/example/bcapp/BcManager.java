@@ -3463,7 +3463,6 @@ public void undoLastAction() {
     action.undoAction.run();
     redoStack.add(action);
     saveAllToRoom();
-    showBcListTable();
     updateUndoRedoButtons();
 }
 
@@ -3477,7 +3476,6 @@ public void redoLastAction() {
     action.redoAction.run();
     undoStack.add(action);
     saveAllToRoom();
-    showBcListTable();
     updateUndoRedoButtons();
 }
 
