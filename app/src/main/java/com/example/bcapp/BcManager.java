@@ -80,23 +80,6 @@ import java.util.Map;
 
 public class BcManager {
 
-public void setAdminMode(boolean isAdmin) {
-
-    isEditModeEnabled = isAdmin;
-
-    updateLockIcon();
-
-    if (isAdmin) {
-        Toast.makeText(context,
-                "Admin Mode Enabled",
-                Toast.LENGTH_SHORT).show();
-    } else {
-        Toast.makeText(context,
-                "Member View Only Mode",
-                Toast.LENGTH_SHORT).show();
-    }
-}
-
 //  Backup for Undo Delete Member
 private static class DeletedMemberBackup {
     Bc bc;
@@ -275,7 +258,7 @@ public void init() {
     loadFromRoomAndRefreshUi();
 
     // ⭐ AUTO RESTORE FROM CLOUD
-    restoreFromFirebase();
+    startRealtimeSync();
 }  
 
 private void updateUndoRedoButtons() {
@@ -431,6 +414,52 @@ public void restoreFromFirebase() {
             saveAllToRoom();
 
             Log.d("FIREBASE", "✅ Data Restored");
+        }
+
+        @Override
+        public void onCancelled(DatabaseError error) {
+            Log.e("FIREBASE", error.getMessage());
+        }
+    });
+}
+
+// ⭐ REALTIME FIREBASE SYNC
+public void startRealtimeSync() {
+
+    firebaseRef.keepSynced(true); // offline cache + auto restore
+
+    firebaseRef.addValueEventListener(new ValueEventListener() {
+
+        @Override
+        public void onDataChange(DataSnapshot snapshot) {
+
+            bcData.clear();
+
+            for (DataSnapshot child : snapshot.getChildren()) {
+
+                Bc bc = child.getValue(Bc.class);
+
+                if (bc != null) {
+                    bcData.add(bc);
+                }
+            }
+
+            activity.runOnUiThread(() -> {
+
+                bcAdapter.clear();
+                bcAdapter.add("Select BC");
+
+                for (Bc bc : bcData) {
+                    bcAdapter.add(bc.name);
+                }
+
+                bcAdapter.notifyDataSetChanged();
+                spinnerBc.setSelection(0);
+
+                updateMembersDropdown();
+            });
+
+            Log.d("FIREBASE", "🔥 REALTIME UPDATE RECEIVED");
         }
 
         @Override
