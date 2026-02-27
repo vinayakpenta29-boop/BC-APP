@@ -485,6 +485,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 6, 5, "Add Member");
         popup.getMenu().add(0, 7, 6, "Edit");
         popup.getMenu().add(0, 8, 7, "Edit Mode");
+        popup.getMenu().add(0, 9, 8, "Edit Mode");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
@@ -543,6 +544,11 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     return true;
     }
     else if (item.getItemId() == 8) {
+    showEditModeToggleDialog();
+    return true;
+    }
+    }
+    else if (item.getItemId() == 9) {
     showEditModeToggleDialog();
     return true;
     }
