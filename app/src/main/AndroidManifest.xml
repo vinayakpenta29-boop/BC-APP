@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bcapp">
 
-    <!-- Internet -->
+    <!-- 🌐 Internet for Firebase Sync -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
@@ -15,9 +15,9 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <!-- ⭐ SPLASH SCREEN -->
+        <!-- ⭐ MAIN ACTIVITY (APP STARTS HERE) -->
         <activity
-            android:name=".SplashActivity"
+            android:name=".MainActivity"
             android:exported="true">
 
             <intent-filter>
@@ -26,25 +26,6 @@
             </intent-filter>
 
         </activity>
-
-        <!-- ⭐ MODE SELECT (IMPORTANT - WAS MISSING) -->
-        <activity
-            android:name=".ModeActivity"
-            android:exported="false"/>
-
-        <!-- OPTIONAL LOGIN SCREEN -->
-        <activity
-            android:name=".LoginTypeActivity"
-            android:exported="false"/>
-
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false"/>
-
-        <!-- MAIN APP -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"/>
 
     </application>
 
