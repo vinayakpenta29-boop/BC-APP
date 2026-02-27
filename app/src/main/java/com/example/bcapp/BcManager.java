@@ -8,6 +8,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -547,10 +548,14 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     showEditModeToggleDialog();
     return true;
     }
-    }
     else if (item.getItemId() == 9) {
-    showEditModeToggleDialog();
-    return true;
+
+        Intent intent =
+                new Intent(context, AppLockSettingsActivity.class);
+
+        context.startActivity(intent);
+
+        return true;
     }
     return false;  
 }  
