@@ -56,11 +56,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /* ✅ FIREBASE INIT */
+        /* ✅ STEP 1 — FIREBASE INIT */
         FirebaseApp.initializeApp(this);
+
         database = FirebaseDatabase.getInstance();
 
-        /* ✅ FIREBASE CONNECTION TEST */
+        // ⭐ Enable Offline Cache + Realtime Sync
+        try {
+            database.setPersistenceEnabled(true);
+        } catch (Exception ignored) {
+            // Prevent crash if already enabled
+        }
+
+        /* ✅ STEP 2 — CONNECTION TEST */
         testRef = database.getReference("test");
 
         testRef.setValue("BC App Connected")
@@ -69,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Log.e("FIREBASE", "❌ " + e.getMessage()));
 
-        /* ✅ BIND VIEWS */
+        /* ✅ STEP 3 — BIND VIEWS */
         swipeRefresh = findViewById(R.id.swipeRefresh);
 
         swipeRefresh.setColorSchemeResources(
@@ -90,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         btnRedo = findViewById(R.id.btnRedo);
         imgLock = findViewById(R.id.imgLock);
 
-        /* ✅ INIT BC MANAGER */
+        /* ✅ STEP 4 — INIT BC MANAGER */
         bcManager = new BcManager(
                 this,
                 menuButton,
@@ -110,16 +118,16 @@ public class MainActivity extends AppCompatActivity {
 
         bcManager.init();
 
-        /* ✅ AUTO LOAD DATA FROM FIREBASE */
-        bcManager.restoreFromFirebase();
+        /* ⭐ REALTIME SYNC STARTS HERE */
+        bcManager.startRealtimeSync();
 
-        /* ✅ PULL TO REFRESH */
+        /* ✅ OPTIONAL MANUAL REFRESH */
         swipeRefresh.setOnRefreshListener(() -> {
 
             bcManager.restoreFromFirebase();
 
             swipeRefresh.postDelayed(() ->
-                    swipeRefresh.setRefreshing(false), 1500);
+                    swipeRefresh.setRefreshing(false), 1000);
         });
     }
 }
