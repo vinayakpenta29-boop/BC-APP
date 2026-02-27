@@ -13,21 +13,22 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences pref =
-                getSharedPreferences("BC_LOGIN", MODE_PRIVATE);
+                getSharedPreferences("APP_MODE", MODE_PRIVATE);
 
-        boolean loggedIn = pref.getBoolean("LOGGED_IN", false);
+        boolean logged =
+                pref.getBoolean("LOGGED", false);
 
-        if (loggedIn) {
+        if (logged) {
 
-            String email = pref.getString("EMAIL", "");
-
-            Intent i = new Intent(this, MainActivity.class);
-            i.putExtra("USER_EMAIL", email);
-            startActivity(i);
+            // Mode already selected → open app
+            startActivity(
+                    new Intent(this, MainActivity.class));
 
         } else {
-            startActivity(new Intent(this,
-                    LoginTypeActivity.class));
+
+            // First open → ask Admin or Member
+            startActivity(
+                    new Intent(this, ModeActivity.class));
         }
 
         finish();
