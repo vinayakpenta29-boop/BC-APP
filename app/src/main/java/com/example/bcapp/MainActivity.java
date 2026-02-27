@@ -28,17 +28,14 @@ public class MainActivity extends AppCompatActivity {
 
     SwipeRefreshLayout swipeRefresh;
 
-    // UI references
+    // UI
     TextView menuButton;
     Spinner spinnerBc, spinnerMember;
     EditText editPayDate, editPayAmount;
     Button buttonAdd;
     LinearLayout tableContainer;
 
-    // Undo / Redo Buttons
     ImageButton btnUndo, btnRedo;
-
-    // Lock icon
     ImageView imgLock;
 
     // Data
@@ -49,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference testRef;
 
-    // Date formats
+    // Date Formats
     final SimpleDateFormat isoFormat =
             new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
@@ -59,14 +56,28 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /* ⭐ STEP 0 — CHECK SAVED MODE */
+        SharedPreferences pref =
+                getSharedPreferences("APP_MODE", MODE_PRIVATE);
+
+        boolean logged =
+                pref.getBoolean("LOGGED", false);
+
+        // First time open → ask mode
+        if (!logged) {
+            startActivity(
+                    new Intent(this, ModeActivity.class));
+            finish();
+            return;
+        }
+
+        String mode =
+                pref.getString("MODE", "MEMBER");
+
+        boolean isAdmin = mode.equals("ADMIN");
+
         setContentView(R.layout.activity_main);
-
-        /* ⭐ STEP 0 — GET LOGIN EMAIL */
-        String email =
-                getIntent().getStringExtra("USER_EMAIL");
-
-        boolean isAdmin =
-                "admin@gmail.com".equals(email);
 
         /* ✅ STEP 1 — FIREBASE INIT */
         FirebaseApp.initializeApp(this);
@@ -77,9 +88,9 @@ public class MainActivity extends AppCompatActivity {
 
         testRef.setValue("BC App Connected")
                 .addOnSuccessListener(unused ->
-                        Log.d("FIREBASE", "✅ Data sent successfully"))
+                        Log.d("FIREBASE", "✅ Firebase Connected"))
                 .addOnFailureListener(e ->
-                        Log.e("FIREBASE", "❌ Failed: " + e.getMessage()));
+                        Log.e("FIREBASE", "❌ " + e.getMessage()));
 
         /* ✅ STEP 3 — BIND VIEWS */
         swipeRefresh = findViewById(R.id.swipeRefresh);
@@ -122,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
         bcManager.init();
 
-        /* ⭐ STEP 5 — ADMIN / MEMBER MODE */
+        /* ⭐ STEP 5 — APPLY ADMIN / MEMBER MODE */
         bcManager.setAdminMode(isAdmin);
 
         /* ✅ STEP 6 — PULL TO REFRESH */
@@ -134,26 +145,25 @@ public class MainActivity extends AppCompatActivity {
                     swipeRefresh.setRefreshing(false), 2000);
         });
 
-        /* ⭐ STEP 7 — LOGOUT CLICK (LONG PRESS MENU BUTTON) */
+        /* ⭐ STEP 7 — LONG PRESS MENU = CHANGE MODE */
         menuButton.setOnLongClickListener(v -> {
-
             logoutUser();
             return true;
         });
     }
 
-    /* ⭐ LOGOUT FUNCTION */
+    /* ⭐ CHANGE MODE / LOGOUT */
     private void logoutUser() {
 
         SharedPreferences pref =
-                getSharedPreferences("BC_LOGIN", MODE_PRIVATE);
+                getSharedPreferences("APP_MODE", MODE_PRIVATE);
 
-        // Clear saved login
+        // Remove saved mode
         pref.edit().clear().apply();
 
-        // Go back to login type screen
-        startActivity(new Intent(this,
-                LoginTypeActivity.class));
+        // Go back to Mode selection
+        startActivity(
+                new Intent(this, ModeActivity.class));
 
         finish();
     }
