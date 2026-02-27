@@ -486,7 +486,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 6, 5, "Add Member");
         popup.getMenu().add(0, 7, 6, "Edit");
         popup.getMenu().add(0, 8, 7, "Edit Mode");
-        popup.getMenu().add(0, 9, 8, "Edit Mode");
+        popup.getMenu().add(0, 9, 8, "App Lock 🔒");
 
         popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
 
