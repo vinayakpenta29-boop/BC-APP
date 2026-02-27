@@ -1,7 +1,5 @@
 package com.example.bcapp;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -56,34 +54,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /* ⭐ STEP 0 — CHECK SAVED MODE */
-        SharedPreferences pref =
-                getSharedPreferences("APP_MODE", MODE_PRIVATE);
-
-        boolean logged =
-                pref.getBoolean("LOGGED", false);
-
-        // First time open → ask mode
-        if (!logged) {
-            startActivity(
-                    new Intent(this, ModeActivity.class));
-            finish();
-            return;
-        }
-
-        String mode =
-                pref.getString("MODE", "MEMBER");
-
-        boolean isAdmin = mode.equals("ADMIN");
-
         setContentView(R.layout.activity_main);
 
-        /* ✅ STEP 1 — FIREBASE INIT */
+        /* ✅ FIREBASE INIT */
         FirebaseApp.initializeApp(this);
         database = FirebaseDatabase.getInstance();
 
-        /* ✅ STEP 2 — FIREBASE TEST */
+        /* ✅ FIREBASE CONNECTION TEST */
         testRef = database.getReference("test");
 
         testRef.setValue("BC App Connected")
@@ -92,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Log.e("FIREBASE", "❌ " + e.getMessage()));
 
-        /* ✅ STEP 3 — BIND VIEWS */
+        /* ✅ BIND VIEWS */
         swipeRefresh = findViewById(R.id.swipeRefresh);
 
         swipeRefresh.setColorSchemeResources(
@@ -113,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         btnRedo = findViewById(R.id.btnRedo);
         imgLock = findViewById(R.id.imgLock);
 
-        /* ✅ STEP 4 — INIT BC MANAGER */
+        /* ✅ INIT BC MANAGER */
         bcManager = new BcManager(
                 this,
                 menuButton,
@@ -133,38 +110,16 @@ public class MainActivity extends AppCompatActivity {
 
         bcManager.init();
 
-        /* ⭐ STEP 5 — APPLY ADMIN / MEMBER MODE */
-        bcManager.setAdminMode(isAdmin);
+        /* ✅ AUTO LOAD DATA FROM FIREBASE */
+        bcManager.restoreFromFirebase();
 
-        /* ✅ STEP 6 — PULL TO REFRESH */
+        /* ✅ PULL TO REFRESH */
         swipeRefresh.setOnRefreshListener(() -> {
 
             bcManager.restoreFromFirebase();
 
             swipeRefresh.postDelayed(() ->
-                    swipeRefresh.setRefreshing(false), 2000);
+                    swipeRefresh.setRefreshing(false), 1500);
         });
-
-        /* ⭐ STEP 7 — LONG PRESS MENU = CHANGE MODE */
-        menuButton.setOnLongClickListener(v -> {
-            logoutUser();
-            return true;
-        });
-    }
-
-    /* ⭐ CHANGE MODE / LOGOUT */
-    private void logoutUser() {
-
-        SharedPreferences pref =
-                getSharedPreferences("APP_MODE", MODE_PRIVATE);
-
-        // Remove saved mode
-        pref.edit().clear().apply();
-
-        // Go back to Mode selection
-        startActivity(
-                new Intent(this, ModeActivity.class));
-
-        finish();
     }
 }
