@@ -2,12 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bcapp">
 
-    <!-- 🌐 Internet Required For Firebase -->
+    <!-- 🌐 Internet Required For Firebase Sync -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -15,7 +17,7 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
-        <!-- ⭐ SPLASH SCREEN (APP STARTS HERE) -->
+        <!-- ⭐ APP STARTS FROM SPLASH -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -27,7 +29,7 @@
 
         </activity>
 
-        <!-- ⭐ ADMIN / MEMBER SELECT SCREEN -->
+        <!-- ⭐ ADMIN / MEMBER CHOICE -->
         <activity
             android:name=".LoginTypeActivity"
             android:exported="false"/>
@@ -37,7 +39,7 @@
             android:name=".LoginActivity"
             android:exported="false"/>
 
-        <!-- ⭐ MAIN APP SCREEN -->
+        <!-- ⭐ MAIN APP -->
         <activity
             android:name=".MainActivity"
             android:exported="false"/>
