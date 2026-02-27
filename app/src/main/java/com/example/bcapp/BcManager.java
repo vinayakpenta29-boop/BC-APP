@@ -1204,7 +1204,7 @@ private void renderMainTable(Bc bc) {
 
     TableLayout table = new TableLayout(context);
     table.setPadding(8, 8, 8, 8);
-    table.setcardBackgroundColor(Color.TRANSPARENT);
+    table.setBackgroundColor(Color.TRANSPARENT);
     table.setBackgroundResource(R.drawable.bg_table_card); // soft outer background
     table.setStretchAllColumns(false);
 
