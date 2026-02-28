@@ -13,6 +13,8 @@ public class AppLockSettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+
+        try {
         setContentView(R.layout.activity_lock_settings);
 
         lockSwitch = findViewById(R.id.lockSwitch);
@@ -33,5 +35,11 @@ public class AppLockSettingsActivity extends AppCompatActivity {
                 AppLockManager.disableLock(this);
             }
         });
-    }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        Toast.makeText(this,
+                e.toString(),
+                Toast.LENGTH_LONG).show();
+}
 }
