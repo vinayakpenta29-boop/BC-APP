@@ -488,7 +488,16 @@ private void setupMenu() {
         popup.getMenu().add(0, 8, 7, "Edit Mode");
         popup.getMenu().add(0, 9, 8, "App Lock 🔒");
 
-        popup.setOnMenuItemClickListener(item -> onMenuItemClick(item));  
+        popup.setOnMenuItemClickListener(item -> {
+
+            try {
+                return onMenuItemClick(item);
+            } catch (Exception e) {
+                showCrashDialog(e);
+                return true;
+            }
+
+        });  
 
         // OPTIONAL: Force icons to show (reflection – safe wrapped)  
         try {  
@@ -550,10 +559,17 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
     }
     else if (item.getItemId() == 9) {
 
-        Intent intent =
-                new Intent(context, AppLockSettingsActivity.class);
+        try {
 
-        context.startActivity(intent);
+            Intent intent =
+                    new Intent(context, AppLockSettingsActivity.class);
+
+            context.startActivity(intent);
+
+        } catch (Exception e) {
+
+            showCrashDialog(e);   // ⭐ SHOW CRASH DETAILS
+        }
 
         return true;
     }
