@@ -35,6 +35,7 @@ public class AppLockSettingsActivity extends AppCompatActivity {
                 AppLockManager.disableLock(this);
             }
         });
+        }
 
     } catch (Exception e) {
         e.printStackTrace();
