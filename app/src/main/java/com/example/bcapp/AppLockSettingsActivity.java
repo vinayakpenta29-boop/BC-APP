@@ -2,14 +2,14 @@ package com.example.bcapp;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.widget.Switch;
+import androidx.appcompat.widget.SwitchCompat;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AppLockSettingsActivity extends AppCompatActivity {
 
-    private Switch lockSwitch;
+    private SwitchCompat lockSwitch;
 
     @Override
     protected void onCreate(Bundle b) {
