@@ -1260,9 +1260,9 @@ private void renderMainTable(Bc bc) {
         String member = bc.members.get(r);
         TableRow row = new TableRow(context);
         if (r % 2 == 0) {
-        row.setBackgroundColor(Color.parseColor("#F7F9FC"));
+        row.setBackgroundResource(R.drawable.bg_table_card);
         } else {
-        row.setBackgroundColor(Color.WHITE);
+        row.setBackgroundResource(R.drawable.bg_table_card);
         }
 
         addCell(row, String.valueOf(r + 1), false);
