@@ -1563,7 +1563,8 @@ private void renderMainTable(Bc bc) {
     card.setRadius(28f);
     card.setCardElevation(14f);
     card.setUseCompatPadding(true);
-    card.setCardBackgroundColor(Color.WHITE);
+    card.setBackgroundColor(Color.TRANSPARENT);
+    card.setBackgroundResource(R.drawable.bg_table_card);
 
     LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -1738,7 +1739,8 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
     card.setRadius(28f);
     card.setCardElevation(14f);
     card.setUseCompatPadding(true);
-    card.setCardBackgroundColor(Color.WHITE);
+    card.setBackgroundColor(Color.TRANSPARENT);
+    card.setBackgroundResource(R.drawable.bg_table_card);
 
     LinearLayout.LayoutParams cardParams =
             new LinearLayout.LayoutParams(
