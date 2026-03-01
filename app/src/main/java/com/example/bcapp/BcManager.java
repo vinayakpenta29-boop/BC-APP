@@ -2460,16 +2460,19 @@ private Calendar parseIsoDate(String iso) {
 private void addCompactHeaderCell(TableRow row, String text) {
     TextView tv = new TextView(context);
     tv.setText(text);
-    tv.setTextSize(13f);
+    tv.setTextSize(14f);
     tv.setTypeface(null, Typeface.BOLD);
     tv.setTextColor(Color.WHITE);
     tv.setGravity(Gravity.CENTER);
-    tv.setPadding(16, 12, 16, 12);
+    tv.setPadding(24, 12, 24, 12);
+
+    tv.setBackgroundResource(R.drawable.bg_header_cell);
 
     TableRow.LayoutParams params = new TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
             TableRow.LayoutParams.WRAP_CONTENT
     );
+    params.setMargins(1,1,1,1);
     tv.setLayoutParams(params);
     row.addView(tv);
 }
