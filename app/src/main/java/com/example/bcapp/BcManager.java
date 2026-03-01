@@ -1593,7 +1593,8 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
     // ===== TABLE =====
     TableLayout table = new TableLayout(context);
     table.setPadding(8,8,8,8);
-    table.setBackgroundColor(Color.parseColor("#ECEFF1"));
+    table.setBackgroundColor(Color.TRANSPARENT);
+    table.setBackgroundResource(R.drawable.bg_table_card);
     table.setStretchAllColumns(false);
 
     // ===== HEADER =====
