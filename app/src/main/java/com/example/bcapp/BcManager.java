@@ -1040,7 +1040,7 @@ private void showBcListTable() {
         card.setRadius(26f);
         card.setCardElevation(12f);
         card.setUseCompatPadding(true);
-        card.setCardBackgroundColor(Color.WHITE);
+        card.setBackgroundResource(R.drawable.bg_table_card);
 
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -1062,7 +1062,7 @@ private void showBcListTable() {
         table.setStretchAllColumns(false);
         table.setShrinkAllColumns(false);
         table.setPadding(8, 8, 8, 8);
-        table.setBackgroundColor(Color.parseColor("#ECEFF1"));
+        table.setBackgroundResource(R.drawable.bg_table_card);
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
