@@ -1082,8 +1082,7 @@ private void showBcListTable() {
         for (int i = 0; i < bc.months; i++) {
 
             TableRow row = new TableRow(context);
-            row.setBackgroundColor(i % 2 == 0 ? Color.parseColor("#F8FAFC") : Color.WHITE);
-
+            row.setBackgroundResource(i % 2 == 0 ? R.drawable.bg_table_card);
             addCompactCell(row, String.valueOf(i + 1));
 
             Calendar cal = parseIsoDate(bc.startDateIso);
@@ -2464,9 +2463,7 @@ private void addCompactHeaderCell(TableRow row, String text) {
     tv.setTypeface(null, Typeface.BOLD);
     tv.setTextColor(Color.WHITE);
     tv.setGravity(Gravity.CENTER);
-    tv.setPadding(24, 12, 24, 12);
-
-    tv.setBackgroundResource(R.drawable.bg_header_cell);
+    tv.setPadding(16, 12, 16, 12);
 
     TableRow.LayoutParams params = new TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
