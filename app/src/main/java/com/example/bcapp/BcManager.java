@@ -1066,7 +1066,7 @@ private void showBcListTable() {
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
-        header.setBackgroundResource(R.drawable.table_header_border);
+        
         addCompactHeaderCell(header, "Sr");
         addCompactHeaderCell(header, "Date");
         addCompactHeaderCell(header, "Installment\nAmount");
@@ -2457,21 +2457,24 @@ private Calendar parseIsoDate(String iso) {
 }
 
 private void addCompactHeaderCell(TableRow row, String text) {
-    TextView tv = new TextView(context);
-    tv.setText(text);
-    tv.setTextSize(14f);
-    tv.setTypeface(null, Typeface.BOLD);
-    tv.setTextColor(Color.WHITE);
-    tv.setGravity(Gravity.CENTER);
-    tv.setPadding(16, 12, 16, 12);
+    TextView header = new TextView(context);
+    header.setText(text);
+    header.setTextSize(14f);
+    header.setTypeface(null, Typeface.BOLD);
+    header.setTextColor(Color.WHITE);
+    header.setGravity(Gravity.CENTER);
+    header.setPadding(12, 12, 12, 12);
+    header.setBackgroundResource(R.drawable.table_header_border);
 
-    TableRow.LayoutParams params = new TableRow.LayoutParams(
-            TableRow.LayoutParams.WRAP_CONTENT,
-            TableRow.LayoutParams.WRAP_CONTENT
-    );
+    TableRow.LayoutParams params =
+            new TableRow.LayoutParams(
+                    0,
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    1f
+            );
     params.setMargins(1,1,1,1);
-    tv.setLayoutParams(params);
-    row.addView(tv);
+    header.setLayoutParams(params);
+    row.addView(header);
 }
 
 private void addCompactCell(TableRow row, String text) {
