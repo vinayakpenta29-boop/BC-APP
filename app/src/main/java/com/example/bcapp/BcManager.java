@@ -1070,7 +1070,7 @@ private void showBcListTable() {
         addCompactHeaderCell(header, "Sr");
         addCompactHeaderCell(header, "Date");
         addCompactHeaderCell(header, "Installment\nAmount");
-        addCompactHeaderCell(header, "Receive Amount");
+        addCompactHeaderCell(header, "Receive\nAmount");
 
         if (bc.afterTaken) {
             addCompactHeaderCell(header, "After\nTaken");
@@ -2457,21 +2457,34 @@ private Calendar parseIsoDate(String iso) {
 }
 
 private void addCompactHeaderCell(TableRow row, String text) {
+
     TextView header = new TextView(context);
+
     header.setText(text);
     header.setTextSize(14f);
     header.setTypeface(null, Typeface.BOLD);
     header.setTextColor(Color.WHITE);
+
+    // ✅ CENTER TEXT PERFECTLY
     header.setGravity(Gravity.CENTER);
-    header.setPadding(12, 12, 12, 12);
-    header.setBackgroundResource(R.drawable.table_header_border);
+
+    // ✅ SAME HEIGHT FOR ALL HEADERS
+    int headerHeight = dpToPx(56); // change 56 if needed
 
     TableRow.LayoutParams params = new TableRow.LayoutParams(
             TableRow.LayoutParams.WRAP_CONTENT,
-            TableRow.LayoutParams.WRAP_CONTENT
+            headerHeight
     );
-    params.setMargins(1,1,1,1);
+
+    params.setMargins(6, 6, 6, 6);
     header.setLayoutParams(params);
+
+    // ✅ background box
+    header.setBackgroundResource(R.drawable.table_header_border);
+
+    // ✅ equal padding
+    header.setPadding(12, 0, 12, 0);
+
     row.addView(header);
 }
 
