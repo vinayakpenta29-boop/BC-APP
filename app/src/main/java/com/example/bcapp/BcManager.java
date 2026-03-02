@@ -1082,7 +1082,7 @@ private void showBcListTable() {
         for (int i = 0; i < bc.months; i++) {
 
             TableRow row = new TableRow(context);
-            row.setBackgroundResource(i % 2 == 0 ? R.drawable.bg_table_card);
+            row.setBackgroundResource(i % 2 == 0 ? R.drawable.bg_table_card : R.drawable.bg_table_card);
             addCompactCell(row, String.valueOf(i + 1));
 
             Calendar cal = parseIsoDate(bc.startDateIso);
