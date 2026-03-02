@@ -1070,7 +1070,7 @@ private void showBcListTable() {
         addCompactHeaderCell(header, "Sr");
         addCompactHeaderCell(header, "Date");
         addCompactHeaderCell(header, "Installment\nAmount");
-        addCompactHeaderCell(header, "Receive\nAmount");
+        addCompactHeaderCell(header, "Receive Amount");
 
         if (bc.afterTaken) {
             addCompactHeaderCell(header, "After\nTaken");
@@ -2466,12 +2466,10 @@ private void addCompactHeaderCell(TableRow row, String text) {
     header.setPadding(12, 12, 12, 12);
     header.setBackgroundResource(R.drawable.table_header_border);
 
-    TableRow.LayoutParams params =
-            new TableRow.LayoutParams(
-                    0,
-                    TableRow.LayoutParams.WRAP_CONTENT,
-                    1f
-            );
+    TableRow.LayoutParams params = new TableRow.LayoutParams(
+            TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.WRAP_CONTENT
+    );
     params.setMargins(1,1,1,1);
     header.setLayoutParams(params);
     row.addView(header);
