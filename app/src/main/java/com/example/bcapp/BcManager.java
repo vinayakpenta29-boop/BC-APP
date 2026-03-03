@@ -2465,25 +2465,26 @@ private void addCompactHeaderCell(TableRow row, String text) {
     header.setTypeface(null, Typeface.BOLD);
     header.setTextColor(Color.WHITE);
 
+    // ✅ REMOVE EXTRA FONT SPACE (MAIN FIX)
+    header.setIncludeFontPadding(false);
+
     // ✅ CENTER TEXT PERFECTLY
     header.setGravity(Gravity.CENTER);
 
     // ✅ SAME HEIGHT FOR ALL HEADERS
-    int headerHeight = dpToPx(56); // change 56 if needed
+    int headerHeight = dpToPx(56);
 
-    TableRow.LayoutParams params = new TableRow.LayoutParams(
-            TableRow.LayoutParams.WRAP_CONTENT,
-            headerHeight
-    );
+    TableRow.LayoutParams params =
+            new TableRow.LayoutParams(0, headerHeight, 1f);
 
-    params.setMargins(6, 6, 6, 6);
+    params.setMargins(6,6,6,6);
     header.setLayoutParams(params);
 
-    // ✅ background box
-    header.setBackgroundResource(R.drawable.table_header_border);
+    // ✅ Balanced padding
+    header.setPadding(12,0,12,0);
 
-    // ✅ equal padding
-    header.setPadding(12, 0, 12, 0);
+    // ✅ Header box background
+    header.setBackgroundResource(R.drawable.table_header_border);
 
     row.addView(header);
 }
