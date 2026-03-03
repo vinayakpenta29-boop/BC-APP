@@ -1059,8 +1059,8 @@ private void showBcListTable() {
         hScroll.setFillViewport(false);
 
         TableLayout table = new TableLayout(context);
-        table.setStretchAllColumns(false);
-        table.setShrinkAllColumns(false);
+        table.setStretchAllColumns(true);
+        table.setShrinkAllColumns(true);
         table.setPadding(8, 8, 8, 8);
         table.setBackgroundResource(R.drawable.bg_table_card);
 
@@ -2475,9 +2475,8 @@ private void addCompactHeaderCell(TableRow row, String text) {
     int headerHeight = dpToPx(56);
 
     TableRow.LayoutParams params =
-            new TableRow.LayoutParams(0, headerHeight, 1f);
-
-    params.setMargins(6,6,6,6);
+        new TableRow.LayoutParams(0, dpToPx(56), 1f);
+    params.setMargins(1,1,1,1);
     header.setLayoutParams(params);
 
     // ✅ Balanced padding
