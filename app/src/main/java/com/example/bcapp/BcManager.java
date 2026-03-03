@@ -1059,8 +1059,8 @@ private void showBcListTable() {
         hScroll.setFillViewport(false);
 
         TableLayout table = new TableLayout(context);
-        table.setStretchAllColumns(true);
-        table.setShrinkAllColumns(true);
+        table.setStretchAllColumns(false);
+        table.setShrinkAllColumns(false);
         table.setPadding(8, 8, 8, 8);
         table.setBackgroundResource(R.drawable.bg_table_card);
 
@@ -2457,35 +2457,21 @@ private Calendar parseIsoDate(String iso) {
 }
 
 private void addCompactHeaderCell(TableRow row, String text) {
+    TextView tv = new TextView(context);
+    tv.setText(text);
+    tv.setTextSize(14f);
+    tv.setTypeface(null, Typeface.BOLD);
+    tv.setTextColor(Color.WHITE);
+    tv.setGravity(Gravity.CENTER);
+    tv.setPadding(16, 12, 16, 12);
 
-    TextView header = new TextView(context);
-
-    header.setText(text);
-    header.setTextSize(14f);
-    header.setTypeface(null, Typeface.BOLD);
-    header.setTextColor(Color.WHITE);
-
-    // ✅ REMOVE EXTRA FONT SPACE (MAIN FIX)
-    header.setIncludeFontPadding(false);
-
-    // ✅ CENTER TEXT PERFECTLY
-    header.setGravity(Gravity.CENTER);
-
-    // ✅ SAME HEIGHT FOR ALL HEADERS
-    int headerHeight = dpToPx(56);
-
-    TableRow.LayoutParams params =
-        new TableRow.LayoutParams(0, dpToPx(56), 1f);
+    TableRow.LayoutParams params = new TableRow.LayoutParams(
+            TableRow.LayoutParams.WRAP_CONTENT,
+            TableRow.LayoutParams.WRAP_CONTENT
+    );
     params.setMargins(1,1,1,1);
-    header.setLayoutParams(params);
-
-    // ✅ Balanced padding
-    header.setPadding(12,0,12,0);
-
-    // ✅ Header box background
-    header.setBackgroundResource(R.drawable.table_header_border);
-
-    row.addView(header);
+    tv.setLayoutParams(params);
+    row.addView(tv);
 }
 
 private void addCompactCell(TableRow row, String text) {
