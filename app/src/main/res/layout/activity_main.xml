@@ -1,202 +1,202 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>  <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"  
+android:layout_width="match_parent"  
+android:layout_height="match_parent"  
+android:background="#f0f6fb"  
+android:fillViewport="true">
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#f0f6fb"
-    android:fillViewport="true">
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout  
+    android:id="@+id/swipeRefresh"  
+    android:layout_width="match_parent"  
+    android:layout_height="match_parent">  
 
-    <!-- ✅ SwipeRefresh must be wrap_content inside ScrollView -->
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefresh"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+<LinearLayout  
+    android:id="@+id/rootLayout"  
+    android:orientation="vertical"  
+    android:padding="12dp"  
+    android:layout_width="match_parent"  
+    android:layout_height="match_parent">  
 
-        <LinearLayout
-            android:id="@+id/rootLayout"
-            android:orientation="vertical"
-            android:padding="12dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <!-- 🔹 Top Toolbar Row -->  
+    <LinearLayout  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:gravity="center_vertical"  
+        android:orientation="horizontal">  
 
-            <!-- 🔹 Top Toolbar Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+        <ImageView  
+            android:id="@+id/imgLock"  
+            android:layout_width="24dp"  
+            android:layout_height="24dp"  
+            android:src="@drawable/ic_lock"  
+            android:layout_marginEnd="10dp"  
+            android:contentDescription="Edit Mode Locked"  
+            android:visibility="visible"  
+            android:padding="2dp" />  
 
-                <ImageView
-                    android:id="@+id/imgLock"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_lock"
-                    android:layout_marginEnd="10dp"
-                    android:contentDescription="Edit Mode Locked"
-                    android:visibility="visible"
-                    android:padding="2dp" />
+        <Space  
+            android:layout_width="0dp"  
+            android:layout_height="wrap_content"  
+            android:layout_weight="1" />  
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+        <LinearLayout  
+            android:layout_width="wrap_content"  
+            android:layout_height="36dp"  
+            android:orientation="horizontal"  
+            android:gravity="center"  
+            android:background="@drawable/bg_big_curve"  
+            android:paddingStart="4dp"  
+            android:paddingEnd="4dp"  
+            android:layout_marginEnd="6dp">  
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:background="@drawable/bg_big_curve"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
-                    android:layout_marginEnd="6dp">
+            <ImageButton  
+                android:id="@+id/btnUndo"  
+                android:layout_width="32dp"  
+                android:layout_height="32dp"  
+                android:background="@drawable/bg_small_curve"  
+                android:src="@drawable/ic_undo"  
+                android:scaleType="centerInside"  
+                android:contentDescription="Undo"  
+                android:padding="6dp" />  
 
-                    <ImageButton
-                        android:id="@+id/btnUndo"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/bg_small_curve"
-                        android:src="@drawable/ic_undo"
-                        android:scaleType="centerInside"
-                        android:padding="6dp" />
+            <ImageButton  
+                android:id="@+id/btnRedo"  
+                android:layout_width="32dp"  
+                android:layout_height="32dp"  
+                android:layout_marginStart="4dp"  
+                android:background="@drawable/bg_small_curve"  
+                android:src="@drawable/ic_redo"  
+                android:scaleType="centerInside"  
+                android:contentDescription="Redo"  
+                android:padding="6dp" />  
+        </LinearLayout>  
 
-                    <ImageButton
-                        android:id="@+id/btnRedo"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="4dp"
-                        android:background="@drawable/bg_small_curve"
-                        android:src="@drawable/ic_redo"
-                        android:scaleType="centerInside"
-                        android:padding="6dp" />
-                </LinearLayout>
+        <TextView  
+            android:id="@+id/menuButton"  
+            android:text="⋮"  
+            android:textSize="22sp"  
+            android:padding="6dp"  
+            android:clickable="true"  
+            android:focusable="true"  
+            android:layout_width="wrap_content"  
+            android:layout_height="wrap_content" />  
+    </LinearLayout>  
 
-                <TextView
-                    android:id="@+id/menuButton"
-                    android:text="⋮"
-                    android:textSize="22sp"
-                    android:padding="6dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+    <!-- Title -->  
+    <TextView  
+        android:id="@+id/titleMain"  
+        android:text="Main BC Entry"  
+        android:textColor="#990F4B"  
+        android:textSize="18sp"  
+        android:textStyle="bold"  
+        android:layout_marginTop="8dp"  
+        android:layout_marginBottom="8dp"  
+        android:layout_width="wrap_content"  
+        android:layout_height="wrap_content" />  
 
-            </LinearLayout>
+    <!-- Spinners row -->  
+    <LinearLayout  
+        android:orientation="horizontal"  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:layout_marginBottom="8dp">  
 
-            <!-- Title -->
-            <TextView
-                android:id="@+id/titleMain"
-                android:text="Main BC Entry"
-                android:textColor="#990F4B"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+        <Spinner  
+            android:id="@+id/spinnerBc"  
+            android:layout_width="0dp"  
+            android:layout_height="48dp"  
+            android:layout_weight="1"  
+            android:background="@drawable/bg_input_curved"  
+            android:paddingHorizontal="12dp" />  
 
-            <!-- Spinners -->
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp">
+        <Space  
+            android:layout_width="8dp"  
+            android:layout_height="wrap_content" />  
 
-                <Spinner
-                    android:id="@+id/spinnerBc"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_curved"
-                    android:paddingHorizontal="12dp" />
+        <Spinner  
+            android:id="@+id/spinnerMember"  
+            android:layout_width="0dp"  
+            android:layout_height="48dp"  
+            android:layout_weight="1"  
+            android:background="@drawable/bg_input_curved"  
+            android:paddingHorizontal="12dp" />  
+    </LinearLayout>  
 
-                <Space
-                    android:layout_width="8dp"
-                    android:layout_height="wrap_content" />
+    <!-- Date -->  
+    <EditText  
+        android:id="@+id/editPayDate"  
+        android:hint="Date"  
+        android:focusable="false"  
+        android:inputType="none"  
+        android:layout_width="match_parent"  
+        android:layout_height="48dp"  
+        android:background="@drawable/bg_input_curved"  
+        android:paddingHorizontal="12dp"  
+        android:layout_marginBottom="8dp" />  
 
-                <Spinner
-                    android:id="@+id/spinnerMember"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_curved"
-                    android:paddingHorizontal="12dp" />
+    <!-- Amount -->  
+    <EditText  
+        android:id="@+id/editPayAmount"  
+        android:hint="Installment Amount"  
+        android:inputType="number"  
+        android:layout_width="match_parent"  
+        android:layout_height="48dp"  
+        android:background="@drawable/bg_input_curved"  
+        android:paddingHorizontal="12dp"  
+        android:layout_marginBottom="12dp" />  
 
-            </LinearLayout>
+    <!-- ADD Button -->  
+    <Button  
+        android:id="@+id/buttonAdd"  
+        android:text="ADD"  
+        android:textColor="@android:color/white"  
+        android:textStyle="bold"  
+        android:layout_width="match_parent"  
+        android:layout_height="48dp"  
+        android:background="@drawable/btn_add_ripple"  
+        android:elevation="4dp"  
+        android:layout_marginBottom="12dp" />  
 
-            <!-- Date -->
-            <EditText
-                android:id="@+id/editPayDate"
-                android:hint="Date"
-                android:focusable="false"
-                android:inputType="none"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_input_curved"
-                android:paddingHorizontal="12dp"
-                android:layout_marginBottom="8dp" />
+    <!-- 🔹 Main BC Table Header Row -->  
+    <LinearLayout  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:orientation="horizontal"  
+        android:gravity="center_vertical"  
+        android:layout_marginBottom="6dp">  
 
-            <!-- Amount -->
-            <EditText
-                android:id="@+id/editPayAmount"
-                android:hint="Installment Amount"
-                android:inputType="number"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_input_curved"
-                android:paddingHorizontal="12dp"
-                android:layout_marginBottom="12dp" />
+        <TextView  
+            android:text="Main BC Table"  
+            android:textSize="16sp"  
+            android:textStyle="bold"  
+            android:textColor="#990F4B"  
+            android:layout_width="0dp"  
+            android:layout_weight="1"  
+            android:layout_height="wrap_content" />  
 
-            <!-- ADD Button -->
-            <Button
-                android:id="@+id/buttonAdd"
-                android:text="ADD"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/btn_add_ripple"
-                android:elevation="4dp"
-                android:layout_marginBottom="12dp" />
+        <androidx.appcompat.widget.SwitchCompat  
+            android:id="@+id/switchVertical"  
+            android:layout_width="wrap_content"  
+            android:layout_height="wrap_content"  
+            android:text="Vertical"  
+            android:visibility="gone"/>  
+    </LinearLayout>  
 
-            <!-- 🔹 Main BC Table Header -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="6dp">
+    <!-- Table -->  
+    <HorizontalScrollView  
+        android:id="@+id/horizontalScroll"  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:scrollbars="horizontal">  
 
-                <TextView
-                    android:text="Main BC Table"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="#990F4B"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content" />
+        <LinearLayout  
+            android:id="@+id/tableContainer"  
+            android:orientation="vertical"  
+            android:layout_width="wrap_content"  
+            android:layout_height="wrap_content" />  
+    </HorizontalScrollView>  
 
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switchVertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vertical"
-                    android:visibility="gone"/>
+</LinearLayout>
 
-            </LinearLayout>
-
-            <!-- ✅ IMPORTANT FIX -->
-            <!-- REMOVE HorizontalScrollView FROM XML -->
-            <!-- Java will handle horizontal scrolling -->
-
-            <LinearLayout
-                android:id="@+id/tableContainer"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </ScrollView>
