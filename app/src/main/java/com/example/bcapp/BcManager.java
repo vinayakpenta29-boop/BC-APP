@@ -203,6 +203,13 @@ public BcManager(AppCompatActivity activity,
     this.buttonAdd = buttonAdd;  
     this.tableContainer = tableContainer;  
     this.switchVertical = activity.findViewById(R.id.switchVertical);
+    // ✅ TABLE SCROLL VIEWS
+    horizontalScroll = activity.findViewById(R.id.horizontalScroll);
+    verticalScroll = activity.findViewById(R.id.verticalScroll);
+
+    // ✅ SEEK BARS
+    horizontalSeekBar = activity.findViewById(R.id.horizontalSeekBar);
+    verticalSeekBar = activity.findViewById(R.id.verticalSeekBar);
     this.btnUndo = btnUndo;
     this.btnRedo = btnRedo;
     this.imgLock = imgLock;
@@ -267,6 +274,7 @@ public void init() {
 
     // ⭐ AUTO RESTORE FROM CLOUD
     startRealtimeSync();
+    setupSeekBarSync();
 }  
 
 private void updateUndoRedoButtons() {
@@ -648,6 +656,32 @@ private interface AfterTakenCallback {
     void onValue(double amount);  
     void onCancelled();  
 }  
+
+private void setupSeekBarSync() {
+
+    if(horizontalScroll == null || horizontalSeekBar == null) return;
+
+    horizontalSeekBar.setOnSeekBarChangeListener(
+            new SeekBar.OnSeekBarChangeListener() {
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            if(!fromUser) return;
+
+            int maxScroll =
+                    horizontalScroll.getChildAt(0).getWidth()
+                    - horizontalScroll.getWidth();
+
+            int scrollX = (int)((progress / 1000f) * maxScroll);
+
+            horizontalScroll.scrollTo(scrollX, 0);
+        }
+
+        @Override public void onStartTrackingTouch(SeekBar seekBar){}
+        @Override public void onStopTrackingTouch(SeekBar seekBar){}
+    });
+}
 
 /* ---------- Create BC dialog ---------- */  
 
