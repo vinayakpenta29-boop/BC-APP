@@ -1614,7 +1614,15 @@ private void renderMainTable(Bc bc) {
     card.setLayoutParams(cardParams);
 
     HorizontalScrollView scrollWrap = new HorizontalScrollView(context);
+
     scrollWrap.setHorizontalScrollBarEnabled(true);
+    scrollWrap.setFillViewport(true);
+    scrollWrap.setSmoothScrollingEnabled(true);
+    scrollWrap.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+
+    // ⭐ makes scrolling soft
+    scrollWrap.setNestedScrollingEnabled(false);
+
     scrollWrap.addView(table);
 
     card.addView(scrollWrap);
@@ -1790,7 +1798,13 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
     card.setLayoutParams(cardParams);
 
     HorizontalScrollView scrollWrap =
-            new HorizontalScrollView(context);
+        new HorizontalScrollView(context);
+
+    scrollWrap.setFillViewport(true);
+    scrollWrap.setSmoothScrollingEnabled(true);
+    scrollWrap.setNestedScrollingEnabled(false);
+    scrollWrap.setHorizontalScrollBarEnabled(true);
+
     scrollWrap.addView(table);
 
     card.addView(scrollWrap);
