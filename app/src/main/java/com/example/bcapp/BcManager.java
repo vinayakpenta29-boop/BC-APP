@@ -1643,9 +1643,30 @@ private void renderMainTable(Bc bc) {
     horizontalScroll.setNestedScrollingEnabled(false);
 
     horizontalScroll.addView(table);
-    verticalScroll.addView(horizontalScroll);
+    
+    horizontalScroll.getViewTreeObserver()
+            .addOnScrollChangedListener(() -> {
 
-    card.addView(verticalScroll);
+        if (horizontalSeekBar == null) return;
+
+        View child = horizontalScroll.getChildAt(0);
+        if (child == null) return;
+
+        int maxScroll =
+                child.getWidth() - horizontalScroll.getWidth();
+
+        if (maxScroll <= 0) return;
+
+        int progress =
+                (int)((horizontalScroll.getScrollX()
+                        / (float)maxScroll) * 1000);
+
+        horizontalSeekBar.setProgress(progress);
+}    );
+    
+     verticalScroll.addView(horizontalScroll);
+
+     card.addView(verticalScroll);
 
     // ============================
     // HORIZONTAL SEEKBAR
@@ -1661,11 +1682,15 @@ private void renderMainTable(Bc bc) {
         public void onProgressChanged(
                 SeekBar seekBar, int progress, boolean fromUser) {
 
-            if (horizontalScroll == null) return;
+            if (!fromUser || horizontalScroll == null) return;
+
+            View child = horizontalScroll.getChildAt(0);
+            if (child == null) return;
 
             int maxScroll =
-                    horizontalScroll.getChildAt(0).getWidth()
-                            - horizontalScroll.getWidth();
+                    child.getWidth() - horizontalScroll.getWidth();
+
+            if (maxScroll <= 0) return;
 
             int scrollX = (int)(maxScroll * (progress / 1000f));
 
