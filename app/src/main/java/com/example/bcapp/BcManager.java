@@ -1053,6 +1053,10 @@ private void showBcListTable() {
         tableCaptureLayout.setOrientation(LinearLayout.VERTICAL);
         card.addView(tableCaptureLayout);
 
+        // 🔷 ===== VERTICAL SCROLL =====
+        ScrollView vScroll = new ScrollView(context);
+        vScroll.setFillViewport(true);
+
         // 🔷 ===== HORIZONTAL SCROLL =====
         HorizontalScrollView hScroll = new HorizontalScrollView(context);
         hScroll.setHorizontalScrollBarEnabled(true);
@@ -1120,7 +1124,8 @@ private void showBcListTable() {
         }
 
         hScroll.addView(table);
-        tableCaptureLayout.addView(hScroll);
+        vScroll.addView(hScroll);
+        tableCaptureLayout.addView(vScroll);
         tableContainer.addView(card);
 
         btnPrint.setOnClickListener(v -> captureAndSaveTable(tableCaptureLayout, bc.name));
