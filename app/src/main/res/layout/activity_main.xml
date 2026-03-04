@@ -151,6 +151,14 @@
                 android:textColor="#990F4B"
                 android:layout_marginBottom="6dp"/>
 
+                <androidx.appcompat.widget.SwitchCompat    
+                  android:id="@+id/switchVertical"    
+                  android:layout_width="wrap_content"    
+                  android:layout_height="wrap_content"    
+                  android:text="Vertical"    
+                  android:visibility="gone"/>    
+              </LinearLayout>    
+
             <!-- 🔥 TABLE CARD -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
