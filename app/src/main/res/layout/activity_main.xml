@@ -157,7 +157,6 @@
                   android:layout_height="wrap_content"    
                   android:text="Vertical"    
                   android:visibility="gone"/>    
-              </LinearLayout>    
 
             <!-- 🔥 TABLE CARD -->
             <androidx.cardview.widget.CardView
