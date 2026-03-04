@@ -1658,8 +1658,7 @@ private void renderMainTable(Bc bc) {
         if (maxScroll <= 0) return;
 
         int progress =
-                (int)((horizontalScroll.getScrollX()
-                        / (float)maxScroll) * 1000);
+            (int)((scrollX / (float) maxScroll) * 1000);
 
         horizontalSeekBar.setProgress(progress);
 }    );
@@ -1684,17 +1683,21 @@ private void renderMainTable(Bc bc) {
 
             if (!fromUser || horizontalScroll == null) return;
 
-            View child = horizontalScroll.getChildAt(0);
-            if (child == null) return;
+            horizontalScroll.post(() -> {
 
-            int maxScroll =
-                    child.getWidth() - horizontalScroll.getWidth();
+                View child = horizontalScroll.getChildAt(0);
+                if (child == null) return;
 
-            if (maxScroll <= 0) return;
+                int maxScroll =
+                        child.getWidth() - horizontalScroll.getWidth();
 
-            int scrollX = (int)(maxScroll * (progress / 1000f));
+                if (maxScroll <= 0) return;
 
-            horizontalScroll.scrollTo(scrollX, 0);
+                int scrollX =
+                        (int)(maxScroll * (progress / 1000f));
+
+                horizontalScroll.scrollTo(scrollX, 0);
+            });
         }
 
         public void onStartTrackingTouch(SeekBar seekBar){}
