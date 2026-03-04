@@ -1728,21 +1728,21 @@ private void renderMainTable(Bc bc) {
 }
 
 private void renderVerticalSelfWeeklyTable(Bc bc) {
-    
+
     if (verticalTableView != null) {
         verticalTableView.setVisibility(View.VISIBLE);
-        horizontalTableView.setVisibility(View.GONE);
+        if (horizontalTableView != null)
+            horizontalTableView.setVisibility(View.GONE);
         return;
     }
 
-    // ===== TABLE =====
+    // ================= TABLE =================
     TableLayout table = new TableLayout(context);
     table.setPadding(8,8,8,8);
-    table.setBackgroundColor(Color.TRANSPARENT);
-    table.setBackgroundResource(R.drawable.bg_table_card);
     table.setStretchAllColumns(false);
+    table.setBackgroundResource(R.drawable.bg_table_card);
 
-    // ===== HEADER =====
+    // ================= HEADER =================
     TableRow header = new TableRow(context);
     header.setElevation(6f);
 
@@ -1765,7 +1765,7 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
         currentIndex=(int)(diffDays/7);
     }
 
-    // ===== ROWS =====
+    // ================= ROWS =================
     for(int i=0;i<bc.months;i++){
 
         TableRow row = new TableRow(context);
@@ -1792,7 +1792,7 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
 
         addCell(row,"₹"+String.format("%.0f",expected),false);
 
-        // ===== STATUS CELL (SAME STYLE AS MAIN TABLE) =====
+        // ===== STATUS CELL =====
         LinearLayout cellContainer = new LinearLayout(context);
         cellContainer.setOrientation(LinearLayout.VERTICAL);
         cellContainer.setGravity(Gravity.CENTER);
@@ -1816,15 +1816,12 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
                         R.drawable.table_cell_border_partialy_paid);
             }
 
-            // ✅ tick
             TextView tick=new TextView(context);
             tick.setText("✅");
             tick.setTextSize(18f);
-            tick.setTextColor(Color.parseColor("#2E7D32"));
             tick.setGravity(Gravity.CENTER);
             cellContainer.addView(tick);
 
-            // amount badge
             TextView badge=new TextView(context);
             badge.setText("₹"+String.format("%.0f",paidAmt));
             badge.setTextSize(8f);
@@ -1832,12 +1829,10 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
             badge.setPadding(10,4,10,4);
 
             if(paidAmt<expected){
-                badge.setBackgroundResource(
-                        R.drawable.amount_badge_red);
+                badge.setBackgroundResource(R.drawable.amount_badge_red);
                 badge.setTextColor(Color.parseColor("#D32F2F"));
             }else{
-                badge.setBackgroundResource(
-                        R.drawable.amount_badge_green);
+                badge.setBackgroundResource(R.drawable.amount_badge_green);
                 badge.setTextColor(Color.WHITE);
             }
 
@@ -1852,7 +1847,6 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
 
         }else{
 
-            // ☐ unpaid
             TextView box=new TextView(context);
             box.setText("☐");
             box.setTextSize(18f);
@@ -1860,7 +1854,6 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
             cellContainer.addView(box);
         }
 
-        // 🔴 overdue highlight (same logic)
         if(i<=currentIndex && paidAmt<expected){
             cellContainer.setBackgroundResource(
                     R.drawable.table_cell_border_overdue);
@@ -1871,50 +1864,110 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.MATCH_PARENT);
         lp.setMargins(1,1,1,1);
-        cellContainer.setLayoutParams(lp);
 
+        cellContainer.setLayoutParams(lp);
         row.addView(cellContainer);
 
         table.addView(row);
     }
 
-    // ===== CARD WRAPPER (SAME AS MAIN TABLE) =====
+    // ================= CARD =================
     CardView card = new CardView(context);
     card.setRadius(28f);
     card.setCardElevation(14f);
     card.setUseCompatPadding(true);
-    card.setBackgroundColor(Color.TRANSPARENT);
     card.setBackgroundResource(R.drawable.bg_table_card);
 
-    LinearLayout.LayoutParams cardParams =
-            new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-    cardParams.setMargins(16,12,16,24);
-    card.setLayoutParams(cardParams);
+    // ================= SCROLL SYSTEM =================
 
-    HorizontalScrollView scrollWrap =
-        new HorizontalScrollView(context);
+    ScrollView verticalScroll = new ScrollView(context);
+    verticalScroll.setFillViewport(true);
 
-    scrollWrap.setFillViewport(true);
-    scrollWrap.setSmoothScrollingEnabled(true);
-    scrollWrap.setNestedScrollingEnabled(false);
-    scrollWrap.setHorizontalScrollBarEnabled(true);
+    HorizontalScrollView horizontalScroll =
+            new HorizontalScrollView(context);
 
-    scrollWrap.addView(table);
+    horizontalScroll.setFillViewport(true);
+    horizontalScroll.setHorizontalScrollBarEnabled(false);
+    horizontalScroll.setNestedScrollingEnabled(false);
 
-    card.addView(scrollWrap);
-    verticalTableView = card;
+    horizontalScroll.addView(table);
+    verticalScroll.addView(horizontalScroll);
 
-    // safety (prevents future crash)
-    if (verticalTableView.getParent() != null) {
-        ((ViewGroup) verticalTableView.getParent())
+    card.addView(verticalScroll);
+
+    // ================= HORIZONTAL SEEKBAR =================
+    SeekBar horizontalSeek = new SeekBar(context);
+    horizontalSeek.setMax(1000);
+
+    horizontalSeek.setOnSeekBarChangeListener(
+            new SeekBar.OnSeekBarChangeListener() {
+
+        public void onProgressChanged(
+                SeekBar seekBar,int progress,boolean fromUser){
+
+            int maxScroll =
+                    horizontalScroll.getChildAt(0).getWidth()
+                            - horizontalScroll.getWidth();
+
+            int scrollX=(int)(maxScroll*(progress/1000f));
+            horizontalScroll.scrollTo(scrollX,0);
+        }
+
+        public void onStartTrackingTouch(SeekBar s){}
+        public void onStopTrackingTouch(SeekBar s){}
+    });
+
+    // ================= VERTICAL SEEKBAR =================
+    SeekBar verticalSeek = new SeekBar(context);
+    verticalSeek.setRotation(270f);
+    verticalSeek.setMax(1000);
+
+    verticalSeek.setOnSeekBarChangeListener(
+            new SeekBar.OnSeekBarChangeListener() {
+
+        public void onProgressChanged(
+                SeekBar seekBar,int progress,boolean fromUser){
+
+            int maxScroll =
+                    verticalScroll.getChildAt(0).getHeight()
+                            - verticalScroll.getHeight();
+
+            int scrollY=(int)(maxScroll*(progress/1000f));
+            verticalScroll.scrollTo(0,scrollY);
+        }
+
+        public void onStartTrackingTouch(SeekBar s){}
+        public void onStopTrackingTouch(SeekBar s){}
+    });
+
+    // ================= FINAL WRAPPER =================
+    LinearLayout mainWrapper = new LinearLayout(context);
+    mainWrapper.setOrientation(LinearLayout.VERTICAL);
+    mainWrapper.addView(card);
+    mainWrapper.addView(horizontalSeek);
+
+    FrameLayout frame = new FrameLayout(context);
+    frame.addView(mainWrapper);
+
+    FrameLayout.LayoutParams vp =
+            new FrameLayout.LayoutParams(
+                    80,
+                    FrameLayout.LayoutParams.MATCH_PARENT);
+
+    vp.gravity = Gravity.END;
+
+    frame.addView(verticalSeek,vp);
+
+    verticalTableView = frame;
+
+    if (verticalTableView.getParent()!=null) {
+        ((ViewGroup)verticalTableView.getParent())
                 .removeView(verticalTableView);
     }
 
     tableContainer.addView(verticalTableView);
 
-    if (horizontalTableView != null)
+    if(horizontalTableView!=null)
         horizontalTableView.setVisibility(View.GONE);
 }
 
