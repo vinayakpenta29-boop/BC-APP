@@ -1691,6 +1691,8 @@ private void renderMainTable(Bc bc) {
 
         if (maxScroll <= 0) return;
 
+        int scrollX = horizontalScroll.getScrollX();
+
         int progress =
             (int)((scrollX / (float) maxScroll) * 1000);
 
