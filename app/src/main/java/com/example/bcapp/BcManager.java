@@ -1133,28 +1133,64 @@ private void showBcListTable() {
 }
 
 private void captureAndSaveTable(View view, String bcName) {
-    try {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
 
+    try {
+
+        // 🔥 Get actual content inside ScrollView
+        View content = ((ViewGroup) view).getChildAt(0);
+
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(
+                view.getWidth(),
+                View.MeasureSpec.EXACTLY);
+
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(
+                0,
+                View.MeasureSpec.UNSPECIFIED);
+
+        // Measure full height
+        content.measure(widthSpec, heightSpec);
+
+        int totalHeight = content.getMeasuredHeight();
+        int totalWidth = content.getMeasuredWidth();
+
+        content.layout(0, 0, totalWidth, totalHeight);
+
+        // Create FULL bitmap
+        Bitmap bitmap = Bitmap.createBitmap(
+                totalWidth,
+                totalHeight,
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        content.draw(canvas);
+
+        // Save image
         String filename = "BC_" + bcName + ".png";
 
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
-        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/BCApp");
+        values.put(MediaStore.Images.Media.RELATIVE_PATH,
+                Environment.DIRECTORY_PICTURES + "/BCApp");
 
-        Uri uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        OutputStream out = context.getContentResolver().openOutputStream(uri);
+        Uri uri = context.getContentResolver()
+                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        OutputStream out =
+                context.getContentResolver().openOutputStream(uri);
+
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
         out.close();
 
-        Toast.makeText(context, "Image Saved to Gallery", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context,
+                "Full Table Saved ✅",
+                Toast.LENGTH_SHORT).show();
 
     } catch (Exception e) {
         e.printStackTrace();
-        Toast.makeText(context, "Failed to save image", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context,
+                "Failed to save image",
+                Toast.LENGTH_SHORT).show();
     }
 }
 
