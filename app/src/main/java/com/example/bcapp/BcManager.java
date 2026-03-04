@@ -1066,7 +1066,7 @@ private void showBcListTable() {
 
         // ========== HEADER ==========
         TableRow header = new TableRow(context);
-        
+        header.setBackgroundResource(R.drawable.table_header_border);
         addCompactHeaderCell(header, "Sr");
         addCompactHeaderCell(header, "Date");
         addCompactHeaderCell(header, "Installment\nAmount");
