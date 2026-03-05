@@ -1803,8 +1803,13 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
     scrollWrap.setNestedScrollingEnabled(false);
     scrollWrap.setHorizontalScrollBarEnabled(true);
 
-    scrollWrap.addView(table);
+    ScrollView verticalScroll = new ScrollView(context);
+    verticalScroll.setFillViewport(true);
+    verticalScroll.setNestedScrollingEnabled(false); // important
 
+    verticalScroll.addView(table);
+
+    scrollWrap.addView(verticalScroll);
     card.addView(scrollWrap);
     verticalTableView = card;
 
