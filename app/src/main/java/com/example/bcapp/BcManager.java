@@ -1610,22 +1610,20 @@ private void renderMainTable(Bc bc) {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
     );
-    cardParams.setMargins(16, 12, 16, 24);
+    cardParams.setMargins(8, 8, 8, 16);
     card.setLayoutParams(cardParams);
 
-    HorizontalScrollView scrollWrap = new HorizontalScrollView(context);
+    HorizontalScrollView horizontalScroll = new HorizontalScrollView(context);
+    horizontalScroll.setHorizontalScrollBarEnabled(true);
+    horizontalScroll.setFillViewport(true);
 
-    scrollWrap.setHorizontalScrollBarEnabled(true);
-    scrollWrap.setFillViewport(true);
-    scrollWrap.setSmoothScrollingEnabled(true);
-    scrollWrap.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+    ScrollView verticalScroll = new ScrollView(context);
+    verticalScroll.setFillViewport(true);
 
-    // ⭐ makes scrolling soft
-    scrollWrap.setNestedScrollingEnabled(false);
+    verticalScroll.addView(table);
+    horizontalScroll.addView(verticalScroll);
 
-    scrollWrap.addView(table);
-
-    card.addView(scrollWrap);
+    card.addView(horizontalScroll);
 
     horizontalTableView = card;   // ⭐ SAVE VIEW
     tableContainer.addView(horizontalTableView);
