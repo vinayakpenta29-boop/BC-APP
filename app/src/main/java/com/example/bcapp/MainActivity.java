@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         /* ✅ STEP 3 — BIND VIEWS */
         swipeRefresh = findViewById(R.id.swipeRefresh);
+        swipeRefresh.setEnabled(false);
 
         swipeRefresh.setColorSchemeResources(
                 android.R.color.holo_blue_dark,
