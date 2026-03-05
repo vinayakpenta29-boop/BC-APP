@@ -54,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Thread.setDefaultUncaughtExceptionHandler(
+                    new CrashHandler(this)
+            );
         setContentView(R.layout.activity_main);
 
         /* ✅ STEP 1 — FIREBASE INIT */
