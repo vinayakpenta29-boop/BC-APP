@@ -149,6 +149,8 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="#990F4B"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="6dp"/>
 
                 <androidx.appcompat.widget.SwitchCompat    
