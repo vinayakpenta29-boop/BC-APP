@@ -55,7 +55,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.SeekBar;
 import android.widget.HorizontalScrollView;  // ← ADD THIS LINE
 import android.widget.ScrollView;
 import android.widget.FrameLayout;
@@ -124,12 +123,6 @@ private final ImageView imgLock;
 private Animation shakeAnimation;
 private int lockNormalColor;
 private int lockWarningColor;
-
-private HorizontalScrollView horizontalScroll;
-private ScrollView verticalScroll;
-
-private SeekBar horizontalSeekBar;
-private SeekBar verticalSeekBar;
     
 private final Spinner spinnerBc, spinnerMember;  
 private final EditText editPayDate, editPayAmount;  
@@ -203,13 +196,6 @@ public BcManager(AppCompatActivity activity,
     this.buttonAdd = buttonAdd;  
     this.tableContainer = tableContainer;  
     this.switchVertical = activity.findViewById(R.id.switchVertical);
-    // ✅ TABLE SCROLL VIEWS
-    horizontalScroll = activity.findViewById(R.id.horizontalScroll);
-    verticalScroll = activity.findViewById(R.id.verticalScroll);
-
-    // ✅ SEEK BARS
-    horizontalSeekBar = activity.findViewById(R.id.horizontalSeekBar);
-    verticalSeekBar = activity.findViewById(R.id.verticalSeekBar);
     this.btnUndo = btnUndo;
     this.btnRedo = btnRedo;
     this.imgLock = imgLock;
@@ -274,7 +260,6 @@ public void init() {
 
     // ⭐ AUTO RESTORE FROM CLOUD
     startRealtimeSync();
-    setupSeekBarSync();
 }  
 
 private void updateUndoRedoButtons() {
@@ -656,32 +641,6 @@ private interface AfterTakenCallback {
     void onValue(double amount);  
     void onCancelled();  
 }  
-
-private void setupSeekBarSync() {
-
-    if(horizontalScroll == null || horizontalSeekBar == null) return;
-
-    horizontalSeekBar.setOnSeekBarChangeListener(
-            new SeekBar.OnSeekBarChangeListener() {
-
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-            if(!fromUser) return;
-
-            int maxScroll =
-                    horizontalScroll.getChildAt(0).getWidth()
-                    - horizontalScroll.getWidth();
-
-            int scrollX = (int)((progress / 1000f) * maxScroll);
-
-            horizontalScroll.scrollTo(scrollX, 0);
-        }
-
-        @Override public void onStartTrackingTouch(SeekBar seekBar){}
-        @Override public void onStopTrackingTouch(SeekBar seekBar){}
-    });
-}
 
 /* ---------- Create BC dialog ---------- */  
 
@@ -1654,160 +1613,40 @@ private void renderMainTable(Bc bc) {
     cardParams.setMargins(16, 12, 16, 24);
     card.setLayoutParams(cardParams);
 
-    // ===== MAIN CONTAINER =====
-    LinearLayout mainWrapper = new LinearLayout(context);
-    mainWrapper.setOrientation(LinearLayout.VERTICAL);
+    HorizontalScrollView scrollWrap = new HorizontalScrollView(context);
 
-    // ============================
-    // VERTICAL SCROLL WRAPPER
-    // ============================
+    scrollWrap.setHorizontalScrollBarEnabled(true);
+    scrollWrap.setFillViewport(true);
+    scrollWrap.setSmoothScrollingEnabled(true);
+    scrollWrap.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
 
-    verticalScroll = new ScrollView(context);
-    verticalScroll.setFillViewport(true);
-    verticalScroll.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+    // ⭐ makes scrolling soft
+    scrollWrap.setNestedScrollingEnabled(false);
 
-    // ============================
-    // HORIZONTAL SCROLL WRAPPER
-    // ============================
+    scrollWrap.addView(table);
 
-    horizontalScroll = new HorizontalScrollView(context);
-    horizontalScroll.setFillViewport(true);
-    horizontalScroll.setSmoothScrollingEnabled(true);
-    horizontalScroll.setHorizontalScrollBarEnabled(false);
-    horizontalScroll.setNestedScrollingEnabled(false);
+    card.addView(scrollWrap);
 
-    horizontalScroll.addView(table);
-    
-    horizontalScroll.getViewTreeObserver()
-            .addOnScrollChangedListener(() -> {
-
-        if (horizontalSeekBar == null) return;
-
-        View child = horizontalScroll.getChildAt(0);
-        if (child == null) return;
-
-        int maxScroll =
-                child.getWidth() - horizontalScroll.getWidth();
-
-        if (maxScroll <= 0) return;
-
-        int scrollX = horizontalScroll.getScrollX();
-
-        int progress =
-            (int)((scrollX / (float) maxScroll) * 1000);
-
-        horizontalSeekBar.setProgress(progress);
-}    );
-    
-     verticalScroll.addView(horizontalScroll);
-
-     card.addView(verticalScroll);
-
-    // ============================
-    // HORIZONTAL SEEKBAR
-    // ============================
-
-    horizontalSeekBar = new SeekBar(context);
-    horizontalSeekBar.setMax(1000);
-
-    horizontalSeekBar.setOnSeekBarChangeListener(
-    new SeekBar.OnSeekBarChangeListener() {
-
-        @Override
-        public void onProgressChanged(
-                SeekBar seekBar, int progress, boolean fromUser) {
-
-            if (!fromUser || horizontalScroll == null) return;
-
-            horizontalScroll.post(() -> {
-
-                View child = horizontalScroll.getChildAt(0);
-                if (child == null) return;
-
-                int maxScroll =
-                        child.getWidth() - horizontalScroll.getWidth();
-
-                if (maxScroll <= 0) return;
-
-                int scrollX =
-                        (int)(maxScroll * (progress / 1000f));
-
-                horizontalScroll.scrollTo(scrollX, 0);
-            });
-        }
-
-        public void onStartTrackingTouch(SeekBar seekBar){}
-        public void onStopTrackingTouch(SeekBar seekBar){}
-    });
-
-    mainWrapper.addView(card);
-    mainWrapper.addView(horizontalSeekBar);
-
-    // ============================
-    // VERTICAL SEEKBAR (RIGHT SIDE)
-    // ============================
-
-    verticalSeekBar = new SeekBar(context);
-    verticalSeekBar.setRotation(270f); // vertical look
-    verticalSeekBar.setMax(1000);
-
-    verticalSeekBar.setOnSeekBarChangeListener(
-    new SeekBar.OnSeekBarChangeListener() {
-
-        @Override
-        public void onProgressChanged(
-                SeekBar seekBar, int progress, boolean fromUser) {
-
-            if (verticalScroll == null) return;
-
-            int maxScroll =
-                    verticalScroll.getChildAt(0).getHeight()
-                            - verticalScroll.getHeight();
-
-            int scrollY = (int)(maxScroll * (progress / 1000f));
-
-            verticalScroll.scrollTo(0, scrollY);
-        }
-
-        public void onStartTrackingTouch(SeekBar seekBar){}
-        public void onStopTrackingTouch(SeekBar seekBar){}
-    });
-
-    // right side layout
-    FrameLayout frame = new FrameLayout(context);
-
-    frame.addView(mainWrapper);
-
-    FrameLayout.LayoutParams vp =
-            new FrameLayout.LayoutParams(
-                    80,
-                    FrameLayout.LayoutParams.MATCH_PARENT);
-
-    vp.gravity = Gravity.END;
-
-    frame.addView(verticalSeekBar, vp);
-
-    horizontalTableView = frame;
-
+    horizontalTableView = card;   // ⭐ SAVE VIEW
     tableContainer.addView(horizontalTableView);
-}
+    }
 
 private void renderVerticalSelfWeeklyTable(Bc bc) {
-
+    
     if (verticalTableView != null) {
         verticalTableView.setVisibility(View.VISIBLE);
-        if (horizontalTableView != null)
-            horizontalTableView.setVisibility(View.GONE);
+        horizontalTableView.setVisibility(View.GONE);
         return;
     }
 
-    // ================= TABLE =================
+    // ===== TABLE =====
     TableLayout table = new TableLayout(context);
     table.setPadding(8,8,8,8);
-    table.setStretchAllColumns(false);
+    table.setBackgroundColor(Color.TRANSPARENT);
     table.setBackgroundResource(R.drawable.bg_table_card);
+    table.setStretchAllColumns(false);
 
-    // ================= HEADER =================
+    // ===== HEADER =====
     TableRow header = new TableRow(context);
     header.setElevation(6f);
 
@@ -1830,7 +1669,7 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
         currentIndex=(int)(diffDays/7);
     }
 
-    // ================= ROWS =================
+    // ===== ROWS =====
     for(int i=0;i<bc.months;i++){
 
         TableRow row = new TableRow(context);
@@ -1857,7 +1696,7 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
 
         addCell(row,"₹"+String.format("%.0f",expected),false);
 
-        // ===== STATUS CELL =====
+        // ===== STATUS CELL (SAME STYLE AS MAIN TABLE) =====
         LinearLayout cellContainer = new LinearLayout(context);
         cellContainer.setOrientation(LinearLayout.VERTICAL);
         cellContainer.setGravity(Gravity.CENTER);
@@ -1881,12 +1720,15 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
                         R.drawable.table_cell_border_partialy_paid);
             }
 
+            // ✅ tick
             TextView tick=new TextView(context);
             tick.setText("✅");
             tick.setTextSize(18f);
+            tick.setTextColor(Color.parseColor("#2E7D32"));
             tick.setGravity(Gravity.CENTER);
             cellContainer.addView(tick);
 
+            // amount badge
             TextView badge=new TextView(context);
             badge.setText("₹"+String.format("%.0f",paidAmt));
             badge.setTextSize(8f);
@@ -1894,10 +1736,12 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
             badge.setPadding(10,4,10,4);
 
             if(paidAmt<expected){
-                badge.setBackgroundResource(R.drawable.amount_badge_red);
+                badge.setBackgroundResource(
+                        R.drawable.amount_badge_red);
                 badge.setTextColor(Color.parseColor("#D32F2F"));
             }else{
-                badge.setBackgroundResource(R.drawable.amount_badge_green);
+                badge.setBackgroundResource(
+                        R.drawable.amount_badge_green);
                 badge.setTextColor(Color.WHITE);
             }
 
@@ -1912,6 +1756,7 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
 
         }else{
 
+            // ☐ unpaid
             TextView box=new TextView(context);
             box.setText("☐");
             box.setTextSize(18f);
@@ -1919,6 +1764,7 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
             cellContainer.addView(box);
         }
 
+        // 🔴 overdue highlight (same logic)
         if(i<=currentIndex && paidAmt<expected){
             cellContainer.setBackgroundResource(
                     R.drawable.table_cell_border_overdue);
@@ -1929,110 +1775,50 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.MATCH_PARENT);
         lp.setMargins(1,1,1,1);
-
         cellContainer.setLayoutParams(lp);
+
         row.addView(cellContainer);
 
         table.addView(row);
     }
 
-    // ================= CARD =================
+    // ===== CARD WRAPPER (SAME AS MAIN TABLE) =====
     CardView card = new CardView(context);
     card.setRadius(28f);
     card.setCardElevation(14f);
     card.setUseCompatPadding(true);
+    card.setBackgroundColor(Color.TRANSPARENT);
     card.setBackgroundResource(R.drawable.bg_table_card);
 
-    // ================= SCROLL SYSTEM =================
+    LinearLayout.LayoutParams cardParams =
+            new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+    cardParams.setMargins(16,12,16,24);
+    card.setLayoutParams(cardParams);
 
-    ScrollView verticalScroll = new ScrollView(context);
-    verticalScroll.setFillViewport(true);
+    HorizontalScrollView scrollWrap =
+        new HorizontalScrollView(context);
 
-    HorizontalScrollView horizontalScroll =
-            new HorizontalScrollView(context);
+    scrollWrap.setFillViewport(true);
+    scrollWrap.setSmoothScrollingEnabled(true);
+    scrollWrap.setNestedScrollingEnabled(false);
+    scrollWrap.setHorizontalScrollBarEnabled(true);
 
-    horizontalScroll.setFillViewport(true);
-    horizontalScroll.setHorizontalScrollBarEnabled(false);
-    horizontalScroll.setNestedScrollingEnabled(false);
+    scrollWrap.addView(table);
 
-    horizontalScroll.addView(table);
-    verticalScroll.addView(horizontalScroll);
+    card.addView(scrollWrap);
+    verticalTableView = card;
 
-    card.addView(verticalScroll);
-
-    // ================= HORIZONTAL SEEKBAR =================
-    SeekBar horizontalSeek = new SeekBar(context);
-    horizontalSeek.setMax(1000);
-
-    horizontalSeek.setOnSeekBarChangeListener(
-            new SeekBar.OnSeekBarChangeListener() {
-
-        public void onProgressChanged(
-                SeekBar seekBar,int progress,boolean fromUser){
-
-            int maxScroll =
-                    horizontalScroll.getChildAt(0).getWidth()
-                            - horizontalScroll.getWidth();
-
-            int scrollX=(int)(maxScroll*(progress/1000f));
-            horizontalScroll.scrollTo(scrollX,0);
-        }
-
-        public void onStartTrackingTouch(SeekBar s){}
-        public void onStopTrackingTouch(SeekBar s){}
-    });
-
-    // ================= VERTICAL SEEKBAR =================
-    SeekBar verticalSeek = new SeekBar(context);
-    verticalSeek.setRotation(270f);
-    verticalSeek.setMax(1000);
-
-    verticalSeek.setOnSeekBarChangeListener(
-            new SeekBar.OnSeekBarChangeListener() {
-
-        public void onProgressChanged(
-                SeekBar seekBar,int progress,boolean fromUser){
-
-            int maxScroll =
-                    verticalScroll.getChildAt(0).getHeight()
-                            - verticalScroll.getHeight();
-
-            int scrollY=(int)(maxScroll*(progress/1000f));
-            verticalScroll.scrollTo(0,scrollY);
-        }
-
-        public void onStartTrackingTouch(SeekBar s){}
-        public void onStopTrackingTouch(SeekBar s){}
-    });
-
-    // ================= FINAL WRAPPER =================
-    LinearLayout mainWrapper = new LinearLayout(context);
-    mainWrapper.setOrientation(LinearLayout.VERTICAL);
-    mainWrapper.addView(card);
-    mainWrapper.addView(horizontalSeek);
-
-    FrameLayout frame = new FrameLayout(context);
-    frame.addView(mainWrapper);
-
-    FrameLayout.LayoutParams vp =
-            new FrameLayout.LayoutParams(
-                    80,
-                    FrameLayout.LayoutParams.MATCH_PARENT);
-
-    vp.gravity = Gravity.END;
-
-    frame.addView(verticalSeek,vp);
-
-    verticalTableView = frame;
-
-    if (verticalTableView.getParent()!=null) {
-        ((ViewGroup)verticalTableView.getParent())
+    // safety (prevents future crash)
+    if (verticalTableView.getParent() != null) {
+        ((ViewGroup) verticalTableView.getParent())
                 .removeView(verticalTableView);
     }
 
     tableContainer.addView(verticalTableView);
 
-    if(horizontalTableView!=null)
+    if (horizontalTableView != null)
         horizontalTableView.setVisibility(View.GONE);
 }
 
