@@ -11,7 +11,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
@@ -119,7 +118,5 @@ public class MainActivity extends AppCompatActivity {
 
             bcManager.restoreFromFirebase();
 
-        
-        });
     }
 }
