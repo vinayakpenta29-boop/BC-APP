@@ -24,8 +24,6 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    SwipeRefreshLayout swipeRefresh;
-
     // UI
     TextView menuButton;
     Spinner spinnerBc, spinnerMember;
@@ -81,16 +79,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("FIREBASE", "❌ " + e.getMessage()));
 
         /* ✅ STEP 3 — BIND VIEWS */
-        swipeRefresh = findViewById(R.id.swipeRefresh);
         
-
-        swipeRefresh.setColorSchemeResources(
-                android.R.color.holo_blue_dark,
-                android.R.color.holo_green_dark,
-                android.R.color.holo_red_dark
-        );
-        swipeRefresh.setEnabled(false);
-
         menuButton = findViewById(R.id.menuButton);
         spinnerBc = findViewById(R.id.spinnerBc);
         spinnerMember = findViewById(R.id.spinnerMember);
@@ -127,12 +116,10 @@ public class MainActivity extends AppCompatActivity {
         bcManager.startRealtimeSync();
 
         /* ✅ OPTIONAL MANUAL REFRESH */
-        swipeRefresh.setOnRefreshListener(() -> {
 
             bcManager.restoreFromFirebase();
 
-            swipeRefresh.postDelayed(() ->
-                    swipeRefresh.setRefreshing(false), 1000);
+        
         });
     }
 }
