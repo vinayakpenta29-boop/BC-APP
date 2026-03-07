@@ -1673,8 +1673,8 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
         TableRow row = new TableRow(context);
         row.setBackgroundColor(
                 i%2==0 ?
-                        Color.parseColor("#F7F9FC"):
-                        Color.WHITE
+                        R.drawable.bg_table_card:
+                        R.drawable.bg_table_card
         );
 
         addCell(row,String.valueOf(i+1),false);
