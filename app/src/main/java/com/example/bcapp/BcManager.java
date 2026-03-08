@@ -1697,7 +1697,7 @@ private void renderVerticalSelfWeeklyTable(Bc bc) {
     for(int i=0;i<bc.months;i++){
 
         TableRow row = new TableRow(context);
-        row.setBackgroundColor(
+        row.setBackgroundResource(
                 i%2==0 ?
                         R.drawable.bg_table_card:
                         R.drawable.bg_table_card
