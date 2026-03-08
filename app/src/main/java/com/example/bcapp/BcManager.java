@@ -5,6 +5,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -214,9 +216,18 @@ public BcManager(AppCompatActivity activity,
     // Show correct lock state at startup
     updateLockIcon();
 
-    firebaseRef =
-        FirebaseDatabase.getInstance()
-                .getReference("bc_data");
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+    if (user != null) {
+
+        String userId = user.getUid();
+
+        firebaseRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(userId)
+                .child("bc_data");
+
+    }
 }
 
 private void updateLockIcon() {
