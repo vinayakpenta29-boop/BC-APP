@@ -37,6 +37,11 @@
             android:name=".LoginActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
+        
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
 
         <!-- 🔐 APP LOCK SCREEN -->
         <activity
