@@ -15,6 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import android.content.Intent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference testRef;
 
+    FirebaseAuth auth;
+    FirebaseUser currentUser;
+    String userId;
+
     // Date Formats
     final SimpleDateFormat isoFormat =
             new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -56,6 +63,17 @@ public class MainActivity extends AppCompatActivity {
             );
         setContentView(R.layout.activity_main);
 
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
+
+        if (currentUser == null) {
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
+            return;
+       }
+
+        userId = currentUser.getUid();
+
         /* ✅ STEP 1 — FIREBASE INIT */
         FirebaseApp.initializeApp(this);
 
@@ -69,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /* ✅ STEP 2 — CONNECTION TEST */
-        testRef = database.getReference("test");
+        testRef = database.getReference("users")
+                .child(userId)
+                .child("test");
 
         testRef.setValue("BC App Connected")
                 .addOnSuccessListener(unused ->
