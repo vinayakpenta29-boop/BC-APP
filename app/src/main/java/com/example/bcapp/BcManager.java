@@ -498,6 +498,7 @@ private void setupMenu() {
         popup.getMenu().add(0, 7, 6, "Edit");
         popup.getMenu().add(0, 8, 7, "Edit Mode");
         popup.getMenu().add(0, 9, 8, "App Lock 🔒");
+        popup.getMenu().add(0, 10, 9, "Settings");
 
         popup.setOnMenuItemClickListener(item -> {
 
@@ -580,6 +581,20 @@ private boolean onMenuItemClick(@NonNull MenuItem item) {
         } catch (Exception e) {
 
             showCrashDialog(e);   // ⭐ SHOW CRASH DETAILS
+        }
+
+        return true;
+    }
+    else if (item.getItemId() == 10) {
+
+        try {
+
+            Intent intent = new Intent(context, SettingsActivity.class);
+            context.startActivity(intent);
+
+        } catch (Exception e) {
+
+            showCrashDialog(e);
         }
 
         return true;
