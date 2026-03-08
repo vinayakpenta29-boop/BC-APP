@@ -32,6 +32,12 @@
 
         </activity>
 
+        <!-- 🔐 LOGIN SCREEN -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
         <!-- 🔐 APP LOCK SCREEN -->
         <activity
             android:name=".LockActivity"
