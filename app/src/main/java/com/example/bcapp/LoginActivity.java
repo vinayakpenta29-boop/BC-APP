@@ -56,15 +56,31 @@ public class LoginActivity extends AppCompatActivity {
 
                     if (task.isSuccessful()) {
 
-                        Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
 
-                        // Open MainActivity
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
 
                     } else {
 
-                        Toast.makeText(this, "Login Failed", Toast.LENGTH_LONG).show();
+                        // If login fails, create new account
+                        auth.createUserWithEmailAndPassword(email, password)
+                                .addOnCompleteListener(task2 -> {
+
+                                    if (task2.isSuccessful()) {
+
+                                        Toast.makeText(LoginActivity.this, "Account Created & Logged In", Toast.LENGTH_LONG).show();
+
+                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                        finish();
+
+                                    } else {
+
+                                        Toast.makeText(LoginActivity.this, "Login Failed: " + task2.getException().getMessage(), Toast.LENGTH_LONG).show();
+
+                                    }
+
+                                });
 
                     }
 
