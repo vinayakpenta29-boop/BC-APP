@@ -352,7 +352,9 @@ private void saveAllToRoom() {
         // ✅ Save locally
         bcDao.deleteAll();
 
-        for (Bc bc : bcData) {
+        List<Bc> safeList = new ArrayList<>(bcData);
+
+        for (Bc bc : safeList) {
 
             BcEntity e = new BcEntity(
                     bc.name,
@@ -445,15 +447,15 @@ public void startRealtimeSync() {
         @Override
         public void onDataChange(DataSnapshot snapshot) {
 
-            bcData.clear();
+            List<Bc> newList = new ArrayList<>();
 
             for (DataSnapshot child : snapshot.getChildren()) {
-
                 Bc bc = child.getValue(Bc.class);
+                if (bc != null) newList.add(bc);
+            }
 
-                if (bc != null) {
-                    bcData.add(bc);
-                }
+            bcData.clear();
+            bcData.addAll(newList);
             }
 
             activity.runOnUiThread(() -> {
