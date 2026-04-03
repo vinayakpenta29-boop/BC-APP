@@ -381,7 +381,14 @@ private void saveAllToRoom() {
         // ⭐ Upload to Firebase on UI thread
         activity.runOnUiThread(() -> {
 
-            firebaseRef.setValue(bcData)
+            for (Bc bc : safeList) {
+
+                if (bc.id == null) {
+                    bc.id = String.valueOf(System.currentTimeMillis());
+                }
+
+                firebaseRef.child(bc.id).setValue(bc);
+            }
                     .addOnSuccessListener(unused ->
                             Log.d("FIREBASE", "✅ BC data synced"))
                     .addOnFailureListener(e ->
@@ -447,7 +454,7 @@ public void startRealtimeSync() {
         @Override
         public void onDataChange(DataSnapshot snapshot) {
 
-            // ✅ Step 1: Create new list
+            // ✅ Step 1: Create completely new list (background thread safe)
             List<Bc> newList = new ArrayList<>();
 
             for (DataSnapshot child : snapshot.getChildren()) {
@@ -457,24 +464,28 @@ public void startRealtimeSync() {
                 }
             }
 
-            // ✅ Step 2: Update on UI thread safely
+            // ✅ Step 2: Switch to UI thread safely
             activity.runOnUiThread(() -> {
+
+                // ✅ IMPORTANT: Use temporary copy to avoid conflicts
+                List<Bc> safeCopy = new ArrayList<>(newList);
 
                 // Replace data safely
                 bcData.clear();
-                bcData.addAll(newList);
+                bcData.addAll(safeCopy);
 
-                // Update UI
+                // ✅ Update Spinner safely
                 bcAdapter.clear();
                 bcAdapter.add("Select BC");
 
-                for (Bc bc : bcData) {
+                for (Bc bc : safeCopy) {
                     bcAdapter.add(bc.name);
                 }
 
                 bcAdapter.notifyDataSetChanged();
                 spinnerBc.setSelection(0);
 
+                // ✅ Update members AFTER data update
                 updateMembersDropdown();
             });
 
@@ -483,7 +494,7 @@ public void startRealtimeSync() {
 
         @Override
         public void onCancelled(DatabaseError error) {
-            Log.e("FIREBASE", error.getMessage());
+            Log.e("FIREBASE", "❌ " + error.getMessage());
         }
     });
 }
