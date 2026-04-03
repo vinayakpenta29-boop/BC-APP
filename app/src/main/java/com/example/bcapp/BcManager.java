@@ -440,26 +440,31 @@ public void restoreFromFirebase() {
 // ⭐ REALTIME FIREBASE SYNC
 public void startRealtimeSync() {
 
-    firebaseRef.keepSynced(true); // offline cache + auto restore
+    firebaseRef.keepSynced(true);
 
     firebaseRef.addValueEventListener(new ValueEventListener() {
 
         @Override
         public void onDataChange(DataSnapshot snapshot) {
 
+            // ✅ Step 1: Create new list
             List<Bc> newList = new ArrayList<>();
 
             for (DataSnapshot child : snapshot.getChildren()) {
                 Bc bc = child.getValue(Bc.class);
-                if (bc != null) newList.add(bc);
+                if (bc != null) {
+                    newList.add(bc);
+                }
             }
 
-            bcData.clear();
-            bcData.addAll(newList);
-            }
-
+            // ✅ Step 2: Update on UI thread safely
             activity.runOnUiThread(() -> {
 
+                // Replace data safely
+                bcData.clear();
+                bcData.addAll(newList);
+
+                // Update UI
                 bcAdapter.clear();
                 bcAdapter.add("Select BC");
 
