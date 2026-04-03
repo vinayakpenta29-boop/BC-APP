@@ -349,17 +349,20 @@ private void saveAllToRoom() {
 
     new Thread(() -> {
 
-        // ✅ Step 1: Create safe copy (thread-safe)
+        // ✅ Step 1: Thread-safe copy
         List<Bc> safeList;
         synchronized (bcData) {
             safeList = new ArrayList<>(bcData);
         }
 
-        // ✅ Step 2: Save locally
+        // ✅ Step 2: Save locally (Room)
         bcDao.deleteAll();
 
         for (Bc bc : safeList) {
 
+            if (bc == null) continue; // extra safety
+
+            // Generate ID if missing
             if (bc.id == null) {
                 bc.id = String.valueOf(System.currentTimeMillis());
             }
@@ -373,26 +376,36 @@ private void saveAllToRoom() {
 
             e.afterTakenAmount = bc.afterTakenAmount;
             e.isWeekly = bc.isWeekly;
-            e.members = new ArrayList<>(bc.members);
-            e.amounts = new ArrayList<>(bc.amounts);
-            e.paid = new HashMap<>(bc.paid);
-            e.paidAmount = new HashMap<>(bc.paidAmount);
-            e.payments = new ArrayList<>(bc.payments);
-            e.paidBcAmount = new HashMap<>(bc.paidBcAmount);
+
+            // ✅ Null safety (VERY IMPORTANT)
+            e.members = (bc.members != null) ? new ArrayList<>(bc.members) : new ArrayList<>();
+            e.amounts = (bc.amounts != null) ? new ArrayList<>(bc.amounts) : new ArrayList<>();
+            e.paid = (bc.paid != null) ? new HashMap<>(bc.paid) : new HashMap<>();
+            e.paidAmount = (bc.paidAmount != null) ? new HashMap<>(bc.paidAmount) : new HashMap<>();
+            e.payments = (bc.payments != null) ? new ArrayList<>(bc.payments) : new ArrayList<>();
+            e.paidBcAmount = (bc.paidBcAmount != null) ? new HashMap<>(bc.paidBcAmount) : new HashMap<>();
+            e.receiveAmounts = (bc.receiveAmounts != null) ? new ArrayList<>(bc.receiveAmounts) : new ArrayList<>();
+
             e.isReceiveAmountFixed = bc.isReceiveAmountFixed;
-            e.receiveAmounts = new ArrayList<>(bc.receiveAmounts);
 
             bcDao.insert(e);
         }
 
-        // ✅ Step 3: Upload to Firebase (SAFE WAY)
+        // ✅ Step 3: Upload to Firebase (optimized)
         activity.runOnUiThread(() -> {
 
-            for (Bc bc : safeList) {
-                firebaseRef.child(bc.id).setValue(bc);
+            if (firebaseRef == null) {
+                Log.e("FIREBASE", "❌ firebaseRef is null (user not logged in)");
+                return;
             }
 
-            Log.d("FIREBASE", "✅ BC data synced");
+            // 🔥 BETTER: upload full list once (faster & safer)
+            firebaseRef.setValue(safeList)
+                    .addOnSuccessListener(unused ->
+                            Log.d("FIREBASE", "✅ BC data synced"))
+                    .addOnFailureListener(e ->
+                            Log.e("FIREBASE", "❌ Sync failed: " + e.getMessage()));
+
         });
 
     }).start();
