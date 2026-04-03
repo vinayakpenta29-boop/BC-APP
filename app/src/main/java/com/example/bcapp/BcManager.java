@@ -349,12 +349,20 @@ private void saveAllToRoom() {
 
     new Thread(() -> {
 
-        // ✅ Save locally
+        // ✅ Step 1: Create safe copy (thread-safe)
+        List<Bc> safeList;
+        synchronized (bcData) {
+            safeList = new ArrayList<>(bcData);
+        }
+
+        // ✅ Step 2: Save locally
         bcDao.deleteAll();
 
-        List<Bc> safeList = new ArrayList<>(bcData);
-
         for (Bc bc : safeList) {
+
+            if (bc.id == null) {
+                bc.id = String.valueOf(System.currentTimeMillis());
+            }
 
             BcEntity e = new BcEntity(
                     bc.name,
@@ -371,29 +379,20 @@ private void saveAllToRoom() {
             e.paidAmount = new HashMap<>(bc.paidAmount);
             e.payments = new ArrayList<>(bc.payments);
             e.paidBcAmount = new HashMap<>(bc.paidBcAmount);
-
             e.isReceiveAmountFixed = bc.isReceiveAmountFixed;
             e.receiveAmounts = new ArrayList<>(bc.receiveAmounts);
 
             bcDao.insert(e);
         }
 
-        // ⭐ Upload to Firebase on UI thread
+        // ✅ Step 3: Upload to Firebase (SAFE WAY)
         activity.runOnUiThread(() -> {
 
             for (Bc bc : safeList) {
-
-                if (bc.id == null) {
-                    bc.id = String.valueOf(System.currentTimeMillis());
-                }
-
                 firebaseRef.child(bc.id).setValue(bc);
             }
-                    .addOnSuccessListener(unused ->
-                            Log.d("FIREBASE", "✅ BC data synced"))
-                    .addOnFailureListener(e ->
-                            Log.e("FIREBASE", "❌ Sync failed: " + e.getMessage()));
 
+            Log.d("FIREBASE", "✅ BC data synced");
         });
 
     }).start();
@@ -454,7 +453,6 @@ public void startRealtimeSync() {
         @Override
         public void onDataChange(DataSnapshot snapshot) {
 
-            // ✅ Step 1: Create completely new list (background thread safe)
             List<Bc> newList = new ArrayList<>();
 
             for (DataSnapshot child : snapshot.getChildren()) {
@@ -464,28 +462,23 @@ public void startRealtimeSync() {
                 }
             }
 
-            // ✅ Step 2: Switch to UI thread safely
             activity.runOnUiThread(() -> {
 
-                // ✅ IMPORTANT: Use temporary copy to avoid conflicts
-                List<Bc> safeCopy = new ArrayList<>(newList);
+                synchronized (bcData) {
+                    bcData.clear();
+                    bcData.addAll(newList);
+                }
 
-                // Replace data safely
-                bcData.clear();
-                bcData.addAll(safeCopy);
-
-                // ✅ Update Spinner safely
                 bcAdapter.clear();
                 bcAdapter.add("Select BC");
 
-                for (Bc bc : safeCopy) {
+                for (Bc bc : newList) {
                     bcAdapter.add(bc.name);
                 }
 
                 bcAdapter.notifyDataSetChanged();
                 spinnerBc.setSelection(0);
 
-                // ✅ Update members AFTER data update
                 updateMembersDropdown();
             });
 
