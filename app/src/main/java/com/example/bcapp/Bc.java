@@ -133,7 +133,10 @@ public class Bc {
         List<PaymentEntry> list = new ArrayList<>();
         if (payments == null) return list;
 
-        for (PaymentEntry p : payments) {
+        // ✅ SAFE COPY
+        List<PaymentEntry> safePayments = new ArrayList<>(payments);
+
+        for (PaymentEntry p : safePayments) {
             if (p != null &&
                 member != null &&
                 member.equals(p.member) &&
@@ -150,7 +153,10 @@ public class Bc {
         double total = 0.0;
         if (payments == null || member == null) return total;
 
-        for (PaymentEntry p : payments) {
+        // ✅ SAFE COPY
+        List<PaymentEntry> safePayments = new ArrayList<>(payments);
+
+        for (PaymentEntry p : safePayments) {
             if (p != null && member.equals(p.member)) {
                 total += p.amount;
             }
@@ -163,7 +169,10 @@ public class Bc {
         double total = 0.0;
         if (amounts == null) return total;
 
-        for (double amt : amounts) {
+        // ✅ SAFE COPY
+        List<Double> safeAmounts = new ArrayList<>(amounts);
+
+        for (double amt : safeAmounts) {
             total += amt;
         }
         return total;
