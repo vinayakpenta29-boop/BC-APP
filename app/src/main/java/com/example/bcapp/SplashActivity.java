@@ -19,38 +19,25 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
 
             try {
-
                 Intent intent;
-
-                // 🔐 Check App Lock using Manager
-                if (AppLockManager.isLockEnabled(this)) {
-
-                    // Open Lock Screen
-                    intent = new Intent(
-                            SplashActivity.this,
-                            LockActivity.class
-                    );
-
-                } else {
-
-                    // Open App Normally
-                    intent = new Intent(
-                            SplashActivity.this,
-                            MainActivity.class
-                    );
+                // 1️⃣ Verify authentication status first
+                if (com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser() == null) {
+                    intent = new Intent(SplashActivity.this, LoginActivity.class);
+                } 
+                // 2️⃣ Verify application level access restrictions next
+                else if (AppLockManager.isLockEnabled(this)) {
+                   intent = new Intent(SplashActivity.this, LockActivity.class);
+                } 
+                // 3️⃣ Open workspace directly if authenticated and lock is disabled
+               else {
+                    intent = new Intent(SplashActivity.this, MainActivity.class);
                 }
 
                 startActivity(intent);
                 finish();
-
             } catch (Exception e) {
                 e.printStackTrace();
-
-                // fallback (never crash splash)
-                startActivity(new Intent(
-                        SplashActivity.this,
-                        MainActivity.class));
-
+                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
                 finish();
             }
 
