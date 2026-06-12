@@ -13,6 +13,7 @@ public class Bc {
 
     // ================= BASIC INFO =================
 
+    public String id;
     public String name;
     public int months;
     public String startDateIso; // "yyyy-MM-dd"
@@ -97,6 +98,7 @@ public class Bc {
 
     private void initializeDefaults() {
 
+        this.id = null;
         this.name = "";
         this.months = 0;
         this.startDateIso = "";
