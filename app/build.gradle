@@ -59,12 +59,12 @@ android {
 }
 
 dependencies {
-
     // ---------- AndroidX ----------
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.webkit:webkit:1.11.0'
     implementation 'com.google.android.material:material:1.11.0'
+    implementation "androidx.biometric:biometric:1.1.0"
 
     // ---------- Room Database ----------
     implementation "androidx.room:room-runtime:2.6.1"
@@ -73,19 +73,11 @@ dependencies {
 
     // ---------- Gson ----------
     implementation "com.google.code.gson:gson:2.10.1"
-    
-    // ---------- Kotlin ----------
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
 
-    // ✅ ---------- Firebase (BOM manages versions) ----------
+    // ✅ ---------- Firebase (BOM uniformly manages aligned versions) ----------
     implementation platform('com.google.firebase:firebase-bom:33.5.1')
-    implementation "androidx.biometric:biometric:1.1.0"
-    implementation 'com.google.firebase:firebase-auth:22.3.1'
-
-    // Realtime Database
+    implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
-
-    // Analytics (optional)
     implementation 'com.google.firebase:firebase-analytics'
 
     // ---------- Testing ----------
