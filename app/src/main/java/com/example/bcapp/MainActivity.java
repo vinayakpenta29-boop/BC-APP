@@ -131,9 +131,6 @@ public class MainActivity extends AppCompatActivity {
 
         bcManager.init();
 
-        /* ⭐ REALTIME SYNC STARTS HERE */
-        bcManager.startRealtimeSync();
-
         /* ✅ OPTIONAL MANUAL REFRESH */
 
             bcManager.restoreFromFirebase();
