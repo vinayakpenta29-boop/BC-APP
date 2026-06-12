@@ -149,6 +149,8 @@ private final BcDao bcDao;
 // 🔒 Global Edit Mode (true = can edit, false = view only)
 private boolean isEditModeEnabled = false;
 
+private java.util.concurrent.ExecutorService databaseExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
+
 // 🔒 Checks whether editing is allowed
 private boolean checkEditMode() {
     if (!isEditModeEnabled) {
@@ -344,71 +346,61 @@ private void loadFromRoomAndRefreshUi() {
     }).start();
 }
 
-
+// Rewrite your saveAllToRoom() method like this:
 private void saveAllToRoom() {
+    // Immediate thread-safe structural snapshot 
+    final List<Bc> safeList;
+    synchronized (bcData) {
+        safeList = new ArrayList<>(bcData);
+    }
 
-    new Thread(() -> {
+    databaseExecutor.execute(() -> {
+        try {
+            // Room transaction operations
+            bcDao.deleteAll();
 
-        // ✅ Step 1: Thread-safe copy
-        List<Bc> safeList;
-        synchronized (bcData) {
-            safeList = new ArrayList<>(bcData);
-        }
+            for (Bc bc : safeList) {
+                if (bc == null) continue;
 
-        // ✅ Step 2: Save locally (Room)
-        bcDao.deleteAll();
+                if (bc.id == null) {
+                    bc.id = String.valueOf(System.currentTimeMillis());
+                }
 
-        for (Bc bc : safeList) {
+                BcEntity e = new BcEntity(
+                        bc.name,
+                        bc.months,
+                        bc.startDateIso,
+                        bc.afterTaken
+                );
 
-            if (bc == null) continue; // extra safety
+                e.afterTakenAmount = bc.afterTakenAmount;
+                e.isWeekly = bc.isWeekly;
+                e.members = (bc.members != null) ? new ArrayList<>(bc.members) : new ArrayList<>();
+                e.amounts = (bc.amounts != null) ? new ArrayList<>(bc.amounts) : new ArrayList<>();
+                e.paid = (bc.paid != null) ? new HashMap<>(bc.paid) : new HashMap<>();
+                e.paidAmount = (bc.paidAmount != null) ? new HashMap<>(bc.paidAmount) : new HashMap<>();
+                e.payments = (bc.payments != null) ? new ArrayList<>(bc.payments) : new ArrayList<>();
+                e.paidBcAmount = (bc.paidBcAmount != null) ? new HashMap<>(bc.paidBcAmount) : new HashMap<>();
+                e.receiveAmounts = (bc.receiveAmounts != null) ? new ArrayList<>(bc.receiveAmounts) : new ArrayList<>();
+                e.isReceiveAmountFixed = bc.isReceiveAmountFixed;
 
-            // Generate ID if missing
-            if (bc.id == null) {
-                bc.id = String.valueOf(System.currentTimeMillis());
+                bcDao.insert(e);
             }
 
-            BcEntity e = new BcEntity(
-                    bc.name,
-                    bc.months,
-                    bc.startDateIso,
-                    bc.afterTaken
-            );
-
-            e.afterTakenAmount = bc.afterTakenAmount;
-            e.isWeekly = bc.isWeekly;
-
-            // ✅ Null safety (VERY IMPORTANT)
-            e.members = (bc.members != null) ? new ArrayList<>(bc.members) : new ArrayList<>();
-            e.amounts = (bc.amounts != null) ? new ArrayList<>(bc.amounts) : new ArrayList<>();
-            e.paid = (bc.paid != null) ? new HashMap<>(bc.paid) : new HashMap<>();
-            e.paidAmount = (bc.paidAmount != null) ? new HashMap<>(bc.paidAmount) : new HashMap<>();
-            e.payments = (bc.payments != null) ? new ArrayList<>(bc.payments) : new ArrayList<>();
-            e.paidBcAmount = (bc.paidBcAmount != null) ? new HashMap<>(bc.paidBcAmount) : new HashMap<>();
-            e.receiveAmounts = (bc.receiveAmounts != null) ? new ArrayList<>(bc.receiveAmounts) : new ArrayList<>();
-
-            e.isReceiveAmountFixed = bc.isReceiveAmountFixed;
-
-            bcDao.insert(e);
+            // Safe Main UI thread handoff for Firebase sync
+            activity.runOnUiThread(() -> {
+                if (firebaseRef == null) {
+                    Log.e("FIREBASE", "❌ firebaseRef is null (user not logged in)");
+                    return;
+                }
+                firebaseRef.setValue(safeList)
+                        .addOnSuccessListener(unused -> Log.d("FIREBASE", "✅ BC data synced"))
+                        .addOnFailureListener(err -> Log.e("FIREBASE", "❌ Sync failed: " + err.getMessage()));
+            });
+        } catch (Exception ex) {
+            Log.e("DATABASE_ERROR", "Error writing to database", ex);
         }
-
-        // ✅ Step 3: Upload to Firebase (optimized)
-        activity.runOnUiThread(() -> {
-
-            if (firebaseRef == null) {
-                Log.e("FIREBASE", "❌ firebaseRef is null (user not logged in)");
-                return;
-            }
-
-            // 🔥 BETTER: upload full list once (faster & safer)
-            firebaseRef.setValue(safeList)
-                    .addOnSuccessListener(unused ->
-                            Log.d("FIREBASE", "✅ BC data synced"))
-                    .addOnFailureListener(e ->
-                            Log.e("FIREBASE", "❌ Sync failed: " + e.getMessage()));
-
-        });
-
-    }).start();
+    });
 }
 
 public void restoreFromFirebase() {
@@ -1006,11 +998,16 @@ private void updateMembersDropdown() {
     memberAdapter.add("Select Member");  
     int index = spinnerBc.getSelectedItemPosition();  
     tableContainer.removeAllViews();
+    
+    // 🔥 FIX: Clear old global view representations to prevent cross-contamination
+    horizontalTableView = null;
+    verticalTableView = null;
+
     if (index <= 0 || index > bcData.size()) {  
         memberAdapter.notifyDataSetChanged();  
         return;  
     }  
-    Bc bc = bcData.get(index -1);  
+    Bc bc = bcData.get(index - 1);  
     memberAdapter.addAll(bc.members);  
     memberAdapter.notifyDataSetChanged();  
     spinnerMember.setSelection(0);  
@@ -1019,7 +1016,7 @@ private void updateMembersDropdown() {
     } catch (Exception e) {
         showCrashDialog(e);
     }  
-}  
+}
 
 private void showDurationDialog(String type, EditText editMonths) {
 
