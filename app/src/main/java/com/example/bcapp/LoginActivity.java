@@ -47,69 +47,64 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser() {
+    String email = etEmail.getText().toString().trim();
+    String password = etPassword.getText().toString().trim();
 
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
+    // Email validation
+    if (TextUtils.isEmpty(email)) {
+        etEmail.setError("Enter Email");
+        etEmail.requestFocus();
+        return;
+    }
 
-        // Email validation
-        if (TextUtils.isEmpty(email)) {
-            etEmail.setError("Enter Email");
-            etEmail.requestFocus();
-            return;
-        }
+    // Password validation
+    if (TextUtils.isEmpty(password)) {
+        etPassword.setError("Enter Password");
+        etPassword.requestFocus();
+        return;
+    }
 
-        // Password validation
-        if (TextUtils.isEmpty(password)) {
-            etPassword.setError("Enter Password");
-            etPassword.requestFocus();
-            return;
-        }
+    if (password.length() < 6) {
+        etPassword.setError("Password must be at least 6 characters");
+        etPassword.requestFocus();
+        return;
+    }
 
-        if (password.length() < 6) {
-            etPassword.setError("Password must be at least 6 characters");
-            etPassword.requestFocus();
-            return;
-        }
+    // Attempt Sign In
+    auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
+                } else {
+                    Exception exception = task.getException();
 
-        // Login with Firebase
-        auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-
-                    if (task.isSuccessful()) {
-
-                        Toast.makeText(LoginActivity.this,
-                                "Login Successful",
-                                Toast.LENGTH_SHORT).show();
-
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        finish();
-
-                    } else {
-
-                        // If login fails → create new account
+                    // 1️⃣ Case A: User account doesn't exist -> Create a new account automatically
+                    if (exception instanceof com.google.firebase.auth.FirebaseAuthInvalidUserException) {
+                        
                         auth.createUserWithEmailAndPassword(email, password)
                                 .addOnCompleteListener(task2 -> {
-
                                     if (task2.isSuccessful()) {
-
-                                        Toast.makeText(LoginActivity.this,
-                                                "Account Created & Logged In",
-                                                Toast.LENGTH_LONG).show();
-
+                                        Toast.makeText(LoginActivity.this, "Account Created & Logged In", Toast.LENGTH_LONG).show();
                                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                         finish();
-
                                     } else {
-
-                                        Toast.makeText(LoginActivity.this,
-                                                "Error: " + task2.getException().getMessage(),
-                                                Toast.LENGTH_LONG).show();
+                                        Toast.makeText(LoginActivity.this, "Registration Error: " + task2.getException().getMessage(), Toast.LENGTH_LONG).show();
                                     }
-
                                 });
 
+                    } 
+                    // 2️⃣ Case B: Account exists, but credentials (password) are incorrect
+                    else if (exception instanceof com.google.firebase.auth.FirebaseAuthInvalidCredentialsException) {
+                        etPassword.setError("Incorrect password or invalid email format");
+                        etPassword.requestFocus();
+                    } 
+                    // 3️⃣ Case C: Network issues, server timeouts, or other unexpected errors
+                    else {
+                        Toast.makeText(LoginActivity.this, "Authentication Error: " + (exception != null ? exception.getMessage() : "Unknown error"), Toast.LENGTH_LONG).show();
                     }
-
-                });
+                }
+            });
     }
 }
